@@ -17,25 +17,35 @@
         // https://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
         var ctx = $("#canvaspixel")[0].getContext("2d");
 
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(0, 0, 1, 1);
-        ctx.fillRect(1, 1, 1, 1);
-
-        const imageData = ctx.createImageData(20, 20);
+        //ctx.fillStyle = 'blue';
+        //ctx.fillRect(0, 0, 1, 1);
+        //ctx.fillRect(1, 1, 1, 1);
 
         var gridToPrint = [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 2, 2, 2, 2, 2, 2, 0,
-            0, 0, 2, 2, 2, 2, 2, 2, 3, 0,
-            0, 1, 1, 1, 1, 1, 1, 3, 3, 0,
-            0, 1, 1, 1, 1, 1, 1, 3, 3, 0,
-            0, 1, 1, 1, 1, 1, 1, 3, 3, 0,
-            0, 1, 1, 1, 1, 1, 1, 3, 3, 0,
-            0, 1, 1, 1, 1, 1, 1, 3, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0,
+            0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0,
+            0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 0, 0, 0,
+            0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         ];
 
+        // create imageData of the same size of the gridToPrint
+        const imageData = ctx.createImageData(Math.sqrt(gridToPrint.length), Math.sqrt(gridToPrint.length));
 
 
         // For each point in the grid, draw 1 pixel
@@ -65,7 +75,8 @@
 
 
 
-        // For each point in the grid, draw 4 pixels (if 1 pixel only is too small)
+        // For each point in the grid, draw 4 pixels to make the cube bigger
+        // WARNING: CAUSES ALIASING
         function draw4pixels() {
 
             for (let i = 0; i < gridToPrint.length; i += 1) {
@@ -153,10 +164,12 @@
             }
         }
 
-        draw4pixels();
+        draw1pixel();
 
         //console.log(imageData.data.length);
         ctx.putImageData(imageData, 5, 5);
+        ctx.putImageData(imageData, 25, 5);
+        ctx.putImageData(imageData, 25, 25);
 
     </script>
 </body>

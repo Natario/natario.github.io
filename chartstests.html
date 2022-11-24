@@ -19,6 +19,8 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<script>
 
+            var chart = undefined;
+
             $("#process-text").on("click", function() {
 
                 // Create list of words and their frequency
@@ -43,7 +45,9 @@
                 let sortable = [];
                 for (var property in freqMap) {
                     // ignore words that appear only once to avoid crowding the graph
-                    if(freqMap[property] > 1)
+                    //if(freqMap[property] > 1)
+                    // ignore number of empty spaces
+                    if(property.length != 0)
                         sortable.push([property, freqMap[property]]);
                 }
 
@@ -57,9 +61,12 @@
                 })
 
 
+                // can't create a chart when there's already one in the canvas, so we need to destroy it in case the user pressed Process a second time
+                if(chart)
+                    chart.destroy();
                 // Create chart.js bar chart
                 // https://www.chartjs.org/docs/latest/getting-started/
-                new Chart($("#canvasChart"), {
+                chart = new Chart($("#canvasChart"), {
                     type: 'bar',
                     data: {
                     labels: Object.keys(objSorted),
