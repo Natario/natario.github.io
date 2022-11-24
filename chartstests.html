@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+        <link rel="stylesheet" href="css/stylestests.css" />
+		<title>Charts tests</title>
+	</head>
+    
+	<body>
+        <p>Paste text to analyze word frequency:</p>
+        <p><textarea id="text-to-process" class="halfwidth" rows="20" cols="200"></textarea></p>
+        <button id="process-text" type="button">Process</button>
+
+        <div class="halfwidth">
+            <canvas id="canvasChart"></canvas>
+        </div>
+ 
+        <script src="js/jquery-3.6.1.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script>
+
+            $("#process-text").on("click", function() {
+
+                // Create list of words and their frequency
+                // https://stackoverflow.com/a/30907349/3174659
+                var words = $("#text-to-process").val().replace(/[.]/g, '').split(/\s/);
+                console.log(words);
+                var freqMap = {};
+
+                words.forEach(function(w) {
+                    if (!freqMap[w]) {
+                        freqMap[w] = 0;
+                    }
+                    freqMap[w] += 1;
+                });
+
+                console.log(Object.keys(freqMap));
+                console.log(Object.values(freqMap));
+
+
+                // Order list of words by frequency (freqMap is an Object, so we need to tranform into array to sort and then back -- do we?)
+                // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
+                let sortable = [];
+                for (var property in freqMap) {
+                    // ignore words that appear only once to avoid crowding the graph
+                    if(freqMap[property] > 1)
+                        sortable.push([property, freqMap[property]]);
+                }
+
+                sortable.sort(function(a, b) {
+                    return b[1] - a[1];
+                });
+
+                let objSorted = {}
+                sortable.forEach(function(item){
+                    objSorted[item[0]]=item[1]
+                })
+
+
+                // Create chart.js bar chart
+                // https://www.chartjs.org/docs/latest/getting-started/
+                new Chart($("#canvasChart"), {
+                    type: 'bar',
+                    data: {
+                    labels: Object.keys(objSorted),
+                    datasets: [{
+                        label: '# of Words',
+                        data: Object.values(objSorted),
+                        borderWidth: 1
+                    }]
+                    },
+                    options: {
+                    scales: {
+                        y: {
+                        beginAtZero: true
+                        },
+                        x: {
+                            ticks: {
+                                autoSkip: false
+                            }
+                        }
+                    }
+                    }
+                });
+             
+            });
+
+
+		</script>
+	</body>
+</html>
