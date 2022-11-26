@@ -8,47 +8,82 @@
 </head>
 
 <body>
-    <canvas id="canvaspixel" class="centerhorizontal centervertical" width=100 height=100></canvas>
+    <p><a href="index.html">Back home</a></p>
+    <a class="button zoom-in center">Zoom in</a>
+    <a class="button zoom-out center">Zoom out</a>
+    <a class="button zoom-reset center">Reset zoom</a>
+    <br/>
+    <div id="stringToArrayIntro" class="center">
+        <h3>Change the numbers in the grid and see what happens when you click Process!</h3>
+        <p>(don't remove numbers or commas, just change the numbers!)</p>
+    </div>
+    <p><textarea id="stringToArray" class="center" rows="20" cols="40">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,
+0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,0,0,0,
+0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,3,0,0,0,
+0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,0,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,0,0,0,0,0,
+0,1,1,1,1,1,1,1,1,1,1,1,1,3,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    </textarea></p>
+        <button id="stringToArrayButton" class="center" type="button">Process</button>
+    <canvas id="canvaspixel" class="center" width=100 height=100></canvas>
 
     <script>
 
-        // code for testing pixel drawing
-        // https://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
-        var ctx = document.getElementById("canvaspixel").getContext("2d");
+        // Code for zooming the image (helpful because it's usually small)
+        // https://codepen.io/aotabi_/pen/KbamNX/
+        // I translated from jQuery to vanilla JS
+        var zoom = 1;
+        //var translateX = 0;
+		
+		document.getElementsByClassName('zoom-in')[0].addEventListener('click', function(){
+			zoom += 0.5;
+            document.getElementById("canvaspixel").setAttribute("style", "transform:scale(" + zoom + ")");
+            //translateX -= 20;
+            //$('.button').css('transform', 'translateX(' + translateX + "px" + ')');
+		});
+		document.getElementsByClassName('zoom-reset')[0].addEventListener('click', function(){
+			zoom = 1;
+			document.getElementById("canvaspixel").setAttribute("style", "transform:scale(" + zoom + ")");
+		});
+		document.getElementsByClassName('zoom-out')[0].addEventListener('click', function(){
+			zoom -= 0.5;
+			document.getElementById("canvaspixel").setAttribute("style", "transform:scale(" + zoom + ")");
+		});
 
-        //ctx.fillStyle = 'blue';
-        //ctx.fillRect(0, 0, 1, 1);
-        //ctx.fillRect(1, 1, 1, 1);
-
-        var gridToPrint = [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0,
-            0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 0, 0, 0,
-            0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 0, 0, 0,
-            0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 0, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 0, 0, 0, 0, 0,
-            0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        ];
-
-        // create imageData of the same size of the gridToPrint
-        const imageData = ctx.createImageData(Math.sqrt(gridToPrint.length), Math.sqrt(gridToPrint.length));
 
 
         // For each point in the grid, draw 1 pixel
-        function draw1pixel() {
+        function draw1pixel(gridToPrint) {
+        
+            // code for testing pixel drawing
+            // https://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
+            
+            var ctx = document.getElementById("canvaspixel").getContext("2d");
+
+            //ctx.fillStyle = 'blue';
+            //ctx.fillRect(0, 0, 1, 1);
+            //ctx.fillRect(1, 1, 1, 1);
+
+            // create imageData of the same size of the gridToPrint
+            const imageData = ctx.createImageData(Math.sqrt(gridToPrint.length), Math.sqrt(gridToPrint.length));
+
+
+        
            for (let i = 0; i < gridToPrint.length; i += 1) {
                 // Draw 1st pixel in red
                 if (gridToPrint[i] == 1) {
@@ -70,13 +105,23 @@
                     imageData.data[i*4 + 3] = 255;  // A value
                 }
             }
+
+            //console.log(imageData.data.length);
+            //ctx.putImageData(imageData, 5, 5);
+            //ctx.putImageData(imageData, 25, 5);
+            ctx.putImageData(imageData, 25, 25);
         }
 
 
 
         // For each point in the grid, draw 4 pixels to make the cube bigger
         // WARNING: CAUSES ALIASING
-        function draw4pixels() {
+        function draw4pixels(gridToPrint) {
+
+            var ctx = document.getElementById("canvaspixel").getContext("2d");
+
+            // create imageData of the same size of the gridToPrint
+            const imageData = ctx.createImageData(Math.sqrt(gridToPrint.length), Math.sqrt(gridToPrint.length));
 
             for (let i = 0; i < gridToPrint.length; i += 1) {
                 //console.log("i:" + i + " " + (Math.floor(i/10)*160 + (i%10)*8) + " " + Math.floor(i/10)*160 + " " + (i%10)*8);
@@ -161,14 +206,23 @@
                     imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 3] = 255;  // A value
                 }
             }
+
+            ctx.putImageData(imageData, 25, 25);
         }
 
-        draw1pixel();
 
-        //console.log(imageData.data.length);
-        ctx.putImageData(imageData, 5, 5);
-        ctx.putImageData(imageData, 25, 5);
-        ctx.putImageData(imageData, 25, 25);
+        document.getElementById('stringToArrayButton').addEventListener('click', function() {
+            
+            // https://stackoverflow.com/a/13272437/3174659
+            // but first need to remove newlines as JSON does not accept them
+            // https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
+            
+            stringToArrayJSON = document.getElementById("stringToArray").value.replace("/(\r\n|\n|\r)/gm", "");
+            //console.log(stringToArrayJSON);
+            //console.log(JSON.parse("[" + stringToArrayJSON + "]"));
+            draw1pixel(JSON.parse("[" + stringToArrayJSON + "]"));
+
+        });
 
     </script>
 </body>

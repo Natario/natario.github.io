@@ -7,7 +7,8 @@
 	</head>
     
 	<body>
-        <p>Paste text to analyze word frequency:</p>
+        <p><a href="index.html">Back home</a></p>
+        <h2>Paste text to analyze word frequency:</h2>
         <p><textarea id="text-to-process" class="halfwidth" rows="20" cols="200"></textarea></p>
         <button id="process-text" type="button">Process</button>
 
@@ -43,10 +44,9 @@
                 // Order list of words by frequency (freqMap is an Object, so we need to tranform into array to sort and then back -- do we?)
                 // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
                 let sortable = [];
+
                 for (var property in freqMap) {
-                    // ignore words that appear only once to avoid crowding the graph
-                    //if(freqMap[property] > 1)
-                    // ignore number of empty spaces
+                    // ignore empty strings because using our regexp, while spaces aren't counted, paragraphs are counted as empty strings
                     if(property.length != 0)
                         sortable.push([property, freqMap[property]]);
                 }
@@ -55,12 +55,15 @@
                     return b[1] - a[1];
                 });
 
+                // keep only the most common 50 words to avoid crowding the graph
+                const slicedArray = sortable.slice(0, 50);
+
                 let objSorted = {}
-                sortable.forEach(function(item){
+                slicedArray.forEach(function(item){
                     objSorted[item[0]]=item[1]
                 })
 
-
+                
                 // can't create a chart when there's already one in the canvas, so we need to destroy it in case the user pressed Process a second time
                 if(chart)
                     chart.destroy();
@@ -71,7 +74,7 @@
                     data: {
                     labels: Object.keys(objSorted),
                     datasets: [{
-                        label: '# of Words',
+                        label: '# of occurrences',
                         data: Object.values(objSorted),
                         borderWidth: 1
                     }]
@@ -79,7 +82,11 @@
                     options: {
                     scales: {
                         y: {
-                        beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                // https://stackoverflow.com/a/56833743/3174659
+                                precision: 0
+                            }
                         },
                         x: {
                             ticks: {
