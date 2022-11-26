@@ -11,12 +11,14 @@
 	<script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
 	<script src="js/retroWindowsScript.js"></script>	
 	<link rel="stylesheet" type="text/css" href="css/retroWindowsStyle.css" />
+	<link rel="stylesheet" type="text/css" href="css/clippy.css" media="all">
+	<script src="js/clippy.js"></script>
 	<title>A window into Pedro Natário's world</title>
 </head>
 <body>
 	<div id="desktop">
 		<div class="window" data-title="Web stuff">
-			<p><a href="pixeltest.html">Pixel by pixel</a>. Small Javascript investigation on how to draw single pixels on screen using no JS/CSS libraries or WebGL -- only vanilla JS and HTML's &lt;canvas&gt; element.</p>
+			<p><a href="pixeltest.html">Pixel by pixel</a>. How to draw single pixels on screen using no JS libraries nor WebGL -- only vanilla JS and HTML's &lt;canvas&gt; element.</p>
 			<hr />
 			<p><a href="chartstests.html">Chart.js test</a>. Bar graph that shows the frequency of words in an input text.</p>
 			<hr />
@@ -35,10 +37,10 @@
 		<div class="window" data-title="Welcome">
 			<h1>Hi</h1>
 			<p>Hello</p>
-			<p>I'm Pedro Natário, a (mainly web) developer with a degree in computer science and another one in philosophy.</p>
-			<p>I like to put things where they don't</p>
+			<p>Greetings</p>
+			<p>I'm Pedro Natário, a (mainly web) developer with a degree in computer science and another one in philosophy.<span class="verticalText">belong.</span></p>
+			<p>I tend to put things where they don't</p>
 			<p>This site was made with the aim of sharing my computer-related experiments.</p>
-			<p>belong.</p>
 			<hr />
 			<p>You can find a more detailed CV at <a href="https://www.linkedin.com/in/pnatario">linkedin.com/in/pnatario</a></p>
 		</div>
@@ -62,6 +64,15 @@
 		<div id="templateLinkText" class="preserveSpace">Thanks to &copy; </div><a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">HTML5-Templates.com</a>	
 		<!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
 	</div>
+	<script type="text/javascript">
+		clippy.load('Clippy', function(agent) {
+			agent.show();
+			// run a random animation every 30 secs
+			setInterval(function() {
+				agent.animate()
+			}, 30 * 1000); //
+		});
+	</script>
 </body>
 
 </html>
