@@ -9,33 +9,38 @@
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
-	<script src="script.js"></script>	
-	<link rel="stylesheet" type="text/css" href="style.css" />
+	<script src="js/retroWindowsScript.js"></script>	
+	<link rel="stylesheet" type="text/css" href="css/retroWindowsStyle.css" />
 	<title>A window into Pedro Natário's world</title>
 </head>
 <body>
 	<div id="desktop">
-		<div class="window" data-title="Pixel by pixel">
-			Small Javascript investigation on how to draw single pixels on screen using no graphics JS libraries or WebGL -- only HTML's &lt;canvas&gt; element.
-		</div>
-		<div class="window" data-title="Chart.js test">
-			Bar graph that shows the frequency of words in an input text.
-		</div>
-		<div class="window" data-title="Three.js tests">
-			Some experiments using the three.js library.
-		</div>
-		<div class="window" data-title="Welcome">
-			<h1>Welcome</h1>
-			<p>I'm Pedro Natário, a (mainly web) developer who also likes to get degrees in strange subjects like philosophy.</p>
-			<p>But let's leave that for another time. This site was made with the aim of sharing my computer-related experiments.</p>
+		<div class="window" data-title="Web stuff">
+			<p>Pixel by pixel. Small Javascript investigation on how to draw single pixels on screen using no graphics JS libraries or WebGL -- only HTML's &lt;canvas&gt; element.</p>
 			<hr />
-			<p>You can find me also at <a href="https://www.linkedin.com/in/pnatario">linkedin.com/in/pnatario</a></p>
+			<p>Chart.js test. Bar graph that shows the frequency of words in an input text.</p>
+			<hr />
+			<p>Three.js tests. Some experiments using the three.js library.</p>
 		</div>
-		<div class="window" data-title="Unreal Engine test">
+		<div class="window" data-title="Unreal Engine stuff">
 			<p>One of my first forays into the world of game development.</p>
 			<p>A small game where you steal cars.</p>
-			<p>BEWARE!! VERY ALPHA MANY BUGS1!</p>
+			<p>BEWARE!! VERY ALPHA MANY BUGS!1</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkX4806zZgdV1vNh?e=cUrfVz">Get .zip here</a> (Windows only for now)</p>
+			<p>To run you should only need to unzip and open FirstProject.exe</p>
+		</div>
+		<div class="window" data-title="3d Modelling stuff">
+			This is my windmill.
+		</div>
+		<div class="window" data-title="Welcome">
+			<h1>Hi</h1>
+			<p>Hello</p>
+			<p>I'm Pedro Natário, a (mainly web) developer with a degree in computer science and another in philosophy.</p>
+			<p>I like to put things where they don't</p>
+			<p>This site was made with the aim of sharing my computer-related experiments.</p>
+			<p>belong.</p>
+			<hr />
+			<p>You can find a more detailed CV at <a href="https://www.linkedin.com/in/pnatario">linkedin.com/in/pnatario</a></p>
 		</div>
 		<div class="window closed" data-title="The unknown">
 			<i class="fas fa-question"></i><i class="fas fa-question"></i><i class="fas fa-question"></i>
@@ -45,14 +50,16 @@
 		</div>
 		
 		<div id="icons">
-			<a class="openWindow" data-id="0">Open pixel by pixel test</a>
-			<a class="openWindow" data-id="1">Open Chart.js test</a>
-			<a class="openWindow" data-id="2">Open three.js tests</a>
+			<!-- use fontawesome folder icons -->
+			<!--<a class="openWindow" data-id="0"><p><i class="fas fa-folder-closed fa-3x"></i></p><p>Open web stuff</p></a>-->
+			<!-- /use fontawesome folder icons -->
+			<a class="openWindow" data-id="0">Open web stuff</a>
+			<a class="openWindow" data-id="1">Open Unreal Engine stuff</a>
+			<a class="openWindow" data-id="2">Open 3d modelling stuff</a>
 			<a class="openWindow" data-id="3">Welcome screen</a>
-			<a class="openWindow" data-id="4">Open Unreal Engine stuff</a>
-			<a class="openWindow" data-id="5">Open window into the unknown</a>
+			<a class="openWindow" data-id="4">Open window into the unknown</a>
 		</div>
-		<div id="templateLinkText" class="preserveSpace">Thanks to  &copy;</div><a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">HTML5-Templates.com</a>	
+		<div id="templateLinkText" class="preserveSpace">Thanks to &copy; </div><a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">HTML5-Templates.com</a>	
 		<!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
 	</div>
 </body>

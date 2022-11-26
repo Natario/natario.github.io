@@ -16,7 +16,8 @@ hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padd
 input,select{vertical-align:middle}
 
 #desktop {
-	font-family: Arial, Helvetica, sans-serif;
+	/*font-family: Arial, Helvetica, sans-serif;*/
+    font-family: Consolas, 'Lucida Console', monospace;
     position: fixed;
     height: 100%;
     width: 100%;
@@ -194,17 +195,15 @@ input,select{vertical-align:middle}
 
 /*Demo styles BEGIN*/
 #window0 {	top: 20px;	left: 300px;}
-#window1 {	top: 400px; left: 100px;}
+#window1 {	top: 400px; left: 50px;}
 #window2 {	top: 250px; left: 350px;}
 #window3 {	top: 150px; left: 500px;}
-#window4 {	top: 100px; left: 1220px;}
-#window5 {	top: 300px; left: 620px;}
+#window4 {	top: 300px; left: 620px;}
 #window0 .wincontent {	width: 450px; height: 400px;	}
 #window1 .wincontent {	width: 500px; height: 300px;	}
 #window2 .wincontent {	width: 400px; height: 350px;	}
 #window3 .wincontent {	width: 550px; height: 350px;	}
-#window4 .wincontent {	width: 450px; height: 350px;	}
-#window5 .wincontent {	width: 250px; height: 100px;	}
+#window4 .wincontent {	width: 250px; height: 100px;	}
 @media screen and (max-width:960px){
 	#window0 {	left: 10px;	}
 	#window3 {	left: 50px;	}	
