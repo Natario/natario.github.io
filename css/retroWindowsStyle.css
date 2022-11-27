@@ -201,7 +201,7 @@ input,select{vertical-align:middle}
 #window4 {	top: 300px; left: 620px;}
 #window0 .wincontent {	width: 450px; height: 400px;	}
 #window1 .wincontent {	width: 500px; height: 300px;	}
-#window2 .wincontent {	width: 400px; height: 350px;	}
+#window2 .wincontent {	width: 430px; height: 470px;	}
 #window3 .wincontent {	width: 550px; height: 350px;	}
 #window4 .wincontent {	width: 250px; height: 100px;	}
 @media screen and (max-width:960px){
@@ -229,7 +229,6 @@ input,select{vertical-align:middle}
 
 .verticalText {
     writing-mode: vertical-rl;
-    text-orientation: sideways;
     position: absolute;
     right: 0;
 }
