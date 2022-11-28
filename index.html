@@ -28,16 +28,18 @@
 			<p>One of my first forays into the world of game development.</p>
 			<p>A small game where you steal cars.</p>
 			<p>BEWARE!! VERY ALPHA MANY BUGS!1</p>
-			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkX4806zZgdV1vNh?e=cUrfVz">Get it here</a> (Windows only for now)</p>
-			<p>To run you should only need to unzip and open FirstProject.exe</p>
+			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkmWCQ-G_ojOfFo-?e=8FZhwc">Get it here</a> (Windows only for now)</p>
+			<p>To run you should only need to unzip and double click FirstProject.exe</p>
+			<p><a id="showGamePreview" href="javascript:void(0)">Click here to show/hide preview video</a></p>
+			<div id="gameiframeDisplay"></div>
 		</div>
 		<div class="window" data-title="3d Modelling stuff">
 			<p>This is a windmill 3D model I created in Blender as part of a course I took.</p>
 			<p>I imported it into Unreal Engine 5 and made a simple scenario so that you can walk around the windmill</p>
-			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkeP0WS_HkOUA_vc?e=sv4tsE">Get it here</a> (Windows only for now)</p>
-			<p>To run you should only need to unzip and open Windmill_Course.exe</p>
-			<p>Small preview:</p>
-			<iframe src="https://onedrive.live.com/embed?cid=06214B0948536ADF&resid=6214B0948536ADF%213910&authkey=AM4JG_CpmBHQ9X4" width="400" height="225" frameborder="0" scrolling="no" allowfullscreen></iframe>
+			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkfFlbpxrcg0Aa7F?e=qhocpa">Get it here</a> (Windows only for now)</p>
+			<p>To run you should only need to unzip and double click Windmill_Course.exe. Press ESC to leave.</p>
+			<p><a id="showWindmillPreview" href="javascript:void(0)">Click here to show/hide preview video</a></p>
+			<div id="windmilliframeDisplay"></div>
 		</div>
 		<div class="window" data-title="Welcome">
 			<h1>Hi</h1>
@@ -72,10 +74,26 @@
 	<script type="text/javascript">
 		clippy.load('Clippy', function(agent) {
 			agent.show();
-			// run a random animation every 30 secs
+			// run a random animation every 60 secs
 			setInterval(function() {
 				agent.animate()
-			}, 30 * 1000); //
+			}, 60 * 1000); //
+		});
+
+		
+		document.getElementById('showGamePreview').addEventListener('click', function() {
+			if(document.getElementById("gameiframeDisplay").innerHTML.length == 0)
+				document.getElementById("gameiframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/zXUIPZetHPM\" frameborder=\"0\" allowfullscreen></iframe>";
+			else
+				document.getElementById("gameiframeDisplay").innerHTML = "";
+		});
+
+
+		document.getElementById('showWindmillPreview').addEventListener('click', function() {
+			if(document.getElementById("windmilliframeDisplay").innerHTML.length == 0)
+				document.getElementById("windmilliframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/zXUIPZetHPM\" frameborder=\"0\" allowfullscreen></iframe>";
+			else
+				document.getElementById("windmilliframeDisplay").innerHTML = "";
 		});
 	</script>
 </body>
