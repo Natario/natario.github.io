@@ -5,7 +5,6 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-	<link rel="canonical" href="https://html5-templates.com/" />
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -20,13 +19,14 @@
 		<div class="window" data-title="Web stuff">
 			<p><a href="pixeltest.html">Pixel by pixel</a>. How to draw single pixels on screen using no JS libraries nor WebGL -- only vanilla JS and HTML's &lt;canvas&gt; element.</p>
 			<hr />
-			<p><a href="chartstests.html">Word frequency counter</a>. Chart.js bar graph that shows the frequency of words in an input text.</p>
+			<p><a href="chartstests.html">Word frequency counter</a>. Bar graph (thanks to Chart.js) that shows the frequency of words in an input text.</p>
 			<hr />
 			<p><a href="threejstests.html">Three.js tests</a>. Some experiments using the three.js library.</p>
 		</div>
 		<div class="window" data-title="Unreal Engine stuff">
 			<p>One of my first forays into the world of game development.</p>
-			<p>A small game where you steal cars.</p>
+			<p>(actually my first attemps were in the early 2000's with the almighty RPG Maker).</p>
+			<p>This is a small game where you steal cars as quickly as possible.</p>
 			<p>BEWARE!! VERY ALPHA MANY BUGS!1</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkmWCQ-G_ojOfFo-?e=8FZhwc">Get it here</a> (Windows only for now)</p>
 			<p>To run you should only need to unzip and double click FirstProject.exe</p>
@@ -59,9 +59,8 @@
 		</div>
 		
 		<div id="icons">
-			<!-- use fontawesome folder icons -->
+			<!-- fontawesome folder icons -->
 			<!--<a class="openWindow" data-id="0"><p><i class="fas fa-folder-closed fa-3x"></i></p><p>Open web stuff</p></a>-->
-			<!-- /use fontawesome folder icons -->
 			<a class="openWindow" data-id="0">Open web stuff</a>
 			<a class="openWindow" data-id="1">Open Unreal Engine stuff</a>
 			<a class="openWindow" data-id="2">Open 3d modelling stuff</a>
@@ -72,6 +71,7 @@
 		<!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
 	</div>
 	<script type="text/javascript">
+
 		clippy.load('Clippy', function(agent) {
 			agent.show();
 			// run a random animation every 60 secs
@@ -83,7 +83,7 @@
 		
 		document.getElementById('showGamePreview').addEventListener('click', function() {
 			if(document.getElementById("gameiframeDisplay").innerHTML.length == 0)
-				document.getElementById("gameiframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/zXUIPZetHPM\" frameborder=\"0\" allowfullscreen></iframe>";
+				document.getElementById("gameiframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/g39hngv_M8A\" frameborder=\"0\" allowfullscreen></iframe>";
 			else
 				document.getElementById("gameiframeDisplay").innerHTML = "";
 		});
@@ -95,6 +95,7 @@
 			else
 				document.getElementById("windmilliframeDisplay").innerHTML = "";
 		});
+
 	</script>
 </body>
 
