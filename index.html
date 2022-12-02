@@ -27,8 +27,7 @@
 			<p>One of my first forays into the world of game development.</p>
 			<p>(actually my first attemps were in the early 2000's with the almighty RPG Maker).</p>
 			<p>This is a small game where you steal cars as quickly as possible.</p>
-			<p>BEWARE!! VERY ALPHA MANY BUGS!1</p>
-			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkmWCQ-G_ojOfFo-?e=8FZhwc">Get it here</a> (Windows only for now)</p>
+			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGnkmWCQ-G_ojOfFo-?e=8FZhwc">Get it here</a> (Windows only for now) VERY ALPHA EXPECT BUGS!1</p>
 			<p>To run you should only need to unzip and double click FirstProject.exe</p>
 			<p><a id="showGamePreview" href="javascript:void(0)">Click here to show/hide preview video</a></p>
 			<div id="gameiframeDisplay"></div>
@@ -45,8 +44,8 @@
 			<h1>Hi</h1>
 			<p>Hello</p>
 			<p>Greetings</p>
-			<p>I'm Pedro Natário, a (mainly web) developer with a degree in computer science and another one in philosophy.<span class="verticalText">belong.</span></p>
-			<p>I tend to put things where they don't</p>
+			<p>I'm Pedro Natário, a (mainly web) developer with a degree in computer science and another one in philosophy.</p>
+			<p>Apologies for the<span class="verticalText">mess</span></p>
 			<p>This site was made with the aim of sharing my computer-related experiments.</p>
 			<hr />
 			<p>You can find a more detailed CV at <a href="https://www.linkedin.com/in/pnatario">linkedin.com/in/pnatario</a></p>
@@ -65,8 +64,9 @@
 			<a class="openWindow" data-id="1">Open Unreal Engine stuff</a>
 			<a class="openWindow" data-id="2">Open 3d modelling stuff</a>
 			<a class="openWindow" data-id="3">Welcome screen</a>
-			<a class="openWindow" data-id="4">Open window into the unknown</a>
+			<a class="openWindow" data-id="4">Open window into the unknown</a>			
 		</div>
+		<div><a id="bgColorChanger">I don't like this background color</a></div>
 		<div id="templateLinkText" class="preserveSpace">Thanks to &copy; </div><a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">HTML5-Templates.com</a>	
 		<!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
 	</div>
@@ -81,19 +81,33 @@
 		});
 
 		
+		// show/hide videos (makes page load faster)
 		document.getElementById('showGamePreview').addEventListener('click', function() {
 			if(document.getElementById("gameiframeDisplay").innerHTML.length == 0)
 				document.getElementById("gameiframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/g39hngv_M8A\" frameborder=\"0\" allowfullscreen></iframe>";
 			else
 				document.getElementById("gameiframeDisplay").innerHTML = "";
 		});
-
-
 		document.getElementById('showWindmillPreview').addEventListener('click', function() {
 			if(document.getElementById("windmilliframeDisplay").innerHTML.length == 0)
 				document.getElementById("windmilliframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/zXUIPZetHPM\" frameborder=\"0\" allowfullscreen></iframe>";
 			else
 				document.getElementById("windmilliframeDisplay").innerHTML = "";
+		});
+
+
+		// change header color on click (from Kirupa Chinnathambi - Creating Web Animations (2017))
+		document.querySelector("#bgColorChanger").addEventListener('click', function() {
+			var zeros = "0000000";
+
+			var color = "#" + Math.floor(Math.random() * 0xFFFFFF).toString(16);
+
+			var colorLength = color.length;
+
+			if (colorLength < 7) {
+				color += zeros.substring(0, zeros.length - colorLength);
+			}
+			document.querySelector("#desktop").style.backgroundColor = color;
 		});
 
 	</script>

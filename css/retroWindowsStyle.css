@@ -225,10 +225,59 @@ input,select{vertical-align:middle}
 }
 
 
-/* my styles for the homepage */
+
+/* MY OWN styles for the homepage */
 
 .verticalText {
     writing-mode: vertical-rl;
+    transform: rotate(-25deg); /* can't rotate <span> as it's an inline element (https://stackoverflow.com/a/24962108/3174659) but for some reason after applying writing-mode: vertical-rl; we are able to rotate it */
+    position: relative;
+    left: 30px;
+    bottom: 20px;
+    /* don't increase the size of the parent paragraph
+    https://stackoverflow.com/questions/6040005/relatively-position-an-element-without-it-taking-up-space-in-document-flow */
+    width: 0;
+    height: 0;
+}
+
+.window a:hover {
+	background: #000;
+	color: #FFF;
+}
+
+/* animation tests - based on the book by Kirupa Chinnathambi - Creating Web Animations (2017) */
+.clippy {
+    animation: bobble 2s infinite;
+}
+
+@keyframes bobble {
+    0% {
+        transform: translateY(5px);
+    }
+    50% {
+        transform: translateY(20px);
+    }
+    100% {
+        transform: translateY(5px);
+    }
+}
+
+.window {
+    transition: transform .5s;
+}
+.window:hover {
+    /*transform: scale3d(1.2, 1.2, 1);*/
+    /* transform: rotate(3deg); */
+}
+
+#bgColorChanger {
     position: absolute;
-    right: 0;
+    right:20px;
+    top: 20px;
+    cursor: pointer;
+}
+
+#bgColorChanger:hover {
+    background: #000;
+	color: #FFF;
 }
