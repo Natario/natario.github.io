@@ -18,6 +18,7 @@ input,select{vertical-align:middle}
 #desktop {
 	/*font-family: Arial, Helvetica, sans-serif;*/
     font-family: Consolas, 'Lucida Console', monospace;
+
     position: fixed;
     height: 100%;
     width: 100%;
@@ -172,6 +173,7 @@ input,select{vertical-align:middle}
 	color: #FFF;
 }
 
+
 #templateLinkText {
     position: absolute;
     display: inline-block;
@@ -226,9 +228,9 @@ input,select{vertical-align:middle}
 
 
 
-/* MY OWN styles for the homepage */
+/* my own styles for the homepage */
 
-.verticalText {
+.bentText {
     writing-mode: vertical-rl;
     transform: rotate(-25deg); /* can't rotate <span> as it's an inline element (https://stackoverflow.com/a/24962108/3174659) but for some reason after applying writing-mode: vertical-rl; we are able to rotate it */
     position: relative;
@@ -239,13 +241,17 @@ input,select{vertical-align:middle}
     width: 0;
     height: 0;
 }
+.bentText2 {
+    position: relative;
+    top: 10px;
+}
 
 .window a:hover {
 	background: #000;
 	color: #FFF;
 }
 
-/* animation tests - based on the book by Kirupa Chinnathambi - Creating Web Animations (2017) */
+/* some animation tests - based on the book by Kirupa Chinnathambi - Creating Web Animations (2017) */
 .clippy {
     animation: bobble 2s infinite;
 }
@@ -264,6 +270,8 @@ input,select{vertical-align:middle}
 
 .window {
     transition: transform .5s;
+
+    box-shadow: 0px 0px 5px rgb(114, 114, 114);
 }
 .window:hover {
     /*transform: scale3d(1.2, 1.2, 1);*/
@@ -276,8 +284,21 @@ input,select{vertical-align:middle}
     top: 20px;
     cursor: pointer;
 }
-
 #bgColorChanger:hover {
     background: #000;
 	color: #FFF;
+}
+#bgColorReset {
+    position: absolute;
+    right:20px;
+    top: 40px;
+    cursor: pointer;
+}
+#bgColorReset:hover {
+    background: #000;
+	color: #FFF;
+}
+
+#desktop {
+    transition: background-color .5s ease-out;
 }

@@ -45,7 +45,7 @@
 			<p>Hello</p>
 			<p>Greetings</p>
 			<p>I'm Pedro Natário, a (mainly web) developer with a degree in computer science and another one in philosophy.</p>
-			<p>Apologies for the<span class="verticalText">mess</span></p>
+			<p>Apologies for the <span class="bentText">mess</span></p>
 			<p>This site was made with the aim of sharing my computer-related experiments.</p>
 			<hr />
 			<p>You can find a more detailed CV at <a href="https://www.linkedin.com/in/pnatario">linkedin.com/in/pnatario</a></p>
@@ -67,6 +67,7 @@
 			<a class="openWindow" data-id="4">Open window into the unknown</a>			
 		</div>
 		<div><a id="bgColorChanger">I don't like this background color</a></div>
+		<div><a id="bgColorReset">Actually I did</a></div>
 		<div id="templateLinkText" class="preserveSpace">Thanks to &copy; </div><a href="https://html5-templates.com/" rel="nofollow" target="_blank" id="templateLink">HTML5-Templates.com</a>	
 		<!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
 	</div>
@@ -82,32 +83,62 @@
 
 		
 		// show/hide videos (makes page load faster)
-		document.getElementById('showGamePreview').addEventListener('click', function() {
-			if(document.getElementById("gameiframeDisplay").innerHTML.length == 0)
-				document.getElementById("gameiframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/g39hngv_M8A\" frameborder=\"0\" allowfullscreen></iframe>";
+		$("#showGamePreview").click(function() {
+			if($("#gameiframeDisplay")[0].innerHTML.length == 0)
+				$("#gameiframeDisplay")[0].innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/g39hngv_M8A\" frameborder=\"0\" allowfullscreen></iframe>";
 			else
-				document.getElementById("gameiframeDisplay").innerHTML = "";
+				$("#gameiframeDisplay")[0].innerHTML = "";
 		});
-		document.getElementById('showWindmillPreview').addEventListener('click', function() {
-			if(document.getElementById("windmilliframeDisplay").innerHTML.length == 0)
-				document.getElementById("windmilliframeDisplay").innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/zXUIPZetHPM\" frameborder=\"0\" allowfullscreen></iframe>";
+		$("#showWindmillPreview").click(function() {
+			if($("#windmilliframeDisplay")[0].innerHTML.length == 0)
+			$("#windmilliframeDisplay")[0].innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/zXUIPZetHPM\" frameborder=\"0\" allowfullscreen></iframe>";
 			else
-				document.getElementById("windmilliframeDisplay").innerHTML = "";
+			$("#windmilliframeDisplay")[0].innerHTML = "";
 		});
 
 
-		// change header color on click (from Kirupa Chinnathambi - Creating Web Animations (2017))
-		document.querySelector("#bgColorChanger").addEventListener('click', function() {
+		var timeoutID = undefined;
+
+		// change background color on click
+		$("#bgColorChanger").click(function(event) {
+			
+			// show text where the click happened - https://stackoverflow.com/a/60837378/3174659
+			// get mouse (event) location
+			var x = event.clientX;
+			var y = event.clientY;
+			
+			// create element to add, but first remove it if it exists already from a previous click
+			if($("#okText").length > 0)
+				$("#okText")[0].remove();
+			var newthing = document.createElement("div");
+			newthing.id = "okText";
+			newthing.style.position = "fixed";
+			newthing.style.left = x + "px";
+			newthing.style.top = y + 30 + "px";
+			newthing.innerText = "OK!";
+			$("#desktop")[0].appendChild(newthing);
+			
+
+			// remove text after a while so it doesn't stay there forever - https://stackoverflow.com/a/820954/3174659
+			clearTimeout(timeoutID); // reset timeout from previous click
+			timeoutID = setTimeout(function() {
+				$('#okText').fadeOut('fast');
+			}, 1000);
+			
+
+			// change color (from Kirupa Chinnathambi - Creating Web Animations (2017))
 			var zeros = "0000000";
-
 			var color = "#" + Math.floor(Math.random() * 0xFFFFFF).toString(16);
-
 			var colorLength = color.length;
-
 			if (colorLength < 7) {
 				color += zeros.substring(0, zeros.length - colorLength);
 			}
-			document.querySelector("#desktop").style.backgroundColor = color;
+			$("#desktop")[0].style.backgroundColor = color;
+		});
+
+		// reset color
+		$("#bgColorReset").click(function() {
+			$("#desktop")[0].style.backgroundColor = "#CCC";
 		});
 
 	</script>
