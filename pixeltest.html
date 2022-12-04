@@ -8,16 +8,19 @@
 </head>
 
 <body>
-    <p><a href="index.html">Back home</a></p>
-    <a class="button zoom-in center">Zoom in</a>
-    <a class="button zoom-out center">Zoom out</a>
-    <a class="button zoom-reset center">Reset zoom</a>
-    <br/>
-    <div id="stringToArrayIntro" class="center">
-        <h3>Change the numbers (between 0,1,2,3) in the grid and see what happens when you click Process!</h3>
-        <p>(don't remove numbers or commas, just change the numbers!)</p>
+
+    <div class="header">
+        <a href="index.html">Back home</a>
     </div>
-    <p><textarea id="stringToArray" class="center" rows="20" cols="40">
+    <div class="column">
+        <h4>Draw with your mouse</h4>
+        <canvas id="canvasmouse" width=350 height=350></canvas>
+    </div>
+    
+    <div class="column">
+        <h4>Each number represents a pixel. Change them (between 0,1,2,3) and see what happens with the cube when you click Process</h4>
+        <p>(don't remove numbers or commas, just change the numbers)</p>
+        <textarea id="stringToArray" rows="20" cols="40">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,
 0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,0,0,0,
@@ -38,13 +41,27 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-    </textarea></p>
-        <button id="stringToArrayButton" class="center" type="button">Process</button>
-    <canvas id="canvaspixel" class="center" width=100 height=100></canvas>
+        </textarea>
+        <button id="stringToArrayButton" type="button">Process</button>
+    </div>
+
+    <div class="column">
+        <div class="innerColumn">
+            <a class="button zoom-in">Zoom in</a>
+        </div>
+        <div class="innerColumn">
+            <a class="button zoom-out">Zoom out</a>
+            <canvas id="canvaspixel" width=50 height=50></canvas>
+        </div>
+        <div class="innerColumn">
+            <a class="button zoom-reset">Reset zoom</a>
+        </div>
+        
+    </div>
 
     <script>
 
-        // Code for zooming the image (helpful because it's usually small)
+        // Code for zooming the image (helpful because it's small)
         // https://codepen.io/aotabi_/pen/KbamNX/
         // I translated from jQuery to vanilla JS
         var zoom = 1;
@@ -67,6 +84,7 @@
 
 
 
+        
         // For each point in the grid, draw 1 pixel
         function draw1pixel(gridToPrint) {
         
@@ -81,10 +99,8 @@
 
             // create imageData of the same size of the gridToPrint
             const imageData = ctx.createImageData(Math.sqrt(gridToPrint.length), Math.sqrt(gridToPrint.length));
-
-
         
-           for (let i = 0; i < gridToPrint.length; i += 1) {
+            for (let i = 0; i < gridToPrint.length; i += 1) {
                 // Draw 1st pixel in red
                 if (gridToPrint[i] == 1) {
                     imageData.data[i*4 + 0] = 200;  // R value
@@ -106,128 +122,80 @@
                 }
             }
 
-            //console.log(imageData.data.length);
-            //ctx.putImageData(imageData, 5, 5);
-            //ctx.putImageData(imageData, 25, 5);
-            ctx.putImageData(imageData, 25, 25);
+            // draw figure more or less in the middle of the canvas
+            var rect = document.getElementById("canvaspixel").getBoundingClientRect();
+            ctx.putImageData(imageData, rect.width/2 - 10, rect.height/2 - 10);
         }
 
 
 
-        // For each point in the grid, draw 4 pixels to make the cube bigger
-        // WARNING: CAUSES ALIASING
-        function draw4pixels(gridToPrint) {
-
-            var ctx = document.getElementById("canvaspixel").getContext("2d");
-
-            // create imageData of the same size of the gridToPrint
-            const imageData = ctx.createImageData(Math.sqrt(gridToPrint.length), Math.sqrt(gridToPrint.length));
-
-            for (let i = 0; i < gridToPrint.length; i += 1) {
-                //console.log("i:" + i + " " + (Math.floor(i/10)*160 + (i%10)*8) + " " + Math.floor(i/10)*160 + " " + (i%10)*8);
-                
-                // Draw 1st pixel in red
-                if (gridToPrint[i] == 1) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 0] = 200;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 3] = 255;  // A value
-                // darker shade of red
-                } else if (gridToPrint[i] == 2) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 0] = 150;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 3] = 255;  // A value
-                // even darker shade
-                } else if (gridToPrint[i] == 3) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 0] = 100;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 3] = 255;  // A value
-                }
-
-                // Draw 2nd pixel in red
-                if (gridToPrint[i] == 1) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 0] = 200;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 3] = 255;  // A value
-                // darker shade of red
-                } else if (gridToPrint[i] == 2) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 0] = 150;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 3] = 255;  // A value
-                // even darker shade
-                } else if (gridToPrint[i] == 3) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 0] = 100;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 4 + 3] = 255;  // A value
-                }
-
-                // Draw 3rd pixel in red (in the line below)
-                if (gridToPrint[i] == 1) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 0] = 200;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 3] = 255;  // A value
-                // darker shade of red
-                } else if (gridToPrint[i] == 2) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 0] = 150;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 3] = 255;  // A value
-                // even darker shade
-                } else if (gridToPrint[i] == 3) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 0] = 100;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 80 + 3] = 255;  // A value
-                }
-
-                // Draw 4th pixel in red (also in the line below)
-                if (gridToPrint[i] == 1) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 0] = 200;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 3] = 255;  // A value
-                // darker shade of red
-                } else if (gridToPrint[i] == 2) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 0] = 150;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 3] = 255;  // A value
-                // even darker shade
-                } else if (gridToPrint[i] == 3) {
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 0] = 100;  // R value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 1] = 0;    // G value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 2] = 0;  // B value
-                    imageData.data[Math.floor(i/10)*160 + (i%10)*8 + 84 + 3] = 255;  // A value
-                }
-            }
-
-            ctx.putImageData(imageData, 25, 25);
-        }
-
-
+        // process the values in the textarea
         function processInput() {
             // https://stackoverflow.com/a/13272437/3174659
-            // but first need to remove newlines as JSON does not accept them
+            // but first need to remove newlines as JSON (used go parse array to string below) does not accept them
             // https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
             stringToArrayJSON = document.getElementById("stringToArray").value.replace("/(\r\n|\n|\r)/gm", "");
 
             //console.log(stringToArrayJSON);
             //console.log(JSON.parse("[" + stringToArrayJSON + "]"));
             
+            // need to reset zoom first as the drawing isn't updated when it's zoomed
+            zoom = 1;
+            document.getElementById("canvaspixel").setAttribute("style", "transform:scale(" + zoom + ")");
             draw1pixel(JSON.parse("[" + stringToArrayJSON + "]"));
         }
 
         document.getElementById('stringToArrayButton').addEventListener('click', processInput);
 
 
+
         // process default input data once when page loads
         processInput();
+
+
+
+        // mouse drawing tests - https://stackoverflow.com/a/30684711/3174659
+        // last known position
+        var pos = { x: 0, y: 0 };
+
+        // window.addEventListener('resize', resize);
+        document.addEventListener('mousemove', draw);
+        document.addEventListener('mousedown', setPosition);
+        document.addEventListener('mouseenter', setPosition);
+
+        // new position from mouse event
+        function setPosition(e) {
+            var rect = document.getElementById("canvasmouse").getBoundingClientRect();
+            pos.x = e.clientX - rect.left;
+            pos.y = e.clientY - rect.top;
+        }
+
+        // resize canvas - assumes canvas covers full window size
+        // function resize() {
+        //     ctx.canvas.width = window.innerWidth;
+        //     ctx.canvas.height = window.innerHeight;
+        // }
+
+        function draw(e) {
+            // mouse left button must be pressed
+            if (e.buttons !== 1) return;
+
+            var ctx = document.getElementById("canvasmouse").getContext("2d");
+
+            ctx.beginPath(); // begin
+
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'blue';
+
+            ctx.moveTo(pos.x, pos.y); // from
+            setPosition(e);
+            ctx.lineTo(pos.x, pos.y); // to
+            //console.log(pos.x + " " + pos.y);
+
+            ctx.stroke(); // draw it!
+        }
+
 
     </script>
 </body>

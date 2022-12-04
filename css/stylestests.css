@@ -21,70 +21,76 @@ body {
 }
 
 .halfwidth {
-
     max-width: 50%;
 }
+
+
+
+
+.column {
+    float: left;
+    width: 30%;
+    min-width: 350px;
+    margin: 50px 10px;
+}
+
+.innerColumn {
+    float: left;
+    width: 33%;
+}
+
+/* make all elements in a column display one below the other (block), align everything to center*/
+.column > *, .innerColumn > * {
+    display: block;
+    text-align: center;
+    margin: 20px auto;
+}
+
+
+#canvasmouse {
+    border: 1px solid black;
+    cursor: url(https://ani.cursors-4u.net/others/oth-9/oth839.cur), auto;
+}
+
+#stringToArray {
+    resize: none;
+}
+#stringToArrayButton {
+    width: 60px;
+    height: 30px;
+}
+
+#canvaspixel {
+    margin: 100px auto;
+}
+
 
 
 /*  style for zoom in/out buttons
 /*  https://codepen.io/aotabi_/pen/KbamNX/
  */
-.button {
+ .button {
     width: 50px;
     height: 50px;
     background: #FFF;
     border: 1px solid #005bac;
     border-radius: 50%;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
     color: #005bac;
     padding: 15px 10px 5px;
-    position: fixed;
+    position: relative;
     text-align: center;
-    -ms-user-select: none;
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
     user-select: none;
     transition: all 0.3s ease;
     z-index: 1;
+
+    margin: 20px auto;
   }
 
 .button:hover {
     background: #eef;
-}
-
-.zoom-in {
-    bottom: 500px;
-    right: 250px;
-}
-
-.zoom-out {
-    bottom: 500px;
-    
-}
-.zoom-reset {
-    bottom: 500px;
-    left: 250px;
+    cursor: pointer;
 }
 
 
-#canvaspixel {
-    border: 1px solid black;
-}
 
-#stringToArray {
-    right: 1000px;
-}
-#stringToArrayButton {
-    width: 60px;
-    height: 30px;
-    right: 1000px;
-    top: 400px;
-}
-#stringToArrayIntro {
-    width: 500px;
-    height: 200px;
-    right: 900px;
-    bottom: 400px;
-}
+
