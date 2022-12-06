@@ -4,23 +4,30 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/stylestests.css" />
-    <title>Pixel drawing tests</title>
+    <title>Lines and pixels</title>
 </head>
 
 <body>
-
-    <div class="header">
-        <a href="index.html">Back home</a>
-    </div>
-    <div class="column">
-        <h4>Draw with your mouse</h4>
-        <canvas id="canvasmouse" width=350 height=350></canvas>
-    </div>
-    
-    <div class="column">
-        <h4>Each number represents a pixel. Change them (between 0,1,2,3) and see what happens with the cube when you click Process</h4>
-        <p>(don't remove numbers or commas, just change the numbers)</p>
-        <textarea id="stringToArray" rows="20" cols="40">
+    <div class="window">
+        <div class="windowHeader">
+                <strong>Lines and pixels</strong>
+                <!-- <span title="Minimize" class="winminimize"><span></span></span>
+                <span title="Maximize" class="winmaximize"><span></span><span></span></span>
+                <span title="Close" class="winclose">x</span> -->
+        </div>
+        <div class="wincontent">
+            <div class="backHome">
+                <a href="index.html">Back home</a>
+            </div>
+            <div class="column">
+                <h4>Draw with your mouse</h4>
+                <canvas id="canvasmouse" width=350 height=350></canvas>
+            </div>
+            
+            <div class="column">
+                <h4>Each number represents a pixel. Change them (between 0,1,2,3) and see what happens with the cube when you click Process</h4>
+                <p>(don't remove numbers or commas, just change the numbers)</p>
+                <textarea id="stringToArray" rows="20" cols="40">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,
 0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,0,0,0,
@@ -41,23 +48,25 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-        </textarea>
-        <button id="stringToArrayButton" type="button">Process</button>
-    </div>
+                </textarea>
+                <button id="stringToArrayButton" type="button">Process</button>
+            </div>
 
-    <div class="column">
-        <div class="innerColumn">
-            <a class="button zoom-in">Zoom in</a>
-        </div>
-        <div class="innerColumn">
-            <a class="button zoom-out">Zoom out</a>
-            <canvas id="canvaspixel" width=50 height=50></canvas>
-        </div>
-        <div class="innerColumn">
-            <a class="button zoom-reset">Reset zoom</a>
-        </div>
-        
-    </div>
+            <div class="column">
+                <div class="innerColumn">
+                    <a class="button zoom-in">Zoom in</a>
+                </div>
+                <div class="innerColumn">
+                    <a class="button zoom-out">Zoom out</a>
+                    <canvas id="canvaspixel" width=50 height=50></canvas>
+                </div>
+                <div class="innerColumn">
+                    <a class="button zoom-reset">Reset zoom</a>
+                </div>
+                
+            </div>
+        </div> <!-- .wincontent -->
+    </div> <!-- .window -->
 
     <script>
 

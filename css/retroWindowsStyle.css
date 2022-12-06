@@ -252,9 +252,9 @@ input,select{vertical-align:middle}
 }
 
 /* some animation tests - based on the book by Kirupa Chinnathambi - Creating Web Animations (2017) */
-.clippy {
+/* .clippy {
     animation: bobble 2s infinite;
-}
+} */
 
 @keyframes bobble {
     0% {
@@ -271,12 +271,12 @@ input,select{vertical-align:middle}
 .window {
     transition: transform .5s;
 
-    box-shadow: 0px 0px 5px rgb(114, 114, 114);
+    box-shadow: 0px 0px 3px rgb(114, 114, 114);
 }
-.window:hover {
-    /*transform: scale3d(1.2, 1.2, 1);*/
-    /* transform: rotate(3deg); */
-}
+/* .window:hover {
+    transform: scale3d(1.2, 1.2, 1);
+    transform: rotate(3deg);
+} */
 
 #bgColorChanger {
     position: absolute;

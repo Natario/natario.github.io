@@ -1,3 +1,4 @@
+/* general page styles */
 body {
     font-family: Consolas, 'Lucida Console', monospace;
 }
@@ -26,12 +27,12 @@ body {
 
 
 
-
+/* my own column layout */
 .column {
     float: left;
     width: 30%;
     min-width: 350px;
-    margin: 50px 10px;
+    margin: 10px 10px;
 }
 
 .innerColumn {
@@ -46,7 +47,13 @@ body {
     margin: 20px auto;
 }
 
+.backHome {
+    margin-bottom: 100px;
+}
 
+
+
+/* adjustments for individual elements */
 #canvasmouse {
     border: 1px solid black;
     cursor: url(https://ani.cursors-4u.net/others/oth-9/oth839.cur), auto;
@@ -54,6 +61,7 @@ body {
 
 #stringToArray {
     resize: none;
+    background: #EEE;
 }
 #stringToArrayButton {
     width: 60px;
@@ -72,7 +80,7 @@ body {
  .button {
     width: 50px;
     height: 50px;
-    background: #FFF;
+    background: #EEE;
     border: 1px solid #005bac;
     border-radius: 50%;
     color: #005bac;
@@ -84,6 +92,7 @@ body {
     z-index: 1;
 
     margin: 20px auto;
+    box-shadow: 0px 0px 3px rgb(114, 114, 114);
   }
 
 .button:hover {
@@ -94,3 +103,68 @@ body {
 
 
 
+/* copied from retroWindowsStyle.css (with adjustments) to give the same look and feel as the homepage */
+.window {
+    position: absolute;
+    border: 2px solid #000;
+    background: #EEE;
+	border-radius: 5px;
+	z-index: 1000;
+
+    top: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    border-radius: 0;
+    bottom: 0 !important;
+}
+.windowHeader {
+    background-color: #8888d6;
+    text-align: right;
+    border-bottom: 2px solid #000;
+    padding: 2px;
+    height: 28px;
+}
+.windowHeader > strong {
+    float: left;
+    margin: 0px 3px 0 10px;
+    line-height: 29px;
+    font-size: 17px;
+}
+.wincontent {
+    padding: 10px;
+    min-width: 200px;
+    min-height: 140px;
+    border: 2px solid #000;
+    margin: 2px;
+	border-radius: 0 0 5px 5px;
+
+    width: 98.5%;
+    height: 93%;
+}
+
+@media screen and (max-width:1500px){
+    .wincontent {
+        padding: 0;
+    }
+    .backHome {
+        margin-bottom: 0;
+        padding: 10px;
+    }
+}
+@media screen and (max-width:1200px){
+    .window {
+        min-height: 1500px;
+    }
+    .wincontent {
+        height: 97%;
+    }
+}
+@media screen and (max-width:800px){
+    .window {
+        min-height: 1800px;
+    }
+    .wincontent {
+        height: 97.5%;
+        padding: 0;
+    }
+}
