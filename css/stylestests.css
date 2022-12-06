@@ -31,8 +31,10 @@ body {
 .column {
     float: left;
     width: 30%;
-    min-width: 350px;
+    min-width: 500px;
+    min-height: 500px;
     margin: 10px 10px;
+    position: relative; /* allow children to be absolutely positioned (e.g. <canvas> on top of <img>) - https://stackoverflow.com/questions/2941189/how-to-overlay-one-div-over-another-div */
 }
 
 .innerColumn {
@@ -57,6 +59,16 @@ body {
 #canvasmouse {
     border: 1px solid black;
     cursor: url(https://ani.cursors-4u.net/others/oth-9/oth839.cur), auto;
+    position: absolute;
+    top: 255px;
+    left: 135px;
+}
+.camera {
+    width: 400px;
+    position: absolute;
+    top: 95px;
+    left: 95px;
+    z-index: -1; /* move it to the back so user cant drag it */
 }
 
 #stringToArray {
@@ -71,6 +83,7 @@ body {
 #canvaspixel {
     margin: 100px auto;
 }
+
 
 
 
@@ -142,28 +155,32 @@ body {
     height: 93%;
 }
 
-@media screen and (max-width:1500px){
+@media screen and (max-width:1600px){
+    .window {
+        min-height: 1300px;
+    }
     .wincontent {
         padding: 0;
+        height: 97%;
     }
     .backHome {
-        margin-bottom: 0;
         padding: 10px;
+    }
+    .camera {
+        left: 40px;
+    }
+    #canvasmouse {
+        left: 80px;
     }
 }
 @media screen and (max-width:1200px){
-    .window {
-        min-height: 1500px;
-    }
-    .wincontent {
-        height: 97%;
-    }
-}
-@media screen and (max-width:800px){
     .window {
         min-height: 1800px;
     }
     .wincontent {
         height: 97.5%;
+    }
+    .backHome {
+        margin-bottom: 0;
     }
 }

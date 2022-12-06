@@ -21,7 +21,9 @@
             </div>
             <div class="column">
                 <h4>Draw with your mouse</h4>
-                <canvas id="canvasmouse" width=350 height=350></canvas>
+                <p>(you can also press the arrow keys to "move" the camera; warning: objects out of focus disappear into the void)</p>
+                <canvas id="canvasmouse" width=223 height=153></canvas>
+                <img class="camera" src="photo-camera-svgrepo-com.svg"></img>
             </div>
             
             <div class="column">
@@ -70,9 +72,11 @@
 
     <script>
 
-        // Code for zooming the image (helpful because it's small)
-        // https://codepen.io/aotabi_/pen/KbamNX/
-        // I translated from jQuery to vanilla JS
+        /*
+         * Code for zooming the image (helpful because it's small)
+         * https://codepen.io/aotabi_/pen/KbamNX/
+         * I translated from jQuery to vanilla JS
+         */
         var zoom = 1;
         //var translateX = 0;
 		
@@ -94,7 +98,9 @@
 
 
         
-        // For each point in the grid, draw 1 pixel
+        /*
+         * For each point in the grid, draw 1 pixel
+         */
         function draw1pixel(gridToPrint) {
         
             // code for testing pixel drawing
@@ -138,7 +144,9 @@
 
 
 
-        // process the values in the textarea
+        /*
+         * Process the values in the textarea
+         */
         function processInput() {
             // https://stackoverflow.com/a/13272437/3174659
             // but first need to remove newlines as JSON (used go parse array to string below) does not accept them
@@ -156,14 +164,15 @@
 
         document.getElementById('stringToArrayButton').addEventListener('click', processInput);
 
-
-
         // process default input data once when page loads
         processInput();
 
 
 
-        // mouse drawing tests - https://stackoverflow.com/a/30684711/3174659
+        /*
+         * Mouse drawing tests - https://stackoverflow.com/a/30684711/3174659
+         */
+        
         // last known position
         var pos = { x: 0, y: 0 };
 
@@ -204,6 +213,33 @@
 
             ctx.stroke(); // draw it!
         }
+
+        
+
+        /*
+         * Move the "camera" with the arrow keys
+         */
+         document.addEventListener('keydown', function(event) {
+            const key = event.key; // "ArrowRight", "ArrowLeft", "ArrowUp", or "ArrowDown"
+            var ctx = document.getElementById("canvasmouse").getContext("2d");
+            var rect = document.getElementById("canvasmouse").getBoundingClientRect();
+            const imageData = ctx.getImageData(0, 0, rect.width, rect.height);
+
+            if(key == "ArrowLeft") {
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                ctx.putImageData(imageData, 10, 0);
+            } else if(key == "ArrowRight") {
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                ctx.putImageData(imageData, -10, 0);
+            } else if(key == "ArrowUp") {
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                ctx.putImageData(imageData, 0, 10);
+            } else if(key == "ArrowDown") {
+                ctx.clearRect(0, 0, rect.width, rect.height);
+                ctx.putImageData(imageData, 0, -10);
+            }
+
+        });
 
 
     </script>
