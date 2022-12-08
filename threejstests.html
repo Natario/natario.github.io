@@ -10,9 +10,8 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
 		<!-- JS and CSS -->
         <link rel="stylesheet" href="css/stylestests.css" />
-		<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/loaders/GLTFLoader.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/three@0.146.0/examples/js/controls/OrbitControls.js"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
+
         <title>My three.js tests</title>
 	</head>
 	<body>
@@ -22,8 +21,13 @@
 		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
 		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
 		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="-10" step="0.1" autocomplete="off">
-		<script>
+		<script type="module">
 
+			import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+			import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
+			import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+
+			
 			// Renderer
 			const renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setSize( window.innerWidth*.8, window.innerHeight*.8 );
@@ -72,7 +76,7 @@
 			scene.add(axesHelper);
 
 			// OrbitControls
-			const controls = new THREE.OrbitControls( camera, renderer.domElement );
+			const controls = new OrbitControls( camera, renderer.domElement );
 			controls.addEventListener('change', () => {
 				// update sliders when the camera is moved with the mouse (OrbitControls)
 				document.querySelector('#fov-slider').value = camera.fov;
@@ -81,12 +85,29 @@
 				document.querySelector('#camera-z-slider').value = camera.position.z;
 			});
 
+
 			// GLTFLoader
-			const loader = new THREE.GLTFLoader();
+			const loader = new GLTFLoader();
 			let model;
 			let mixer;
+			let fileLocation = 'Windmill Course Animation.glb';
+
+			// can also retrieve file from dropbox instead of locally:
+			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
+
+			// or, as the above (using the URL dl.dropboxusercontent.com to bypass CORS) is not fully supported, we can also use the code below (inspired by https://github.com/dropbox/dropbox-sdk-js/blob/main/examples/javascript/download/index.html)
+			// we need to generate the ACCESS_TOKEN from https://www.dropbox.com/developers/apps
+			// THIS METHOD IS NOT SAFE FOR PRODUCTION - ACESS_TOKEN AND ACCESS TO MY DROPBOX SHOULD BE KEPT PRIVATE
+			// let fileLocation = '';
+			// var dbx = new Dropbox.Dropbox({ accessToken: "ACCESS_TOKEN" });
+			// await dbx.sharingGetSharedLinkFile({url: "https://www.dropbox.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0"})
+			// 	.then(function(data) {
+			// 		console.log(data);
+			// 		fileLocation = URL.createObjectURL(data.result.fileBlob);
+			// 	})
+
 			const clock = new THREE.Clock(); // clock for animation
-			loader.load( 'Windmill Course Animation.glb', function ( gltf ) {
+			loader.load( fileLocation, function ( gltf ) {
 				console.log(gltf);
 				model = gltf.scene;
 				// add animations - view-source:https://threejs.org/examples/webgl_loader_fbx.html
