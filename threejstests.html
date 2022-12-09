@@ -4,30 +4,39 @@
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="ie=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!-- favicon -  thanks to https://favicon.io/favicon-generator/ -->
+		<title>My three.js tests</title>
+		<!-- favicon - https://favicon.io/favicon-generator/ -->
 		<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
 		<!-- JS and CSS -->
         <link rel="stylesheet" href="css/stylestests.css" />
+		<script src="node_modules/three/build/three.js"></script>
+		<script src="node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
+		<script src="node_modules/three/examples/js/loaders/FontLoader.js"></script>
+		<script src="node_modules/three/examples/js/geometries/TextGeometry.js"></script>
+		<script src="node_modules/three/examples/js/objects/Reflector.js"></script>
+		<script src="node_modules/three/examples/js/objects/Sky.js"></script>
+		<!-- script to get big files from Dropbox (see code below) instead of locally (Github max file size is 25MB) -->
 		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
-
-        <title>My three.js tests</title>
 	</head>
 	<body>
 		<p><a href="index.html">Back home</a></p>
 		<div id="three-container"></div>
-		FOV: <input type="range" id="fov-slider" min="0" max="100" value="75" step="1">
-		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
-		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
-		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="-10" step="0.1" autocomplete="off">
-		<script type="module">
+		FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1">
+		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="-2" step="0.1" autocomplete="off">
+		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="2" step="0.1" autocomplete="off">
+		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
+		<button id="reset-camera">Reset camera</button>
+		<button id="auto-rotate">Auto rotate</button>
+		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off">
+		<script>
 
-			import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
-			import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
-			import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+			//			
+			// SCENE SETUP
+			//
 
-			
 			// Renderer
 			const renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setSize( window.innerWidth*.8, window.innerHeight*.8 );
@@ -38,66 +47,151 @@
 			const scene = new THREE.Scene();
 			scene.background = new THREE.Color('skyblue');
 			
-			// Camera
-			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			// AxesHelper
+			const axesHelper = new THREE.AxesHelper( 100 );
+			scene.add(axesHelper);
+
+			// Camera -- initialize some values based on sliders' default values so we only need to change initial values in one place
+			const camera = new THREE.PerspectiveCamera( document.querySelector('#fov-slider').value, window.innerWidth / window.innerHeight, 0.1, 1000 );
 			camera.position.x = document.querySelector('#camera-x-slider').value;
 			camera.position.y = document.querySelector('#camera-y-slider').value;
 			camera.position.z = document.querySelector('#camera-z-slider').value;
 			// camera.lookAt(0,0,0);
 
-			// Camera Helper (also create a second camera to see all the lines) - for some reason can't move the camera from 0,0,0
+			// Camera Helper (create a second camera to see all the lines) - for some reason can't move this second camera from 0,0,0
 			// const camera2 = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 5, 10 );
 			// camera2.position.set(0,20,0);
 			// const helper = new THREE.CameraHelper( camera2 );
 			// scene.add( helper );
 
-			// Geometry
-			const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-			const material = new THREE.MeshStandardMaterial( { color: 0x00ff00 } );
-			const cube = new THREE.Mesh( geometry, material );
-			scene.add(cube);
-
-			// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
-			// const floor = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
-			// floor.rotation.x = - Math.PI / 2;
-			// scene.add( floor );
-			// const grid = new THREE.GridHelper( 200, 40, 0x000000, 0x000000 );
-			// grid.material.opacity = 0.2;
-			// grid.material.transparent = true;
-			// scene.add( grid );
-			
-			// Light
-			const light = new THREE.DirectionalLight('white', 8);
-  			light.position.set(10, 10, 0);
-			scene.add(light);
-
-			// AxesHelper
-			const axesHelper = new THREE.AxesHelper( 100 );
-			scene.add(axesHelper);
-
 			// OrbitControls
-			const controls = new OrbitControls( camera, renderer.domElement );
+			const controls = new THREE.OrbitControls( camera, renderer.domElement );
 			controls.addEventListener('change', () => {
-				// update sliders when the camera is moved with the mouse (OrbitControls)
+				// update sliders when the camera is moved with the OrbitControls (basically using the mouse)
 				document.querySelector('#fov-slider').value = camera.fov;
 				document.querySelector('#camera-x-slider').value = camera.position.x;
 				document.querySelector('#camera-y-slider').value = camera.position.y;
 				document.querySelector('#camera-z-slider').value = camera.position.z;
 			});
+			controls.enableDamping = true;
+			controls.listenToKeyEvents(window);
+			controls.keyPanSpeed = 40;
+
+			// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
+			const floor = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999/*, depthWrite: false */} ) );
+			floor.rotation.x = - Math.PI / 2;
+			floor.position.y = -5;
+			scene.add( floor );
+			const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
+			grid.material.opacity = 0.2;
+			grid.material.transparent = true;
+			grid.position.y = -5;
+			scene.add( grid );
+			
+
+			// Lights
+			const directionalLight = new THREE.DirectionalLight('white', 3);
+			directionalLight.position.set(100, 100, 100);
+			scene.add(directionalLight);
+			
+			// const helper = new THREE.DirectionalLightHelper( directionalLight, 5 );
+			// scene.add( helper );
+			
+			// const ambientLight = new THREE.AmbientLight( 0x404040, 3); // soft white light
+			// scene.add( ambientLight );
+		
+			const hemiLight = new THREE.HemisphereLight(
+				'white', // bright sky color
+				'lightgrey', // dim ground color
+				2, // intensity
+			);
+			scene.add( hemiLight );
+
+			// Sky with sun - https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_ocean.html and https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_sky.html
+			const sky = new THREE.Sky();
+			sky.scale.setScalar( 10000 );
+			sky.material.uniforms[ 'sunPosition' ].value = directionalLight.position;
+			sky.material.uniforms[ 'rayleigh' ].value = 1;
+			sky.material.uniforms[ 'turbidity' ].value = 5;
+			sky.material.uniforms[ 'mieCoefficient' ].value = 0.01;
+			sky.material.uniforms[ 'mieDirectionalG' ].value = 0.9;
+			// renderer.toneMappingExposure = 0.01;
+			scene.add( sky );
 
 
-			// GLTFLoader
-			const loader = new GLTFLoader();
-			let model;
+
+			//
+			// OBJECTS
+			//
+
+			// Generic cube with custom texture
+			const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			const textureLoader = new THREE.TextureLoader();
+			const material = new THREE.MeshStandardMaterial( {
+				emissiveIntensity: 0.5,
+				map: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-albedo.png'),
+				aoMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-ao2.png'),
+				metalnessMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-metalness.png'),
+				normalMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-normal.png'),
+				roughnessMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-roughness.png'),
+			} );
+			const cube = new THREE.Mesh( geometry, material );
+			cube.position.z = -2;
+			scene.add(cube);
+
+			// Generic spheres
+			const sphereGeometry = new THREE.SphereGeometry(0.5);
+			const sphereMaterial = new THREE.MeshStandardMaterial({color: 'olivedrab'});
+			const sphereGroup = [];
+			for (let i = 0; i < 10; i++) {
+				sphereGroup[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
+				sphereGroup[i].scale.multiplyScalar(Math.random()+0.3);
+				sphereGroup[i].position.x = i*1.5;
+				sphereGroup[i].position.y = -2;
+				scene.add(sphereGroup[i]);
+			}
+
+			// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
+			const mirrorGeometry = new THREE.PlaneGeometry( 10, 10 );
+			verticalMirror = new THREE.Reflector( mirrorGeometry, {
+				clipBias: 0.003,
+				textureWidth: window.innerWidth * window.devicePixelRatio,
+				textureHeight: window.innerHeight * window.devicePixelRatio,
+				color: 0x889999
+			} );
+			verticalMirror.position.z = -5;
+			scene.add( verticalMirror );
+			// const box = new THREE.BoxHelper( verticalMirror, 0xffff00 );
+			// box.material = new THREE.LineBasicMaterial();
+			// scene.add( box );
+
+			// add a border around the mirror because the BoxHelper around the mirror is too thin
+			let mirrorBorderTop = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderTop.position.y = 5;
+			let mirrorBorderRight = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderRight.rotation.z = Math.PI / 2;
+			mirrorBorderRight.position.x = 5;
+			let mirrorBorderBottom = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderBottom.position.y = -5;
+			let mirrorBorderLeft = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderLeft.rotation.z = Math.PI / 2;
+			mirrorBorderLeft.position.x = -5;
+			verticalMirror.add(mirrorBorderTop, mirrorBorderRight, mirrorBorderBottom, mirrorBorderLeft);
+
+			
+			// GLTFLoader for 3D models
+			const loader = new THREE.GLTFLoader();
+			let model, model2, model3;
 			let mixer;
-			let fileLocation = 'Windmill Course Animation.glb';
+			let fileLocation = 'OlmecHead.glb';
 
-			// can also retrieve file from dropbox instead of locally:
+			// can also retrieve 3D model from dropbox instead of locally:
 			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
 
-			// or, as the above (using the URL dl.dropboxusercontent.com to bypass CORS) is not fully supported, we can also use the code below (inspired by https://github.com/dropbox/dropbox-sdk-js/blob/main/examples/javascript/download/index.html)
-			// we need to generate the ACCESS_TOKEN from https://www.dropbox.com/developers/apps
-			// THIS METHOD IS NOT SAFE FOR PRODUCTION - ACESS_TOKEN AND ACCESS TO MY DROPBOX SHOULD BE KEPT PRIVATE
+			// or, as the above (using the URL dl.dropboxusercontent.com to bypass CORS) is not fully supported (https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/CORS-Access-Control-Allow-Origin/m-p/336138/highlight/true#M19583),
+			// we can also use the code below (inspired by https://github.com/dropbox/dropbox-sdk-js/blob/main/examples/javascript/download/index.html)
+			// note that we first need to generate an ACCESS_TOKEN from https://www.dropbox.com/developers/apps
+			// THIS METHOD IS NOT SAFE FOR PRODUCTION - ACESS_TOKEN AND ACCESS TO MY OWN DROPBOX SHOULD BE KEPT PRIVATE
 			// let fileLocation = '';
 			// var dbx = new Dropbox.Dropbox({ accessToken: "ACCESS_TOKEN" });
 			// await dbx.sharingGetSharedLinkFile({url: "https://www.dropbox.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0"})
@@ -107,31 +201,101 @@
 			// 	})
 
 			const clock = new THREE.Clock(); // clock for animation
+			let textMesh = {}; // loading text to remove when windmill finishes loading
 			loader.load( fileLocation, function ( gltf ) {
-				console.log(gltf);
+				// console.log(gltf);
 				model = gltf.scene;
-				// add animations - view-source:https://threejs.org/examples/webgl_loader_fbx.html
-				mixer = new THREE.AnimationMixer( gltf.scene );
-				const action = mixer.clipAction( gltf.animations[ 0 ] );
-				action.play();
-				scene.add( gltf.scene );
+				model.position.x = 5;
+				// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
+				// mixer = new THREE.AnimationMixer( model );
+				// const action = mixer.clipAction( gltf.animations[ 0 ] );
+				// action.play();
+				scene.add( model );
+				model2 = model.clone(); // create a few more models to populate the scene
+				model3 = model.clone();
+				model2.position.x = 8;
+				model3.position.x = 12;
+				scene.add( model2, model3 );
+				scene.remove( textMesh );
 			}, undefined, function ( error ) {
 				console.error( error );
 			} );
+
+			// Loading... text
+			const fontLoader = new THREE.FontLoader();
+			fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+				const textGeometry = new THREE.TextGeometry( 'Loading 3D models...', {
+					font: font,
+					size: 0.5,
+					height: 0.2,
+					curveSegments: 2
+				} );
+				var textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
+				textMesh = new THREE.Mesh( textGeometry, textMaterial );
+				textMesh.position.y = 1;
+				textMesh.position.x = 3;
+				scene.add( textMesh );
+			});
 			
+			
+			
+
+			//
+			// ANIMATIONS
+			//
+			let movementDirectionZ = new Array(10);
+			let movementDirectionY = new Array(10);
+			for (let i = 0; i < 10; i++) {
+				movementDirectionZ[i] = true;
+				movementDirectionY[i] = true;
+			}
+
+			// https://discoverthreejs.com/book/first-steps/animation-system/
+			const times = [0, 1, 2];
+			const values = [0, 0, 0, 0, 2, 0, 0, 0, 0];
+			const positionKF = new THREE.VectorKeyframeTrack(".position", times, values);
+			const tracks = [positionKF];
+			// use -1 to automatically calculate the length from the array of tracks
+			const length = -1;
+			const clip = new THREE.AnimationClip("slowmove", length, tracks);
+			const ballMixer = new THREE.AnimationMixer(sphereGroup[0]);
+			const action = ballMixer.clipAction(clip);
+			action.play();
 
 			function animate() {
 				requestAnimationFrame( animate );
 
-				cube.rotation.x += 0.01;
-				cube.rotation.y += 0.01;
-				// if(model) {
-				// 	model.rotation.x += 0.01;
-				// 	model.rotation.y += 0.01;
-				// }
+				// cube.rotation.x += 0.01;
+				// cube.rotation.y += 0.01;
+
+				for (let i = 1; i < 10; i++) {
+					if(movementDirectionZ[i])
+						sphereGroup[i].position.z += (i%3+3) * 0.01;
+					else
+						sphereGroup[i].position.z -= (i%3+3) * 0.01;
+					if((sphereGroup[i].position.z >= 3) || (sphereGroup[i].position.z <= 0))
+						movementDirectionZ[i] = !movementDirectionZ[i];
+					if(movementDirectionY[i])
+						sphereGroup[i].position.y += (i+1) * 0.01;
+					else
+						sphereGroup[i].position.y -= (i+1) * 0.01;
+					if((sphereGroup[i].position.y >= 2) || (sphereGroup[i].position.y <= -2))
+						movementDirectionY[i] = !movementDirectionY[i];
+				}
+						
+				
+				if(model)
+					model.rotation.y += 0.01;
+				if(model2)
+					model2.rotation.x += 0.01;
+				if(model3)
+					model3.rotation.z += 0.01;
 
 				const delta = clock.getDelta();
 				if ( mixer ) mixer.update( delta );
+				if ( ballMixer ) ballMixer.update( delta );
+				
+				controls.update();
 
 				renderer.render( scene, camera );
 			};
@@ -139,7 +303,7 @@
 			animate();
 
 
-			// resize scene on window resize - https://discoverthreejs.com/book/first-steps/responsive-design/
+			// Resize scene on window resize - https://discoverthreejs.com/book/first-steps/responsive-design/
 			window.addEventListener("resize", () => {
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
@@ -148,7 +312,7 @@
 				renderer.setPixelRatio(window.devicePixelRatio);
 			});
 			
-			// Sliders events
+			// Sliders for user input
 			document.querySelector('#fov-slider').addEventListener('input', function() {
 				camera.fov = this.value;
 				camera.updateProjectionMatrix();
@@ -168,6 +332,18 @@
 				camera.position.z = this.value;
 				camera.updateProjectionMatrix();
 				controls.update();
+			});
+			document.querySelector('#reset-camera').addEventListener('click', function() {
+				controls.reset();
+			});
+			document.querySelector('#auto-rotate').addEventListener('click', function() {
+				if(controls.autoRotate == false)
+					controls.autoRotate = true;
+				else
+					controls.autoRotate = false;
+			});
+			document.querySelector('#auto-rotate-speed').addEventListener('input', function() {
+				controls.autoRotateSpeed = this.value;
 			});
 
 		</script>
