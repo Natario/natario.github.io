@@ -29,7 +29,7 @@ input,select{vertical-align:middle}
     left: 0;
     right: 0;
 
-    pointer-events: none;
+    pointer-events: none; /* we don't need click events on the whole bacground, just on its children buttons, windows etc. (so we reset "pointer-events: auto" below) */
 }
 #desktop * {
     pointer-events: auto;

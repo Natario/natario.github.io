@@ -129,11 +129,11 @@
 			const textureLoader = new THREE.TextureLoader();
 			const material = new THREE.MeshStandardMaterial( {
 				emissiveIntensity: 0.5,
-				map: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-albedo.png'),
-				aoMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-ao2.png'),
-				metalnessMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-metalness.png'),
-				normalMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-normal.png'),
-				roughnessMap: textureLoader.load('harshbricks-Unreal-Engine/harshbricks-roughness.png'),
+				map: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-albedo.png'),
+				aoMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-ao2.png'),
+				metalnessMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-metalness.png'),
+				normalMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-normal.png'),
+				roughnessMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-roughness.png'),
 			} );
 			const cube = new THREE.Mesh( geometry, material );
 			cube.position.z = -2;
@@ -183,7 +183,7 @@
 			const loader = new THREE.GLTFLoader();
 			let model, model2, model3;
 			let mixer;
-			let fileLocation = 'OlmecHead.glb';
+			let fileLocation = 'img/OlmecHead.glb';
 
 			// can also retrieve 3D model from dropbox instead of locally:
 			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
