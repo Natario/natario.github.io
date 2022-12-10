@@ -22,12 +22,17 @@ input,select{vertical-align:middle}
     position: fixed;
     height: 100%;
     width: 100%;
-    background: #CCC;
+    /* background: #CCC; */
 	overflow: hidden;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+
+    pointer-events: none;
+}
+#desktop * {
+    pointer-events: auto;
 }
 .window {
     position: absolute;

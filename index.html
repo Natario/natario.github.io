@@ -17,16 +17,20 @@
 	<link rel="stylesheet" type="text/css" href="css/retroWindowsStyle.css" />
 	<link rel="stylesheet" type="text/css" href="css/clippy.css" media="all"> <!-- could also use CDN: <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/clippyjs/clippy.js/build/clippy.css" media="all"> -->
 	<script src="js/clippy.js"></script> <!-- could also use CDN: <script src="https://cdn.jsdelivr.net/gh/clippyjs/clippy.js/build/clippy.js"></script> -->
+	<script src="node_modules/three/build/three.js"></script>
+	<script src="node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+	<script src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
 	<title>A window into Pedro Natário's world</title>
 </head>
 <body>
+	<canvas id="bg" style="position: fixed; top: 0; left: 0; "></canvas>
 	<div id="desktop">
 		<div class="window" data-title="Web stuff">
 			<p><a href="pixeltest.html">Lines and pixels</a>. How to draw simple elements on screen using no JS libraries nor WebGL -- only vanilla JS and HTML's 2D &lt;canvas&gt; context.</p>
 			<hr />
-			<p><a href="chartstests.html">Word frequency counter</a>. Bar graph (thanks to Chart.js) that shows the frequency of words in an input text.</p>
-			<hr />
 			<p><a href="threejstests.html">Three.js tests</a>. Some experiments using the three.js library.</p>
+			<hr />
+			<p><a href="chartstests.html">Word frequency counter</a>. Bar graph (thanks to Chart.js) that shows the frequency of words in an input text.</p>
 		</div>
 		<div class="window" data-title="Unreal Engine stuff">
 			<p>One of my first forays into the world of game development.</p>
@@ -78,6 +82,7 @@
 	</div>
 	<script type="text/javascript">
 
+		//Show Clippy
 		clippy.load('Clippy', function(agent) {
 			agent.show();
 			// run a random animation every 60 secs
@@ -87,7 +92,7 @@
 		});
 
 		
-		// show/hide videos (makes page load faster)
+		// Show/hide preview videos (hiding by default makes page load faster)
 		$("#showGamePreview").click(function() {
 			if($("#gameiframeDisplay")[0].innerHTML.length == 0)
 				$("#gameiframeDisplay")[0].innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/g39hngv_M8A\" frameborder=\"0\" allowfullscreen></iframe>";
@@ -102,12 +107,12 @@
 		});
 
 
+		
+		// Change background color on user click
 		var timeoutID = undefined;
-
-		// change background color on click
 		$("#bgColorChanger").click(function(event) {
 			
-			// show text where the click happened - https://stackoverflow.com/a/60837378/3174659
+			// show little "ok" text where the click happened - https://stackoverflow.com/a/60837378/3174659
 			// get mouse (event) location
 			var x = event.clientX;
 			var y = event.clientY;
@@ -123,14 +128,12 @@
 			newthing.innerText = "OK!";
 			$("#desktop")[0].appendChild(newthing);
 			
-
-			// remove text after a while so it doesn't stay there forever - https://stackoverflow.com/a/820954/3174659
+			// remove "ok" text after a while so it doesn't stay there forever - https://stackoverflow.com/a/820954/3174659
 			clearTimeout(timeoutID); // reset timeout from previous click
 			timeoutID = setTimeout(function() {
 				$('#okText').fadeOut('fast');
 			}, 1000);
 			
-
 			// change color (from Kirupa Chinnathambi - Creating Web Animations (2017))
 			var zeros = "0000000";
 			var color = "#" + Math.floor(Math.random() * 0xFFFFFF).toString(16);
@@ -141,10 +144,57 @@
 			$("#desktop")[0].style.backgroundColor = color;
 		});
 
-		// reset color
+		// Reset color on user click
 		$("#bgColorReset").click(function() {
 			$("#desktop")[0].style.backgroundColor = "#CCC";
 		});
+
+
+
+		// Three.js background - https://www.youtube.com/watch?v=Q7AOvWpIVHU
+		// basically I just took the idea of using a three.js scene covering the whole background (using position: fixed) and not all the other animations
+		const scene = new THREE.Scene();
+		scene.background = new THREE.Color( 'skyblue' );
+		const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+		const renderer = new THREE.WebGLRenderer({
+			canvas: document.querySelector('#bg'),
+		});
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		camera.position.setZ(30);
+		camera.position.setY(30);
+		const controls = new THREE.OrbitControls( camera, renderer.domElement );
+		renderer.render(scene, camera);
+		
+		const hemiLight = new THREE.HemisphereLight(
+			'white', // bright sky color
+			'white', // dim ground color
+			3, // intensity
+		);
+		scene.add( hemiLight );
+
+		const loader = new THREE.GLTFLoader();
+		let model;
+		let fileLocation = 'druid_hills.glb';
+		loader.load( fileLocation, function ( gltf ) {
+			// console.log(gltf);
+			model = gltf.scene;
+			// model.position.x = 30;
+			model.scale.set( 0.01, 0.01, 0.01);
+			scene.add( model );
+		}, undefined, function ( error ) {
+			console.error( error );
+		} );
+
+		function animate() {
+			requestAnimationFrame(animate);
+			// torus.rotation.x += 0.01;
+			// torus.rotation.y += 0.005;
+			// torus.rotation.z += 0.01;
+			controls.update();
+			renderer.render(scene, camera);
+		}
+		animate();
 
 	</script>
 </body>
