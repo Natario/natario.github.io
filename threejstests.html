@@ -22,15 +22,16 @@
 		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
 	</head>
 	<body>
-		<p><a href="index.html">Back home</a></p>
+		<p><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move skate with WASD or arrow keys!</span></p>
 		<div id="three-container"></div>
 		FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1">
 		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="-2" step="0.1" autocomplete="off">
 		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="2" step="0.1" autocomplete="off">
 		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
 		<button id="reset-camera">Reset camera</button>
-		<button id="auto-rotate">Auto rotate</button>
-		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off">
+		<!-- <button id="auto-rotate">Auto rotate</button>
+		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off"> -->
+		<button id="fixed-camera">Toggle fixed camera</button>
 		<script>
 
 			//			
@@ -48,7 +49,7 @@
 			scene.background = new THREE.Color('skyblue');
 			
 			// AxesHelper
-			const axesHelper = new THREE.AxesHelper( 100 );
+			const axesHelper = new THREE.AxesHelper( 1000 );
 			scene.add(axesHelper);
 
 			// Camera -- initialize some values based on sliders' default values so we only need to change initial values in one place
@@ -73,20 +74,27 @@
 				document.querySelector('#camera-y-slider').value = camera.position.y;
 				document.querySelector('#camera-z-slider').value = camera.position.z;
 			});
-			controls.enableDamping = true;
-			controls.listenToKeyEvents(window);
-			controls.keyPanSpeed = 40;
+			// controls.enableDamping = true;
+			// controls.listenToKeyEvents(window);
+			// controls.keyPanSpeed = 40;
 
-			// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
-			const floor = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), new THREE.MeshPhongMaterial( { color: 0x999999/*, depthWrite: false */} ) );
+			// Floor
+			const textureLoader = new THREE.TextureLoader();
+			const floorTexture = textureLoader.load( "img/tile_floor.jpg" );
+			floorTexture.wrapS = THREE.RepeatWrapping;
+			floorTexture.wrapT = THREE.RepeatWrapping;
+			floorTexture.repeat.set( 400, 400 );
+			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture} );
+			const floor = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), floorMaterial );
 			floor.rotation.x = - Math.PI / 2;
-			floor.position.y = -5;
+			floor.position.y = 0;
 			scene.add( floor );
-			const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
-			grid.material.opacity = 0.2;
-			grid.material.transparent = true;
-			grid.position.y = -5;
-			scene.add( grid );
+			// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
+			// const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
+			// grid.material.opacity = 0.2;
+			// grid.material.transparent = true;
+			// grid.position.y = 0;
+			// scene.add( grid );
 			
 
 			// Lights
@@ -126,7 +134,6 @@
 
 			// Generic cube with custom texture
 			const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-			const textureLoader = new THREE.TextureLoader();
 			const material = new THREE.MeshStandardMaterial( {
 				emissiveIntensity: 0.5,
 				map: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-albedo.png'),
@@ -136,8 +143,8 @@
 				roughnessMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-roughness.png'),
 			} );
 			const cube = new THREE.Mesh( geometry, material );
-			cube.position.z = -2;
-			scene.add(cube);
+			cube.position.z = 0;
+			// scene.add(cube);
 
 			// Generic spheres
 			const sphereGeometry = new THREE.SphereGeometry(0.5);
@@ -147,9 +154,23 @@
 				sphereGroup[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
 				sphereGroup[i].scale.multiplyScalar(Math.random()+0.3);
 				sphereGroup[i].position.x = i*1.5;
-				sphereGroup[i].position.y = -2;
+				sphereGroup[i].position.y = 2;
 				scene.add(sphereGroup[i]);
 			}
+
+			// geometric skateboard
+			// const skate = new THREE.Mesh( new THREE.BoxGeometry( 2, 0.2, 0.5 ), new THREE.MeshStandardMaterial({color: 'maroon'}) );
+			// scene.add(skate);
+			// const wheelBack = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.4), new THREE.MeshStandardMaterial({color: 'black'}));
+			// wheelBack.rotation.x = Math.PI / 2;
+			// wheelBack.position.x = 0.5;
+			// wheelBack.position.y = -0.1;
+			// const wheelFront = wheelBack.clone();
+			// wheelFront.position.x = -0.5;
+			// skate.add(wheelBack, wheelFront);
+			// skate.position.y = 0.5;
+			// skate.position.z = 1;
+
 
 			// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
 			const mirrorGeometry = new THREE.PlaneGeometry( 10, 10 );
@@ -159,6 +180,7 @@
 				textureHeight: window.innerHeight * window.devicePixelRatio,
 				color: 0x889999
 			} );
+			verticalMirror.position.y = 5;
 			verticalMirror.position.z = -5;
 			scene.add( verticalMirror );
 			// const box = new THREE.BoxHelper( verticalMirror, 0xffff00 );
@@ -181,7 +203,7 @@
 			
 			// GLTFLoader for 3D models
 			const loader = new THREE.GLTFLoader();
-			let model, model2, model3;
+			let model, model2, model3, skateModel;
 			let mixer;
 			let fileLocation = 'img/OlmecHead.glb';
 
@@ -217,9 +239,15 @@
 				model3.position.x = 12;
 				scene.add( model2, model3 );
 				scene.remove( textMesh );
-			}, undefined, function ( error ) {
-				console.error( error );
-			} );
+			});
+
+			loader.load( 'img/skateboard.glb', function ( gltf ) {
+				// console.log(gltf);
+				skateModel = gltf.scene;
+				skateModel.scale.setScalar(0.3);
+				skateModel.position.y = 0.2;
+				scene.add( skateModel );
+			});
 
 			// Loading... text
 			const fontLoader = new THREE.FontLoader();
@@ -243,6 +271,8 @@
 			//
 			// ANIMATIONS
 			//
+
+			// ball group
 			let movementDirectionZ = new Array(10);
 			let movementDirectionY = new Array(10);
 			for (let i = 0; i < 10; i++) {
@@ -250,6 +280,7 @@
 				movementDirectionY[i] = true;
 			}
 
+			// using threejs built-in animation system to animate one ball
 			// https://discoverthreejs.com/book/first-steps/animation-system/
 			const times = [0, 1, 2];
 			const values = [0, 0, 0, 0, 2, 0, 0, 0, 0];
@@ -262,12 +293,22 @@
 			const action = ballMixer.clipAction(clip);
 			action.play();
 
+			let speed = 0;
+			let fixedCamera = true;
+
 			function animate() {
 				requestAnimationFrame( animate );
 
 				// cube.rotation.x += 0.01;
 				// cube.rotation.y += 0.01;
 
+				if(model)
+					model.rotation.y += 0.01;
+				if(model2)
+					model2.rotation.x += 0.01;
+				if(model3)
+					model3.rotation.z += 0.01;
+					
 				for (let i = 1; i < 10; i++) {
 					if(movementDirectionZ[i])
 						sphereGroup[i].position.z += (i%3+3) * 0.01;
@@ -279,21 +320,27 @@
 						sphereGroup[i].position.y += (i+1) * 0.01;
 					else
 						sphereGroup[i].position.y -= (i+1) * 0.01;
-					if((sphereGroup[i].position.y >= 2) || (sphereGroup[i].position.y <= -2))
+					if((sphereGroup[i].position.y >= 4) || (sphereGroup[i].position.y <= (0 + sphereGroup[i].geometry.parameters.radius/2)))
 						movementDirectionY[i] = !movementDirectionY[i];
 				}
-						
-				
-				if(model)
-					model.rotation.y += 0.01;
-				if(model2)
-					model2.rotation.x += 0.01;
-				if(model3)
-					model3.rotation.z += 0.01;
 
 				const delta = clock.getDelta();
 				if ( mixer ) mixer.update( delta );
 				if ( ballMixer ) ballMixer.update( delta );
+
+				if(skateModel) {
+					skateModel.position.z -= speed * Math.cos(skateModel.rotation.y);
+					skateModel.position.x -= speed * Math.sin(skateModel.rotation.y);
+					camera.lookAt(skateModel.position);
+					controls.target = skateModel.position; // https://stackoverflow.com/a/68958468/3174659
+					// move camera with object
+					// https://discourse.threejs.org/t/how-do-i-make-camera-follow-an-object-regardless-of-the-x-y-and-z-rotation-of-the-object/28974/2
+					// THIS CODE MAKES ORBITCONTROLS UNUSABLE, so we let user toggle between follow skate or orbit controls
+					if(fixedCamera) {
+						const cameraOffset = new THREE.Vector3(0.0, 5.0, 5.0); 
+						camera.position.copy(skateModel.position).add(cameraOffset);
+					}
+				}
 				
 				controls.update();
 
@@ -336,14 +383,35 @@
 			document.querySelector('#reset-camera').addEventListener('click', function() {
 				controls.reset();
 			});
-			document.querySelector('#auto-rotate').addEventListener('click', function() {
-				if(controls.autoRotate == false)
-					controls.autoRotate = true;
-				else
-					controls.autoRotate = false;
+			// document.querySelector('#auto-rotate').addEventListener('click', function() {
+			// 	if(controls.autoRotate == false)
+			// 		controls.autoRotate = true;
+			// 	else
+			// 		controls.autoRotate = false;
+			// });
+			// document.querySelector('#auto-rotate-speed').addEventListener('input', function() {
+			// 	controls.autoRotateSpeed = this.value;
+			// });
+			document.querySelector('#fixed-camera').addEventListener('click', function() {
+				fixedCamera == false ? fixedCamera = true : fixedCamera = false;
 			});
-			document.querySelector('#auto-rotate-speed').addEventListener('input', function() {
-				controls.autoRotateSpeed = this.value;
+
+			// move the skate with the arrow keys
+			document.addEventListener('keydown', function(event) {
+				const key = event.key; // "ArrowRight", "ArrowLeft", "ArrowUp", or "ArrowDown"
+				
+				if(key == "ArrowLeft" || key == "a" || key == "A") {
+					skateModel.rotation.y += 0.1;
+				} else if(key == "ArrowRight" || key == "d" || key == "D") {
+					skateModel.rotation.y -= 0.1;
+				} else if(key == "ArrowUp" || key == "w" || key == "W") {
+					if(speed <= 0.1)
+						speed += 0.005;
+				} else if(key == "ArrowDown" || key == "s" || key == "S") {
+					if(speed >= -0.1) 
+						speed -= 0.005;
+				}
+
 			});
 
 		</script>
