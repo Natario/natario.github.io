@@ -22,6 +22,7 @@
 	</head>
 	<body>
 		<p><a href="index.html">Back home</a></p>
+		<p>Left click to orbit, right click to pan, scroll to zoom.</p>
 		<div id="three-container"></div>
 		<script>
 
@@ -40,13 +41,13 @@
 			scene.background = new THREE.Color('skyblue');
 			
 			// AxesHelper
-			const axesHelper = new THREE.AxesHelper( 1000 );
-			scene.add(axesHelper);
+			// const axesHelper = new THREE.AxesHelper( 1000 );
+			// scene.add(axesHelper);
 
 			// Camera -- initialize some values based on sliders' default values so we only need to change initial values in one place
 			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
 			camera.position.x = 10
-			camera.position.y = 10;
+			camera.position.y = 5;
 			camera.position.z = 10;
 			// camera.lookAt(0,0,0);
 
@@ -61,42 +62,67 @@
 
 			// Floor
 			const textureLoader = new THREE.TextureLoader();
-			const floorTexture = textureLoader.load( "img/poly_wood2.jpg" );
-			const floorNormal = textureLoader.load( "img/poly_normal2.jpg" );
-			floorTexture.wrapS = THREE.RepeatWrapping;
-			floorTexture.wrapT = THREE.RepeatWrapping;
-			floorTexture.repeat.set( 800, 800 );
+
+			// const floorTexture = textureLoader.load( "img/grass.jpg" );
+			// // const floorNormal = textureLoader.load( "img/poly_normal2.jpg" );
+			// floorTexture.wrapS = THREE.RepeatWrapping;
+			// floorTexture.wrapT = THREE.RepeatWrapping;
+			// floorTexture.repeat.set( 20, 20 );
 			// const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
-			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
-			const floor = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), floorMaterial );
-			floor.rotation.x = - Math.PI / 2;
-			floor.position.y = 0;
-			scene.add( floor );
-			// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
-			// const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
-			// grid.material.opacity = 0.2;
-			// grid.material.transparent = true;
-			// grid.position.y = 0;
-			// scene.add( grid );
+			// // const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
+			// const floor = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50 ), floorMaterial );
+			// floor.rotation.x = - Math.PI / 2;
+			// floor.position.x = 0;
+			// floor.position.z = 22;
+			// scene.add( floor );
+			// // Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
+			// // const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
+			// // grid.material.opacity = 0.2;
+			// // grid.material.transparent = true;
+			// // grid.position.y = 0;
+			// // scene.add( grid );
+
+			// Water
+			// const waterTexture = textureLoader.load( "img/water2.jpg" );
+			// waterTexture.wrapS = THREE.RepeatWrapping;
+			// waterTexture.wrapT = THREE.RepeatWrapping;
+			// waterTexture.repeat.set( 5, 2 );
+			// const waterMaterial = new THREE.MeshStandardMaterial({map: waterTexture});
+			// const water = new THREE.Mesh( new THREE.PlaneGeometry( 50, 10 ), waterMaterial );
+			// water.rotation.x = - Math.PI / 2;
+			// water.position.x = 0;
+			// water.position.z = -8;
+			// scene.add( water );
 			
 
 			// Lights
-			const directionalLight = new THREE.DirectionalLight('white', 3);
-			directionalLight.position.set(100, 100, 100);
+			const directionalLight = new THREE.DirectionalLight('white', 5);
+			directionalLight.position.set(10, 5, 10);
 			scene.add(directionalLight);
+			// const directionalLight2 = new THREE.DirectionalLight('white', 7);
+			// directionalLight2.position.set(-10, 5, -10);
+			// scene.add(directionalLight2);
 			
 			// const helper = new THREE.DirectionalLightHelper( directionalLight, 5 );
 			// scene.add( helper );
+
+			// const spotLight = new THREE.SpotLight('white', 300, 100, Math.PI / 5);
+			// spotLight.position.set(20, 5, 5);
+			// spotLight.target.position.set(0, 5, 0);
+			// scene.add(spotLight);
+			// const spotLightHelper = new THREE.SpotLightHelper( spotLight );
+			// spotLightHelper.visible = false; // have to hide it this way because if I remove the code for the spotLightHelper, then I can't move the spotlight...
+			// scene.add( spotLightHelper );
 			
-			// const ambientLight = new THREE.AmbientLight( 0x404040, 3); // soft white light
-			// scene.add( ambientLight );
+			const ambientLight = new THREE.AmbientLight( 'white', 7); // soft white light
+			scene.add( ambientLight );
 		
-			const hemiLight = new THREE.HemisphereLight(
-				'white', // bright sky color
-				'lightgrey', // dim ground color
-				2, // intensity
-			);
-			scene.add( hemiLight );
+			// const hemiLight = new THREE.HemisphereLight(
+			// 	'white', // bright sky color
+			// 	'lightgrey', // dim ground color
+			// 	2, // intensity
+			// );
+			// scene.add( hemiLight );
 
 			// Sky with sun - https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_ocean.html and https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_sky.html
 			const sky = new THREE.Sky();

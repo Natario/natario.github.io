@@ -230,9 +230,9 @@ input,select{vertical-align:middle}
 
 .bentText {
     writing-mode: vertical-rl;
-    transform: rotate(-25deg); /* can't rotate <span> as it's an inline element (https://stackoverflow.com/a/24962108/3174659) but for some reason after applying writing-mode: vertical-rl; we are able to rotate it */
+    transform: rotate(-60deg); /* can't rotate <span> as it's an inline element (https://stackoverflow.com/a/24962108/3174659) but for some reason after applying writing-mode: vertical-rl; we are able to rotate it */
     position: relative;
-    left: 30px;
+    left: 10px;
     bottom: 20px;
     /* don't increase the size of the parent paragraph
     https://stackoverflow.com/questions/6040005/relatively-position-an-element-without-it-taking-up-space-in-document-flow */
