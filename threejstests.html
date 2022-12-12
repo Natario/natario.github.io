@@ -80,11 +80,13 @@
 
 			// Floor
 			const textureLoader = new THREE.TextureLoader();
-			const floorTexture = textureLoader.load( "img/tile_floor.jpg" );
+			const floorTexture = textureLoader.load( "img/poly_wood2.jpg" );
+			const floorNormal = textureLoader.load( "img/poly_normal2.jpg" );
 			floorTexture.wrapS = THREE.RepeatWrapping;
 			floorTexture.wrapT = THREE.RepeatWrapping;
-			floorTexture.repeat.set( 400, 400 );
-			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture} );
+			floorTexture.repeat.set( 800, 800 );
+			// const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
+			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
 			const floor = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), floorMaterial );
 			floor.rotation.x = - Math.PI / 2;
 			floor.position.y = 0;
@@ -245,7 +247,8 @@
 				// console.log(gltf);
 				skateModel = gltf.scene;
 				skateModel.scale.setScalar(0.3);
-				skateModel.position.y = 0.2;
+				skateModel.position.y = 0.15;
+				skateModel.position.z = 2;
 				scene.add( skateModel );
 			});
 
@@ -283,7 +286,7 @@
 			// using threejs built-in animation system to animate one ball
 			// https://discoverthreejs.com/book/first-steps/animation-system/
 			const times = [0, 1, 2];
-			const values = [0, 0, 0, 0, 2, 0, 0, 0, 0];
+			const values = [0, 0 + sphereGroup[0].geometry.parameters.radius, 0, 0, 2, 0, 0, 0 + sphereGroup[0].geometry.parameters.radius, 0];
 			const positionKF = new THREE.VectorKeyframeTrack(".position", times, values);
 			const tracks = [positionKF];
 			// use -1 to automatically calculate the length from the array of tracks
@@ -294,7 +297,7 @@
 			action.play();
 
 			let speed = 0;
-			let fixedCamera = true;
+			let fixedCamera = false;
 
 			function animate() {
 				requestAnimationFrame( animate );
@@ -320,7 +323,7 @@
 						sphereGroup[i].position.y += (i+1) * 0.01;
 					else
 						sphereGroup[i].position.y -= (i+1) * 0.01;
-					if((sphereGroup[i].position.y >= 4) || (sphereGroup[i].position.y <= (0 + sphereGroup[i].geometry.parameters.radius/2)))
+					if((sphereGroup[i].position.y >= 4) || (sphereGroup[i].position.y <= (0 + sphereGroup[i].geometry.parameters.radius)))
 						movementDirectionY[i] = !movementDirectionY[i];
 				}
 
@@ -335,7 +338,7 @@
 					controls.target = skateModel.position; // https://stackoverflow.com/a/68958468/3174659
 					// move camera with object
 					// https://discourse.threejs.org/t/how-do-i-make-camera-follow-an-object-regardless-of-the-x-y-and-z-rotation-of-the-object/28974/2
-					// THIS CODE MAKES ORBITCONTROLS UNUSABLE, so we let user toggle between follow skate or orbit controls
+					// THIS CODE MAKES ORBITCONTROLS UNUSABLE, so we let user toggle between fixed camera offset or free orbit controls
 					if(fixedCamera) {
 						const cameraOffset = new THREE.Vector3(0.0, 5.0, 5.0); 
 						camera.position.copy(skateModel.position).add(cameraOffset);

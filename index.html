@@ -169,8 +169,8 @@
 		// scene.background = new THREE.Color( 'dodgerblue' );
 		// scene.background = new THREE.TextureLoader().load('img/clouds2.jpg');
 		
-		const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
-		camera.position.z = 20;
+		const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+		camera.position.z = 26;
 
 		const renderer = new THREE.WebGLRenderer({canvas: document.querySelector('#bg')});
 		renderer.setPixelRatio(window.devicePixelRatio);
@@ -191,7 +191,7 @@
 		// directionalLight.position.set(0, 30, 100);
 		// scene.add(directionalLight);
 		
-		const spotLight = new THREE.SpotLight('white', 6, 200, Math.PI / 2.5);
+		const spotLight = new THREE.SpotLight('white', 5, 400, Math.PI / 2.4);
 		spotLight.position.set(2, 8, 10);
 		spotLight.target.position.set(2, -10, 0);
 		scene.add(spotLight);
@@ -237,10 +237,15 @@
 		gltfLoader.load( 'img/mount_rough.glb', function ( file ) {
 			// console.log(file);
 			model = file.scene;
+			model2 = model.clone();
 			model.scale.set(0.2,0.075,0.1);
-			model.position.x = 5;
+			model.position.x = 0;
 			model.position.y = -5;
-			scene.add(model);
+			model2.scale.set(0.2,0.12,0.2);
+			model2.position.x = 55;
+			model2.position.y = -10;
+			model2.position.z = -50;
+			scene.add(model, model2);
 		});
 		// gltfLoader.load( 'img/win2.glb', function ( file ) {
 		// 	// console.log(file);
