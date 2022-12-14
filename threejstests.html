@@ -22,17 +22,22 @@
 		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
 	</head>
 	<body>
-		<p><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move skate with WASD or arrow keys!</span></p>
+		<p><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move the vehicle with WASD or arrow keys!</span></p>
 		<div id="three-container"></div>
 		FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1">
 		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="-2" step="0.1" autocomplete="off">
 		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="2" step="0.1" autocomplete="off">
 		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
-		<button id="reset-camera">Reset camera</button>
+		<!-- <button id="reset-camera">Reset camera</button> -->
 		<!-- <button id="auto-rotate">Auto rotate</button>
 		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off"> -->
 		<button id="fixed-camera">Toggle fixed camera</button>
+		<button id="reset-vehicle">Reset vehicle</button>
 		<script>
+
+
+
+
 
 			//			
 			// SCENE SETUP
@@ -76,28 +81,7 @@
 			});
 			// controls.enableDamping = true;
 			// controls.listenToKeyEvents(window);
-			// controls.keyPanSpeed = 40;
-
-			// Floor
-			const textureLoader = new THREE.TextureLoader();
-			const floorTexture = textureLoader.load( "img/poly_wood2.jpg" );
-			const floorNormal = textureLoader.load( "img/poly_normal2.jpg" );
-			floorTexture.wrapS = THREE.RepeatWrapping;
-			floorTexture.wrapT = THREE.RepeatWrapping;
-			floorTexture.repeat.set( 800, 800 );
-			// const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
-			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
-			const floor = new THREE.Mesh( new THREE.PlaneGeometry( 2000, 2000 ), floorMaterial );
-			floor.rotation.x = - Math.PI / 2;
-			floor.position.y = 0;
-			scene.add( floor );
-			// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
-			// const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
-			// grid.material.opacity = 0.2;
-			// grid.material.transparent = true;
-			// grid.position.y = 0;
-			// scene.add( grid );
-			
+			// controls.keyPanSpeed = 40;			
 
 			// Lights
 			const directionalLight = new THREE.DirectionalLight('white', 3);
@@ -130,22 +114,61 @@
 
 
 
+
+
 			//
 			// OBJECTS
 			//
 
+			// Floor
+			const textureLoader = new THREE.TextureLoader();
+			const floorTexture = textureLoader.load( "img/poly_wood2.jpg" );
+			const floorNormal = textureLoader.load( "img/poly_normal2.jpg" );
+			floorTexture.wrapS = THREE.RepeatWrapping;
+			floorTexture.wrapT = THREE.RepeatWrapping;
+			floorTexture.repeat.set( 5, 5 );
+			// const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
+			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
+			const floorGeometry = new THREE.PlaneGeometry( 30, 30 );
+			const floor = new THREE.Mesh( floorGeometry, floorMaterial );
+			floor.rotation.x = - Math.PI / 2;
+			floor.position.y = 0;
+			scene.add( floor );
+			// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
+			// const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
+			// grid.material.opacity = 0.2;
+			// grid.material.transparent = true;
+			// grid.position.y = 0;
+			// scene.add( grid );
+
+			// Walls
+			const wallGeometry = new THREE.BoxGeometry( 0.5, 3, floorGeometry.parameters.width );
+			const wallMaterial = new THREE.MeshStandardMaterial( {color: 'maroon'} );
+			const wallRight = new THREE.Mesh( wallGeometry, wallMaterial );
+			wallRight.position.y = wallGeometry.parameters.height/2;
+			const wallLeft = wallRight.clone();
+			const wallTop = wallRight.clone();
+			const wallBottom = wallRight.clone();
+			wallRight.position.x = floorGeometry.parameters.width/2;
+			wallLeft.position.x = -floorGeometry.parameters.width/2;
+			wallTop.rotation.y = Math.PI / 2;
+			wallTop.position.z = -floorGeometry.parameters.height/2;
+			wallBottom.rotation.y = Math.PI / 2;
+			wallBottom.position.z = floorGeometry.parameters.height/2;
+			scene.add(wallRight, wallLeft, wallTop, wallBottom);
+
 			// Generic cube with custom texture
-			const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-			const material = new THREE.MeshStandardMaterial( {
-				emissiveIntensity: 0.5,
-				map: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-albedo.png'),
-				aoMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-ao2.png'),
-				metalnessMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-metalness.png'),
-				normalMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-normal.png'),
-				roughnessMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-roughness.png'),
-			} );
-			const cube = new THREE.Mesh( geometry, material );
-			cube.position.z = 0;
+			// const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			// const material = new THREE.MeshStandardMaterial( {
+			// 	emissiveIntensity: 0.5,
+			// 	map: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-albedo.png'),
+			// 	aoMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-ao2.png'),
+			// 	metalnessMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-metalness.png'),
+			// 	normalMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-normal.png'),
+			// 	roughnessMap: textureLoader.load('img/harshbricks-Unreal-Engine/harshbricks-roughness.png'),
+			// } );
+			// const cube = new THREE.Mesh( geometry, material );
+			// cube.position.z = 0;
 			// scene.add(cube);
 
 			// Generic spheres
@@ -160,7 +183,7 @@
 				scene.add(sphereGroup[i]);
 			}
 
-			// geometric skateboard
+			// Geometric skateboard
 			// const skate = new THREE.Mesh( new THREE.BoxGeometry( 2, 0.2, 0.5 ), new THREE.MeshStandardMaterial({color: 'maroon'}) );
 			// scene.add(skate);
 			// const wheelBack = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.4), new THREE.MeshStandardMaterial({color: 'black'}));
@@ -175,39 +198,41 @@
 
 
 			// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
-			const mirrorGeometry = new THREE.PlaneGeometry( 10, 10 );
+			const mirrorGeometry = new THREE.PlaneGeometry( 10, 3 );
 			verticalMirror = new THREE.Reflector( mirrorGeometry, {
 				clipBias: 0.003,
 				textureWidth: window.innerWidth * window.devicePixelRatio,
 				textureHeight: window.innerHeight * window.devicePixelRatio,
 				color: 0x889999
 			} );
-			verticalMirror.position.y = 5;
+			verticalMirror.position.y = mirrorGeometry.parameters.height/2;
 			verticalMirror.position.z = -5;
 			scene.add( verticalMirror );
 			// const box = new THREE.BoxHelper( verticalMirror, 0xffff00 );
 			// box.material = new THREE.LineBasicMaterial();
 			// scene.add( box );
 
-			// add a border around the mirror because the BoxHelper around the mirror is too thin
-			let mirrorBorderTop = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-			mirrorBorderTop.position.y = 5;
-			let mirrorBorderRight = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			// Border around the mirror because the BoxHelper around the mirror is too thin
+			let mirrorBorderTop = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderTop.position.y = mirrorGeometry.parameters.height/2;
+			let mirrorBorderRight = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
 			mirrorBorderRight.rotation.z = Math.PI / 2;
-			mirrorBorderRight.position.x = 5;
-			let mirrorBorderBottom = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-			mirrorBorderBottom.position.y = -5;
-			let mirrorBorderLeft = new THREE.Mesh( new THREE.BoxGeometry( 10, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderRight.position.x = mirrorGeometry.parameters.width/2;
+			let mirrorBorderBottom = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderBottom.position.y = -mirrorGeometry.parameters.height/2;
+			let mirrorBorderLeft = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
 			mirrorBorderLeft.rotation.z = Math.PI / 2;
-			mirrorBorderLeft.position.x = -5;
+			mirrorBorderLeft.position.x = -mirrorGeometry.parameters.width/2;
 			verticalMirror.add(mirrorBorderTop, mirrorBorderRight, mirrorBorderBottom, mirrorBorderLeft);
 
 			
 			// GLTFLoader for 3D models
 			const loader = new THREE.GLTFLoader();
-			let model, model2, model3, skateModel;
+			let miscModels = [];
+			let vehicleModel;
 			let mixer;
 			let fileLocation = 'img/OlmecHead.glb';
+			const vehicleInitialPosition = new THREE.Vector3(0, 0.15, 2); 
 
 			// can also retrieve 3D model from dropbox instead of locally:
 			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
@@ -228,28 +253,28 @@
 			let textMesh = {}; // loading text to remove when windmill finishes loading
 			loader.load( fileLocation, function ( gltf ) {
 				// console.log(gltf);
-				model = gltf.scene;
-				model.position.x = 5;
+				miscModels[0] = gltf.scene;
+				miscModels[0].position.x = 5;
+				miscModels[0].position.z = 10;
 				// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
 				// mixer = new THREE.AnimationMixer( model );
 				// const action = mixer.clipAction( gltf.animations[ 0 ] );
 				// action.play();
-				scene.add( model );
-				model2 = model.clone(); // create a few more models to populate the scene
-				model3 = model.clone();
-				model2.position.x = 8;
-				model3.position.x = 12;
-				scene.add( model2, model3 );
+				scene.add( miscModels[0] );
+				miscModels[1] = miscModels[0].clone(); // create a few more models to populate the scene
+				miscModels[2] = miscModels[0].clone();
+				miscModels[1].position.x = 8;
+				miscModels[2].position.x = 12;
+				scene.add( miscModels[1], miscModels[2] );
 				scene.remove( textMesh );
 			});
 
 			loader.load( 'img/skateboard.glb', function ( gltf ) {
 				// console.log(gltf);
-				skateModel = gltf.scene;
-				skateModel.scale.setScalar(0.3);
-				skateModel.position.y = 0.15;
-				skateModel.position.z = 2;
-				scene.add( skateModel );
+				vehicleModel = gltf.scene;
+				vehicleModel.scale.setScalar(.3);
+				vehicleModel.position.copy(vehicleInitialPosition);
+				scene.add( vehicleModel );
 			});
 
 			// Loading... text
@@ -271,6 +296,7 @@
 			
 			
 
+
 			//
 			// ANIMATIONS
 			//
@@ -285,19 +311,27 @@
 
 			// using threejs built-in animation system to animate one ball
 			// https://discoverthreejs.com/book/first-steps/animation-system/
-			const times = [0, 1, 2];
-			const values = [0, 0 + sphereGroup[0].geometry.parameters.radius, 0, 0, 2, 0, 0, 0 + sphereGroup[0].geometry.parameters.radius, 0];
-			const positionKF = new THREE.VectorKeyframeTrack(".position", times, values);
-			const tracks = [positionKF];
-			// use -1 to automatically calculate the length from the array of tracks
-			const length = -1;
-			const clip = new THREE.AnimationClip("slowmove", length, tracks);
-			const ballMixer = new THREE.AnimationMixer(sphereGroup[0]);
-			const action = ballMixer.clipAction(clip);
-			action.play();
+			// const times = [0, 1, 2];
+			// const values = [0, 0 + sphereGroup[0].geometry.parameters.radius, 0, 0, 2, 0, 0, 0 + sphereGroup[0].geometry.parameters.radius, 0];
+			// const positionKF = new THREE.VectorKeyframeTrack(".position", times, values);
+			// const tracks = [positionKF];
+			// // use -1 to automatically calculate the length from the array of tracks
+			// const length = -1;
+			// const clip = new THREE.AnimationClip("slowmove", length, tracks);
+			// const ballMixer = new THREE.AnimationMixer(sphereGroup[0]);
+			// const action = ballMixer.clipAction(clip);
+			// action.play();
 
 			let speed = 0;
 			let fixedCamera = false;
+			const boundingBoxesSpheres = [];
+			const boundingBoxesModels = [];
+			const boundingBoxesWalls = [];
+			let boundingBoxVehicle = {};
+			const boundingBoxesSpheresHelpers = [];
+			const boundingBoxesModelsHelpers = [];
+			let boundingBoxesVehicleHelper = {};
+			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
 
 			function animate() {
 				requestAnimationFrame( animate );
@@ -305,43 +339,140 @@
 				// cube.rotation.x += 0.01;
 				// cube.rotation.y += 0.01;
 
-				if(model)
-					model.rotation.y += 0.01;
-				if(model2)
-					model2.rotation.x += 0.01;
-				if(model3)
-					model3.rotation.z += 0.01;
+				if(miscModels[0])
+					miscModels[0].rotation.y += 0.01;
+				if(miscModels[1])
+					miscModels[1].rotation.x += 0.01;
+				if(miscModels[2])
+					miscModels[2].rotation.z += 0.01;
 					
-				for (let i = 1; i < 10; i++) {
+				for (let i = 0; i < 10; i++) {
 					if(movementDirectionZ[i])
-						sphereGroup[i].position.z += (i%3+3) * 0.01;
+						sphereGroup[i].position.z += (i%3+3) * 0.007;
 					else
-						sphereGroup[i].position.z -= (i%3+3) * 0.01;
+						sphereGroup[i].position.z -= (i%3+3) * 0.007;
 					if((sphereGroup[i].position.z >= 3) || (sphereGroup[i].position.z <= 0))
 						movementDirectionZ[i] = !movementDirectionZ[i];
 					if(movementDirectionY[i])
-						sphereGroup[i].position.y += (i+1) * 0.01;
+						sphereGroup[i].position.y += (i+1) * 0.007;
 					else
-						sphereGroup[i].position.y -= (i+1) * 0.01;
+						sphereGroup[i].position.y -= (i+1) * 0.007;
 					if((sphereGroup[i].position.y >= 4) || (sphereGroup[i].position.y <= (0 + sphereGroup[i].geometry.parameters.radius)))
 						movementDirectionY[i] = !movementDirectionY[i];
 				}
 
 				const delta = clock.getDelta();
 				if ( mixer ) mixer.update( delta );
-				if ( ballMixer ) ballMixer.update( delta );
+				// if ( ballMixer ) ballMixer.update( delta );
 
-				if(skateModel) {
-					skateModel.position.z -= speed * Math.cos(skateModel.rotation.y);
-					skateModel.position.x -= speed * Math.sin(skateModel.rotation.y);
-					camera.lookAt(skateModel.position);
-					controls.target = skateModel.position; // https://stackoverflow.com/a/68958468/3174659
+				if(vehicleModel) {
+
+					// accelerate and turn
+					// idea to do this here from https://stackoverflow.com/a/12273538/3174659 and https://stackoverflow.com/a/14449028/3174659
+					// because if done in the addEventListener it will look jerky because the keydown event fires more often than the animate() loop
+					if(keysPressed.left) {
+						vehicleModel.rotation.y += 0.05;
+					}
+					if(keysPressed.right) {
+						vehicleModel.rotation.y -= 0.05;
+					}
+					if(keysPressed.up) {
+						if(speed <= 0.1)
+							speed += 0.004;
+					}
+					if(keysPressed.down) {
+						if(speed >= -0.1) 
+							speed -= 0.002;
+					}
+
+					// if no up or down key is pressed, slow down the vehicle
+					if(!keysPressed.up && !keysPressed.down) {
+						if(speed < 0)
+							speed += 0.002;
+						if(speed > 0) 
+							speed -= 0.002;
+						// speed might not get to zero just by adding/subtracting (e.g. 0.014500000000000006), so when it is close to zero we force it to zero so the vehicle fully stops
+						if(Math.abs(speed) < 0.01)
+							speed = 0;
+					}
+					
+					vehicleModel.position.z += speed * Math.cos(vehicleModel.rotation.y);
+					vehicleModel.position.x += speed * Math.sin(vehicleModel.rotation.y);
+					camera.lookAt(vehicleModel.position);
+					controls.target = vehicleModel.position; // https://stackoverflow.com/a/68958468/3174659
 					// move camera with object
 					// https://discourse.threejs.org/t/how-do-i-make-camera-follow-an-object-regardless-of-the-x-y-and-z-rotation-of-the-object/28974/2
 					// THIS CODE MAKES ORBITCONTROLS UNUSABLE, so we let user toggle between fixed camera offset or free orbit controls
 					if(fixedCamera) {
 						const cameraOffset = new THREE.Vector3(0.0, 5.0, 5.0); 
-						camera.position.copy(skateModel.position).add(cameraOffset);
+						camera.position.copy(vehicleModel.position).add(cameraOffset);
+					}
+
+					// Collision detection - https://stackoverflow.com/a/70403986/3174659
+					// first, calculate bounding boxes for the spheres and the player-controlled vehicle and also helpers to see where the bbs are
+					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallLeft));
+					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallRight));
+					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallBottom));
+					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallTop));
+					for (let i = 0; i < sphereGroup.length ; i++) {
+						boundingBoxesSpheres[i] = new THREE.Box3().setFromObject(sphereGroup[i]);
+						// if(boundingBoxesSpheresHelpers[i])
+						// 	scene.remove( boundingBoxesSpheresHelpers[i] );
+						// boundingBoxesSpheresHelpers[i] = new THREE.Box3Helper(boundingBoxes[i], 0xffff00 )
+						// scene.add( boundingBoxesSpheresHelpers[i] );
+					}
+					for (let i = 0; i < miscModels.length ; i++) {
+						const boundingBoxModel = new THREE.Box3().setFromObject(miscModels[i]);
+						// boundingBoxModel.expandByVector(new THREE.Vector3(-0.4, 0, -0.4));
+						boundingBoxesModels[i] = boundingBoxModel;
+						if(boundingBoxesModelsHelpers[i])
+							scene.remove( boundingBoxesModelsHelpers[i] );
+						boundingBoxesModelsHelpers[i] = new THREE.Box3Helper(boundingBoxesModels[i], 0xffff00 )
+						scene.add( boundingBoxesModelsHelpers[i] );
+					}
+					boundingBoxVehicle = new THREE.Box3().setFromObject(vehicleModel);
+					// if(boundingBoxesVehicleHelper)
+					// 	scene.remove( boundingBoxesVehicleHelper );
+					// boundingBoxesVehicleHelper = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
+					// scene.add( boundingBoxesVehicleHelper );
+					for (let i = 0; i < boundingBoxesSpheres.length ; i++) {
+						// second, if there is a collision between the vehicle and one of the spheres, reverse the direction of movement of both the vehicle and the sphere
+						if (boundingBoxesSpheres[i].intersectsBox(boundingBoxVehicle)) {
+							// console.log('hit ' + i + ' ' +  Date.now());
+							vehicleModel.position.z += 0.005 * Math.cos(vehicleModel.rotation.y);
+							vehicleModel.position.x += 0.005 * Math.sin(vehicleModel.rotation.y);
+							speed = -speed * 0.5;
+							movementDirectionY[i] = !movementDirectionY[i];
+							movementDirectionZ[i] = !movementDirectionZ[i];
+							if(movementDirectionY[i])
+								sphereGroup[i].position.y += 0.005;
+							else
+								sphereGroup[i].position.y -= 0.005;
+							if(movementDirectionZ[i])
+								sphereGroup[i].position.z += 0.005;
+							else
+								sphereGroup[i].position.z -= 0.005;
+						}
+					}
+					for (let i = 0; i < boundingBoxesModels.length ; i++) {
+						if (boundingBoxesModels[i].intersectsBox(boundingBoxVehicle)) {
+							vehicleModel.position.z -= 0.05 * Math.cos(vehicleModel.rotation.y);
+							vehicleModel.position.x -= 0.05 * Math.sin(vehicleModel.rotation.y);
+							speed = -speed * 0.5;
+						}
+					}
+					for (let i = 0; i < boundingBoxesWalls.length ; i++) {
+						if (boundingBoxesWalls[i].intersectsBox(boundingBoxVehicle)) {
+							if(speed > 0) {
+								vehicleModel.position.z += 0.05 * Math.cos(vehicleModel.rotation.y);
+								vehicleModel.position.x += 0.05 * Math.sin(vehicleModel.rotation.y);
+							}
+							else {
+								vehicleModel.position.z -= 0.05 * Math.cos(vehicleModel.rotation.y);
+								vehicleModel.position.x -= 0.05 * Math.sin(vehicleModel.rotation.y);
+							}
+							speed = -speed;
+						}
 					}
 				}
 				
@@ -352,6 +483,13 @@
 
 			animate();
 
+
+
+
+			
+			//
+			// EVENT LISTENERS
+			//
 
 			// Resize scene on window resize - https://discoverthreejs.com/book/first-steps/responsive-design/
 			window.addEventListener("resize", () => {
@@ -383,9 +521,9 @@
 				camera.updateProjectionMatrix();
 				controls.update();
 			});
-			document.querySelector('#reset-camera').addEventListener('click', function() {
-				controls.reset();
-			});
+			// document.querySelector('#reset-camera').addEventListener('click', function() {
+			// 	controls.reset();
+			// });
 			// document.querySelector('#auto-rotate').addEventListener('click', function() {
 			// 	if(controls.autoRotate == false)
 			// 		controls.autoRotate = true;
@@ -398,23 +536,33 @@
 			document.querySelector('#fixed-camera').addEventListener('click', function() {
 				fixedCamera == false ? fixedCamera = true : fixedCamera = false;
 			});
+			document.querySelector('#reset-vehicle').addEventListener('click', function() {
+				vehicleModel.position.copy(vehicleInitialPosition);
+				speed = 0;
+			});
 
-			// move the skate with the arrow keys
+			// move the vehicle with the arrow keys
 			document.addEventListener('keydown', function(event) {
-				const key = event.key; // "ArrowRight", "ArrowLeft", "ArrowUp", or "ArrowDown"
-				
-				if(key == "ArrowLeft" || key == "a" || key == "A") {
-					skateModel.rotation.y += 0.1;
-				} else if(key == "ArrowRight" || key == "d" || key == "D") {
-					skateModel.rotation.y -= 0.1;
-				} else if(key == "ArrowUp" || key == "w" || key == "W") {
-					if(speed <= 0.1)
-						speed += 0.005;
-				} else if(key == "ArrowDown" || key == "s" || key == "S") {
-					if(speed >= -0.1) 
-						speed -= 0.005;
-				}
-
+				const key = event.key;
+				if(key == "ArrowLeft" || key == "a" || key == "A")
+					keysPressed.left = true;
+				if(key == "ArrowRight" || key == "d" || key == "D")
+					keysPressed.right = true;
+				if(key == "ArrowUp" || key == "w" || key == "W")
+					keysPressed.up = true;
+				if(key == "ArrowDown" || key == "s" || key == "S")
+					keysPressed.down = true;
+			});
+			document.addEventListener('keyup', function(event) {
+				const key = event.key;
+				if(key == "ArrowLeft" || key == "a" || key == "A")
+					keysPressed.left = false;
+				if(key == "ArrowRight" || key == "d" || key == "D")
+					keysPressed.right = false;
+				if(key == "ArrowUp" || key == "w" || key == "W")
+					keysPressed.up = false;
+				if(key == "ArrowDown" || key == "s" || key == "S")
+					keysPressed.down = false;
 			});
 
 		</script>
