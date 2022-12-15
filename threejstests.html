@@ -13,16 +13,19 @@
         <link rel="stylesheet" href="css/stylestests.css" />
 		<script src="node_modules/three/build/three.js"></script>
 		<script src="node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="node_modules/three/examples/js/loaders/FBXLoader.js"></script>
+		<script src="node_modules/three/examples/js/libs/fflate.min.js"></script>
 		<script src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
 		<script src="node_modules/three/examples/js/loaders/FontLoader.js"></script>
 		<script src="node_modules/three/examples/js/geometries/TextGeometry.js"></script>
 		<script src="node_modules/three/examples/js/objects/Reflector.js"></script>
 		<script src="node_modules/three/examples/js/objects/Sky.js"></script>
+		<script src="node_modules/three/examples/js/libs/stats.min.js"></script>
 		<!-- script to get big files from Dropbox (see code below) instead of locally (Github max file size is 25MB) -->
 		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
 	</head>
 	<body>
-		<p><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move the vehicle with WASD or arrow keys!</span></p>
+		<p style="margin-left: 100px;"><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move the vehicle with WASD or arrow keys!</span></p>
 		<div id="three-container"></div>
 		FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1">
 		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="-1" step="0.1" autocomplete="off">
@@ -231,11 +234,13 @@
 
 			
 			// GLTFLoader for 3D models
-			const loader = new THREE.GLTFLoader();
+			const GLTFLoader = new THREE.GLTFLoader();
+			const FBXLoader = new THREE.FBXLoader();
 			let miscModels = [];
 			let vehicleModel;
 			let mixer;
-			let fileLocation = 'img/OlmecHead.glb';
+			// let vehicleFilename = 'img/skateboard.glb';
+			let vehicleFilename = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
 			const vehicleInitialPosition = new THREE.Vector3(0, 0.15, 2); 
 
 			// can also retrieve 3D model from dropbox instead of locally:
@@ -255,7 +260,7 @@
 
 			const clock = new THREE.Clock(); // clock for animation
 			let textMesh = {}; // loading text to remove when windmill finishes loading
-			loader.load( fileLocation, function ( gltf ) {
+			GLTFLoader.load( 'img/OlmecHead.glb', function ( gltf ) {
 				// console.log(gltf);
 				miscModels[0] = gltf.scene;
 				miscModels[0].position.x = 5;
@@ -273,18 +278,29 @@
 				scene.remove( textMesh );
 			});
 
-			loader.load( 'img/skateboard.glb', function ( gltf ) {
-				// console.log(gltf);
-				vehicleModel = gltf.scene;
-				vehicleModel.scale.setScalar(.3);
-				vehicleModel.rotation.y = Math.PI;
-				vehicleModel.position.copy(vehicleInitialPosition);
-				scene.add( vehicleModel );
-				// list parts of the model (e.g. wheels, chassis, ...) - of course, the location in the hierarchy depends on the model
-				// for (const modelPart of vehicleModel.children[0].children[0].children) {
-				// 	console.log(modelPart.name);
-				// }
-			});
+			if(vehicleFilename.includes('.glb')) {
+				GLTFLoader.load( vehicleFilename, function ( gltf ) {
+					// console.log(gltf);
+					vehicleModel = gltf.scene;
+					vehicleModel.scale.setScalar(.3);
+					vehicleModel.rotation.y = Math.PI;
+					vehicleModel.position.copy(vehicleInitialPosition);
+					scene.add( vehicleModel );
+					// list parts of the model (e.g. wheels, chassis, ...) - of course, the location in the hierarchy depends on the model
+					// for (const modelPart of vehicleModel.children[0].children[0].children) {
+					// 	console.log(modelPart.name);
+					// }
+				});
+			} else if(vehicleFilename.includes('.fbx')) {
+				FBXLoader.load( vehicleFilename, function ( fbx ) {
+					console.log(fbx);
+					vehicleModel = fbx;
+					vehicleModel.scale.setScalar(.01);
+					vehicleModel.rotation.y = Math.PI;
+					vehicleModel.position.copy(vehicleInitialPosition);
+					scene.add( vehicleModel );
+				});
+			}
 
 			// Loading... text
 			const fontLoader = new THREE.FontLoader();
@@ -335,6 +351,8 @@
 			let fixedCamera = true;
 			let boundingBoxesVehicleHelper = {};
 			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
+			const stats = Stats();
+			document.body.appendChild(stats.dom);
 
 			function animate() {
 				requestAnimationFrame( animate );
@@ -468,20 +486,34 @@
 					// boundingBoxesVehicleHelper = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
 					// Alternatively, we can set bounding boxes on only some smaller parts of the vehicle so they don't get as big when the vehicle is rotated
 					boundingBoxesVehicleHelper = new THREE.Group();
-					for (const modelPart of vehicleModel.children[0].children[0].children) {
-						// Put the collision box either at the front or the back of the vehicle, depending on the direction of movement
-						if((modelPart.name.includes('Truck_front') && speed > 0) || (modelPart.name.includes('Truck_back') && speed < 0)) {
-							const boundingBoxVehicle = new THREE.Box3().setFromObject(modelPart);
-							// Adjust the bounding box a little so that rotating the vehicle doesn't distort it as much
-							const roundedAngle = Math.abs(Math.cos(vehicleModel.rotation.y));
-							boundingBoxVehicle.expandByVector(new THREE.Vector3((1-roundedAngle)*.3, 0, roundedAngle*.3));
-							//pprint debug ingo only e.g. every 600 frames (i.e. every 5 seconds at 120Hz)
-							// if( renderer.info.render.frame % 120 == 0) {
-							// 	console.log(Math.abs(Math.cos(vehicleModel.rotation.y)));
-							// }
-							boundingBoxesVehicle.push(boundingBoxVehicle);
-							// boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
-							// boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
+
+					if(vehicleFilename.includes('.glb')) {
+						for (const modelPart of vehicleModel.children[0].children[0].children) {
+							// Put the collision box either at the front or the back of the vehicle, depending on the direction of movement
+							if((modelPart.name.includes('Truck_front') && speed > 0) || (modelPart.name.includes('Truck_back') && speed < 0)) {
+								const boundingBoxVehicle = new THREE.Box3().setFromObject(modelPart);
+								// Adjust the bounding box a little so that rotating the vehicle doesn't distort it as much
+								const roundedAngle = Math.abs(Math.cos(vehicleModel.rotation.y));
+								boundingBoxVehicle.expandByVector(new THREE.Vector3((1-roundedAngle)*.3, 0, roundedAngle*.3));
+								//pprint debug ingo only e.g. every 600 frames (i.e. every 5 seconds at 120Hz)
+								// if( renderer.info.render.frame % 120 == 0) {
+								// 	console.log(Math.abs(Math.cos(vehicleModel.rotation.y)));
+								// }
+								boundingBoxesVehicle.push(boundingBoxVehicle);
+								// boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
+								// boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
+							}
+						}
+					} else if(vehicleFilename.includes('.fbx')) {
+						for (const modelPart of vehicleModel.children) {
+							if((modelPart.name.includes('FRONT_BUMPER') && speed > 0) || (modelPart.name.includes('REAR_BUMPER') && speed < 0)) {
+								for (const modelSubpart of modelPart.children[0].children) {
+									const boundingBoxVehicle = new THREE.Box3().setFromObject(modelSubpart);
+									boundingBoxesVehicle.push(boundingBoxVehicle);
+									boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
+									boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
+								}
+							}
 						}
 					}
 					scene.add( boundingBoxesVehicleHelper );
@@ -554,6 +586,8 @@
 							}
 						}
 					}
+
+					stats.update();
 				}
 				
 				controls.update();

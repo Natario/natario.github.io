@@ -224,7 +224,8 @@
 		const colladaLoader = new THREE.ColladaLoader();
 		let model, model2;
 		//
-		// FBXLoader doesn't work very well, but GLTFLoader (.gltf/.glb) and ColladaLoader (.dae) seem to do.
+		// TO use FBXLoader, we need to also include "three/examples/js/libs/fflate.min.js"
+		// BUT even with that extra lib, the GLTFLoader (.gltf/.glb) and the ColladaLoader (.dae) seem to work better.
 		// 
 		// HOWEVER, for .glb models that throw the error "THREE.GLTFLoader: Unknown extension "KHR_materials_pbrSpecularGlossiness"."
 		// we need to remove that extension from the model by importing and then exporting the model at https://gltf.report/
