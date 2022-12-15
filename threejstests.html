@@ -27,16 +27,53 @@
 	<body>
 		<p style="margin-left: 100px;"><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move the vehicle with WASD or arrow keys!</span></p>
 		<div id="three-container"></div>
-		FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1">
-		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="-1" step="0.1" autocomplete="off">
-		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
-		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="10" step="0.1" autocomplete="off">
+		<!-- FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1"> -->
 		<!-- <button id="reset-camera">Reset camera</button> -->
 		<!-- <button id="auto-rotate">Auto rotate</button>
 		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off"> -->
-		<button id="fixed-camera">Toggle fixed camera</button>
+		<!-- <button id="fixed-camera">Toggle fixed camera</button> -->
 		<button id="reset-vehicle">Reset vehicle</button>
 		<script>
+
+
+
+
+
+			//			
+			// IMPORTANT VARIABLES
+			//
+
+			// let vehicleFilename = 'img/skateboard.glb';
+			let vehicleFilename = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
+			// can also retrieve 3D model from dropbox instead of locally (using the dl.dropboxusercontent.com domain bypasses CORS restrictions):
+			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
+			// (beware because this is not fully supported - see https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/CORS-Access-Control-Allow-Origin/m-p/336138/highlight/true#M19583)
+			const vehicleInitialPosition = new THREE.Vector3(0, 0.15, 2); 
+			let speed = 0;
+			let MAX_SPEED;
+			if(vehicleFilename.includes('.glb'))
+				MAX_SPEED = 0.1;
+			else if(vehicleFilename.includes('.fbx'))
+				MAX_SPEED = 0.25;
+			let ROTATION_SPEED;
+			if(vehicleFilename.includes('.glb'))
+				ROTATION_SPEED = 0.05;
+			else if(vehicleFilename.includes('.fbx'))
+				ROTATION_SPEED = 0.035;
+			let BRAKING_SPEED;
+			if(vehicleFilename.includes('.glb'))
+				BRAKING_SPEED = 0.002;
+			else if(vehicleFilename.includes('.fbx'))
+				BRAKING_SPEED = 0.004;
+			let wallHitRotation;
+			if(vehicleFilename.includes('.glb'))
+				wallHitRotation = 0.1;
+			else if(vehicleFilename.includes('.fbx'))
+				wallHitRotation = 0.03;
+			
+			// let fixedCamera = true;
+			let mouseZoom = 0;
+			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
 
 
 
@@ -60,12 +97,9 @@
 			const axesHelper = new THREE.AxesHelper( 1000 );
 			scene.add(axesHelper);
 
-			// Camera -- initialize some values based on sliders' default values so we only need to change initial values in one place
-			const camera = new THREE.PerspectiveCamera( document.querySelector('#fov-slider').value, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			camera.position.x = document.querySelector('#camera-x-slider').value;
-			camera.position.y = document.querySelector('#camera-y-slider').value;
-			camera.position.z = document.querySelector('#camera-z-slider').value;
-			// camera.lookAt(0,0,0);
+
+			// Camera
+			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 10000 );
 
 			// Camera Helper (create a second camera to see all the lines) - for some reason can't move this second camera from 0,0,0
 			// const camera2 = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 5, 10 );
@@ -74,17 +108,21 @@
 			// scene.add( helper );
 
 			// OrbitControls
-			const controls = new THREE.OrbitControls( camera, renderer.domElement );
-			controls.addEventListener('change', () => {
-				// update sliders when the camera is moved with the OrbitControls (basically using the mouse)
-				document.querySelector('#fov-slider').value = camera.fov;
-				document.querySelector('#camera-x-slider').value = camera.position.x;
-				document.querySelector('#camera-y-slider').value = camera.position.y;
-				document.querySelector('#camera-z-slider').value = camera.position.z;
-			});
+			// const controls = new THREE.OrbitControls( camera, renderer.domElement );
+			// controls.enablePan = false; // if pan is enabled, the target object moves with the pan!
+
+			// controls.addEventListener('change', () => {
+			// 	// update sliders when the camera is moved with the OrbitControls (basically using the mouse)
+			// 	document.querySelector('#fov-slider').value = camera.fov;
+			// 	document.querySelector('#camera-x-slider').value = camera.position.x;
+			// 	document.querySelector('#camera-y-slider').value = camera.position.y;
+			// 	document.querySelector('#camera-z-slider').value = camera.position.z;
+			// });
+
 			// controls.enableDamping = true;
 			// controls.listenToKeyEvents(window);
 			// controls.keyPanSpeed = 40;			
+
 
 			// Lights
 			const directionalLight = new THREE.DirectionalLight('white', 3);
@@ -132,7 +170,7 @@
 			floorTexture.repeat.set( 5, 5 );
 			// const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
 			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
-			const floorGeometry = new THREE.PlaneGeometry( 30, 30 );
+			const floorGeometry = new THREE.PlaneGeometry( 50, 50 );
 			const floor = new THREE.Mesh( floorGeometry, floorMaterial );
 			floor.rotation.x = - Math.PI / 2;
 			floor.position.y = 0;
@@ -164,6 +202,37 @@
 			wallOrientation.push('w','e','s','n'); // to detect how vehicle should rotate when it hits each wall
 			scene.add(wallRight, wallLeft, wallTop, wallBottom);
 
+			
+			// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
+			const mirrorGeometry = new THREE.PlaneGeometry( 10, 3 );
+			verticalMirror = new THREE.Reflector( mirrorGeometry, {
+				clipBias: 0.003,
+				textureWidth: window.innerWidth * window.devicePixelRatio,
+				textureHeight: window.innerHeight * window.devicePixelRatio,
+				color: 0x889999
+			} );
+			verticalMirror.position.y = mirrorGeometry.parameters.height/2;
+			verticalMirror.position.z = -24.6;
+			scene.add( verticalMirror );
+			// const box = new THREE.BoxHelper( verticalMirror, 0xffff00 );
+			// box.material = new THREE.LineBasicMaterial();
+			// scene.add( box );
+
+			// Border around the mirror because the BoxHelper around the mirror is too thin
+			let mirrorBorderTop = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderTop.position.y = mirrorGeometry.parameters.height/2;
+			let mirrorBorderRight = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderRight.rotation.z = Math.PI / 2;
+			mirrorBorderRight.position.x = mirrorGeometry.parameters.width/2;
+			let mirrorBorderBottom = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderBottom.position.y = -mirrorGeometry.parameters.height/2;
+			let mirrorBorderLeft = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+			mirrorBorderLeft.rotation.z = Math.PI / 2;
+			mirrorBorderLeft.position.x = -mirrorGeometry.parameters.width/2;
+			verticalMirror.add(mirrorBorderTop, mirrorBorderRight, mirrorBorderBottom, mirrorBorderLeft);
+
+
+
 			// Generic cube with custom texture
 			// const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 			// const material = new THREE.MeshStandardMaterial( {
@@ -190,47 +259,6 @@
 				scene.add(sphereGroup[i]);
 			}
 
-			// Geometric skateboard
-			// const skate = new THREE.Mesh( new THREE.BoxGeometry( 2, 0.2, 0.5 ), new THREE.MeshStandardMaterial({color: 'maroon'}) );
-			// scene.add(skate);
-			// const wheelBack = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.4), new THREE.MeshStandardMaterial({color: 'black'}));
-			// wheelBack.rotation.x = Math.PI / 2;
-			// wheelBack.position.x = 0.5;
-			// wheelBack.position.y = -0.1;
-			// const wheelFront = wheelBack.clone();
-			// wheelFront.position.x = -0.5;
-			// skate.add(wheelBack, wheelFront);
-			// skate.position.y = 0.5;
-			// skate.position.z = 1;
-
-
-			// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
-			const mirrorGeometry = new THREE.PlaneGeometry( 10, 3 );
-			verticalMirror = new THREE.Reflector( mirrorGeometry, {
-				clipBias: 0.003,
-				textureWidth: window.innerWidth * window.devicePixelRatio,
-				textureHeight: window.innerHeight * window.devicePixelRatio,
-				color: 0x889999
-			} );
-			verticalMirror.position.y = mirrorGeometry.parameters.height/2;
-			verticalMirror.position.z = -5;
-			scene.add( verticalMirror );
-			// const box = new THREE.BoxHelper( verticalMirror, 0xffff00 );
-			// box.material = new THREE.LineBasicMaterial();
-			// scene.add( box );
-
-			// Border around the mirror because the BoxHelper around the mirror is too thin
-			let mirrorBorderTop = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-			mirrorBorderTop.position.y = mirrorGeometry.parameters.height/2;
-			let mirrorBorderRight = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-			mirrorBorderRight.rotation.z = Math.PI / 2;
-			mirrorBorderRight.position.x = mirrorGeometry.parameters.width/2;
-			let mirrorBorderBottom = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-			mirrorBorderBottom.position.y = -mirrorGeometry.parameters.height/2;
-			let mirrorBorderLeft = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-			mirrorBorderLeft.rotation.z = Math.PI / 2;
-			mirrorBorderLeft.position.x = -mirrorGeometry.parameters.width/2;
-			verticalMirror.add(mirrorBorderTop, mirrorBorderRight, mirrorBorderBottom, mirrorBorderLeft);
 
 			
 			// GLTFLoader for 3D models
@@ -239,25 +267,6 @@
 			let miscModels = [];
 			let vehicleModel;
 			let mixer;
-			// let vehicleFilename = 'img/skateboard.glb';
-			let vehicleFilename = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
-			const vehicleInitialPosition = new THREE.Vector3(0, 0.15, 2); 
-
-			// can also retrieve 3D model from dropbox instead of locally:
-			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
-
-			// or, as the above (using the URL dl.dropboxusercontent.com to bypass CORS) is not fully supported (https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/CORS-Access-Control-Allow-Origin/m-p/336138/highlight/true#M19583),
-			// we can also use the code below (inspired by https://github.com/dropbox/dropbox-sdk-js/blob/main/examples/javascript/download/index.html)
-			// note that we first need to generate an ACCESS_TOKEN from https://www.dropbox.com/developers/apps
-			// THIS METHOD IS NOT SAFE FOR PRODUCTION - ACESS_TOKEN AND ACCESS TO MY OWN DROPBOX SHOULD BE KEPT PRIVATE
-			// let fileLocation = '';
-			// var dbx = new Dropbox.Dropbox({ accessToken: "ACCESS_TOKEN" });
-			// await dbx.sharingGetSharedLinkFile({url: "https://www.dropbox.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0"})
-			// 	.then(function(data) {
-			// 		console.log(data);
-			// 		fileLocation = URL.createObjectURL(data.result.fileBlob);
-			// 	})
-
 			const clock = new THREE.Clock(); // clock for animation
 			let textMesh = {}; // loading text to remove when windmill finishes loading
 			GLTFLoader.load( 'img/OlmecHead.glb', function ( gltf ) {
@@ -286,6 +295,7 @@
 					vehicleModel.rotation.y = Math.PI;
 					vehicleModel.position.copy(vehicleInitialPosition);
 					scene.add( vehicleModel );
+					vehicleModel.add(camera);
 					// list parts of the model (e.g. wheels, chassis, ...) - of course, the location in the hierarchy depends on the model
 					// for (const modelPart of vehicleModel.children[0].children[0].children) {
 					// 	console.log(modelPart.name);
@@ -299,6 +309,7 @@
 					vehicleModel.rotation.y = Math.PI;
 					vehicleModel.position.copy(vehicleInitialPosition);
 					scene.add( vehicleModel );
+					vehicleModel.add(camera);
 				});
 			}
 
@@ -347,10 +358,8 @@
 			// const action = ballMixer.clipAction(clip);
 			// action.play();
 
-			let speed = 0;
-			let fixedCamera = true;
+			
 			let boundingBoxesVehicleHelper = {};
-			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
 			const stats = Stats();
 			document.body.appendChild(stats.dom);
 
@@ -393,24 +402,26 @@
 				if ( mixer ) mixer.update( delta );
 				// if ( ballMixer ) ballMixer.update( delta );
 
+
+				// Vehicle-dependent animations
 				if(vehicleModel) {
 
 					// Accelerate and turn
 					// Idea to do this here from https://stackoverflow.com/a/12273538/3174659 and https://stackoverflow.com/a/14449028/3174659
 					// Because if done in the addEventListener it will look jerky because the keydown event fires more often than the animate() loop
 					if(keysPressed.left) {
-						vehicleModel.rotation.y += 0.05;
+						vehicleModel.rotation.y += ROTATION_SPEED;
 					}
 					if(keysPressed.right) {
-						vehicleModel.rotation.y -= 0.05;
+						vehicleModel.rotation.y -= ROTATION_SPEED;
 					}
 					if(keysPressed.up) {
-						if(speed <= 0.1)
+						if(speed <= MAX_SPEED)
 							speed += 0.004;
 					}
 					if(keysPressed.down) {
-						if(speed >= -0.1) 
-							speed -= 0.002;
+						if(speed >= -MAX_SPEED) 
+							speed -= BRAKING_SPEED;
 					}
 
 					// If no up or down key is pressed, slow down the vehicle
@@ -426,15 +437,24 @@
 					
 					vehicleModel.position.z += speed * Math.cos(vehicleModel.rotation.y);
 					vehicleModel.position.x += speed * Math.sin(vehicleModel.rotation.y);
-					camera.lookAt(vehicleModel.position);
-					controls.target = vehicleModel.position; // https://stackoverflow.com/a/68958468/3174659
+
+
+					// Update camera
+
+					// camera.lookAt(vehicleModel.position);
+					// controls.target = vehicleModel.position; // https://stackoverflow.com/a/68958468/3174659
 					// Move camera with object
 					// https://discourse.threejs.org/t/how-do-i-make-camera-follow-an-object-regardless-of-the-x-y-and-z-rotation-of-the-object/28974/2
 					// THIS CODE MAKES ORBITCONTROLS UNUSABLE, so we let user toggle between fixed camera offset or free orbit controls
-					if(fixedCamera) {
-						const cameraOffset = new THREE.Vector3(0.0, 7.5, 7.5); 
-						camera.position.copy(vehicleModel.position).add(cameraOffset);
-					}
+					// if(fixedCamera) {
+					// 	const cameraOffset = new THREE.Vector3(0.0, 7.5, 7.5); 
+					// 	camera.position.copy(vehicleModel.position).add(cameraOffset);
+					// }
+
+					const cameraOffset = new THREE.Vector3(0, 400+mouseZoom, -600-mouseZoom); 
+					camera.position.copy(vehicleModel.position).add(cameraOffset);
+					camera.lookAt(vehicleModel.position.x, vehicleModel.position.y+1.3, vehicleModel.position.z);
+				
 
 					
 
@@ -510,15 +530,17 @@
 								for (const modelSubpart of modelPart.children[0].children) {
 									const boundingBoxVehicle = new THREE.Box3().setFromObject(modelSubpart);
 									boundingBoxesVehicle.push(boundingBoxVehicle);
-									boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
-									boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
+									// boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
+									// boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
 								}
 							}
 						}
 					}
 					scene.add( boundingBoxesVehicleHelper );
 
+
 					// 2. If there is a collision between the vehicle and one of the other objects in the scene, reverse the direction of movement of the vehicle
+					
 					for (let i = 0; i < boundingBoxesSpheres.length ; i++) {
 						for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
 							if (boundingBoxesSpheres[i].intersectsBox(boundingBoxesVehicle[j])) {
@@ -539,6 +561,7 @@
 							}
 						}
 					}
+					
 					for (let i = 0; i < boundingBoxesModels.length ; i++) {
 						for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
 							if (boundingBoxesModels[i].intersectsBox(boundingBoxesVehicle[j])) {
@@ -548,6 +571,7 @@
 							}
 						}
 					}
+					
 					for (let i = 0; i < boundingBoxesWalls.length ; i++) {
 						for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
 							if (boundingBoxesWalls[i].intersectsBox(boundingBoxesVehicle[j])) {
@@ -562,27 +586,27 @@
 								// To simulate impact, rotate the vehicle a bit depending on orientation of wall and vehicle
 								if(wallOrientation[i] == 'n') {
 									if(Math.sin(vehicleModel.rotation.y) < 0)
-										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+										vehicleModel.rotation.y += (speed > 0) ? -wallHitRotation : +wallHitRotation;
 									else
-										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+										vehicleModel.rotation.y += (speed > 0) ? +wallHitRotation : -wallHitRotation;
 								} else if(wallOrientation[i] == 's') {
 									if(Math.sin(vehicleModel.rotation.y) < 0)
-										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+										vehicleModel.rotation.y += (speed > 0) ? +wallHitRotation : -wallHitRotation;
 									else
-										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+										vehicleModel.rotation.y += (speed > 0) ? -wallHitRotation : +wallHitRotation;
 								} else if(wallOrientation[i] == 'e') {
 									if(Math.cos(vehicleModel.rotation.y) < 0)
-										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+										vehicleModel.rotation.y += (speed > 0) ? -wallHitRotation : +wallHitRotation;
 									else
-										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+										vehicleModel.rotation.y += (speed > 0) ? +wallHitRotation : -wallHitRotation;
 								} else if(wallOrientation[i] == 'w') {
 									if(Math.cos(vehicleModel.rotation.y) < 0)
-										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+										vehicleModel.rotation.y += (speed > 0) ? +wallHitRotation : -wallHitRotation;
 									else
-										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+										vehicleModel.rotation.y += (speed > 0) ? -wallHitRotation : +wallHitRotation;
 								} 
 								// speed = -speed * ((speed > 0) ? 0.75 : 0.5);
-								speed *= 0.75;
+								// speed *= 0.75;
 							}
 						}
 					}
@@ -590,7 +614,7 @@
 					stats.update();
 				}
 				
-				controls.update();
+				// controls.update();
 
 				renderer.render( scene, camera );
 			};
@@ -615,26 +639,11 @@
 			});
 			
 			// Sliders for user input
-			document.querySelector('#fov-slider').addEventListener('input', function() {
-				camera.fov = this.value;
-				camera.updateProjectionMatrix();
-				controls.update();
-			});
-			document.querySelector('#camera-x-slider').addEventListener('input', function() {
-				camera.position.x = this.value;
-				camera.updateProjectionMatrix();
-				controls.update();
-			});
-			document.querySelector('#camera-y-slider').addEventListener('input', function() {
-				camera.position.y = this.value;
-				camera.updateProjectionMatrix();
-				controls.update();
-			});
-			document.querySelector('#camera-z-slider').addEventListener('input', function() {
-				camera.position.z = this.value;
-				camera.updateProjectionMatrix();
-				controls.update();
-			});
+			// document.querySelector('#fov-slider').addEventListener('input', function() {
+			// 	camera.fov = this.value;
+			// 	camera.updateProjectionMatrix();
+			// 	controls.update();
+			// });
 			// document.querySelector('#reset-camera').addEventListener('click', function() {
 			// 	controls.reset();
 			// });
@@ -647,9 +656,9 @@
 			// document.querySelector('#auto-rotate-speed').addEventListener('input', function() {
 			// 	controls.autoRotateSpeed = this.value;
 			// });
-			document.querySelector('#fixed-camera').addEventListener('click', function() {
-				fixedCamera == false ? fixedCamera = true : fixedCamera = false;
-			});
+			// document.querySelector('#fixed-camera').addEventListener('click', function() {
+			// 	fixedCamera == false ? fixedCamera = true : fixedCamera = false;
+			// });
 			document.querySelector('#reset-vehicle').addEventListener('click', function() {
 				vehicleModel.position.copy(vehicleInitialPosition);
 				speed = 0;
@@ -677,6 +686,11 @@
 					keysPressed.up = false;
 				if(key == "ArrowDown" || key == "s" || key == "S")
 					keysPressed.down = false;
+			});
+
+			document.addEventListener('wheel', function(event) {
+				if(camera && vehicleModel)
+					mouseZoom += event.deltaY;
 			});
 
 		</script>
