@@ -25,9 +25,9 @@
 		<p><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move the vehicle with WASD or arrow keys!</span></p>
 		<div id="three-container"></div>
 		FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1">
-		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="-2" step="0.1" autocomplete="off">
-		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="2" step="0.1" autocomplete="off">
-		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
+		Camera X: <input type="range" id="camera-x-slider" min="-10" max="10" value="-1" step="0.1" autocomplete="off">
+		Camera Y: <input type="range" id="camera-y-slider" min="-10" max="10" value="5" step="0.1" autocomplete="off">
+		Camera Z: <input type="range" id="camera-z-slider" min="-10" max="10" value="10" step="0.1" autocomplete="off">
 		<!-- <button id="reset-camera">Reset camera</button> -->
 		<!-- <button id="auto-rotate">Auto rotate</button>
 		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off"> -->
@@ -142,6 +142,8 @@
 			// scene.add( grid );
 
 			// Walls
+			const wallArray = [];
+			const wallOrientation = [];
 			const wallGeometry = new THREE.BoxGeometry( 0.5, 3, floorGeometry.parameters.width );
 			const wallMaterial = new THREE.MeshStandardMaterial( {color: 'maroon'} );
 			const wallRight = new THREE.Mesh( wallGeometry, wallMaterial );
@@ -155,6 +157,8 @@
 			wallTop.position.z = -floorGeometry.parameters.height/2;
 			wallBottom.rotation.y = Math.PI / 2;
 			wallBottom.position.z = floorGeometry.parameters.height/2;
+			wallArray.push(wallRight, wallLeft, wallTop, wallBottom);
+			wallOrientation.push('w','e','s','n'); // to detect how vehicle should rotate when it hits each wall
 			scene.add(wallRight, wallLeft, wallTop, wallBottom);
 
 			// Generic cube with custom texture
@@ -273,8 +277,13 @@
 				// console.log(gltf);
 				vehicleModel = gltf.scene;
 				vehicleModel.scale.setScalar(.3);
+				vehicleModel.rotation.y = Math.PI;
 				vehicleModel.position.copy(vehicleInitialPosition);
 				scene.add( vehicleModel );
+				// list parts of the model (e.g. wheels, chassis, ...) - of course, the location in the hierarchy depends on the model
+				// for (const modelPart of vehicleModel.children[0].children[0].children) {
+				// 	console.log(modelPart.name);
+				// }
 			});
 
 			// Loading... text
@@ -309,13 +318,13 @@
 				movementDirectionY[i] = true;
 			}
 
-			// using threejs built-in animation system to animate one ball
+			// Using threejs built-in animation system to animate one ball
 			// https://discoverthreejs.com/book/first-steps/animation-system/
 			// const times = [0, 1, 2];
 			// const values = [0, 0 + sphereGroup[0].geometry.parameters.radius, 0, 0, 2, 0, 0, 0 + sphereGroup[0].geometry.parameters.radius, 0];
 			// const positionKF = new THREE.VectorKeyframeTrack(".position", times, values);
 			// const tracks = [positionKF];
-			// // use -1 to automatically calculate the length from the array of tracks
+			// // Use -1 to automatically calculate the length from the array of tracks
 			// const length = -1;
 			// const clip = new THREE.AnimationClip("slowmove", length, tracks);
 			// const ballMixer = new THREE.AnimationMixer(sphereGroup[0]);
@@ -323,19 +332,20 @@
 			// action.play();
 
 			let speed = 0;
-			let fixedCamera = false;
-			const boundingBoxesSpheres = [];
-			const boundingBoxesModels = [];
-			const boundingBoxesWalls = [];
-			let boundingBoxVehicle = {};
-			const boundingBoxesSpheresHelpers = [];
-			const boundingBoxesModelsHelpers = [];
+			let fixedCamera = true;
 			let boundingBoxesVehicleHelper = {};
 			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
 
 			function animate() {
 				requestAnimationFrame( animate );
 
+				const boundingBoxesSpheres = [];
+				const boundingBoxesModels = [];
+				const boundingBoxesWalls = [];
+				const boundingBoxesVehicle = [];
+				const boundingBoxesSpheresHelpers = [];
+				const boundingBoxesModelsHelpers = [];
+			
 				// cube.rotation.x += 0.01;
 				// cube.rotation.y += 0.01;
 
@@ -367,9 +377,9 @@
 
 				if(vehicleModel) {
 
-					// accelerate and turn
-					// idea to do this here from https://stackoverflow.com/a/12273538/3174659 and https://stackoverflow.com/a/14449028/3174659
-					// because if done in the addEventListener it will look jerky because the keydown event fires more often than the animate() loop
+					// Accelerate and turn
+					// Idea to do this here from https://stackoverflow.com/a/12273538/3174659 and https://stackoverflow.com/a/14449028/3174659
+					// Because if done in the addEventListener it will look jerky because the keydown event fires more often than the animate() loop
 					if(keysPressed.left) {
 						vehicleModel.rotation.y += 0.05;
 					}
@@ -385,7 +395,7 @@
 							speed -= 0.002;
 					}
 
-					// if no up or down key is pressed, slow down the vehicle
+					// If no up or down key is pressed, slow down the vehicle
 					if(!keysPressed.up && !keysPressed.down) {
 						if(speed < 0)
 							speed += 0.002;
@@ -400,78 +410,148 @@
 					vehicleModel.position.x += speed * Math.sin(vehicleModel.rotation.y);
 					camera.lookAt(vehicleModel.position);
 					controls.target = vehicleModel.position; // https://stackoverflow.com/a/68958468/3174659
-					// move camera with object
+					// Move camera with object
 					// https://discourse.threejs.org/t/how-do-i-make-camera-follow-an-object-regardless-of-the-x-y-and-z-rotation-of-the-object/28974/2
 					// THIS CODE MAKES ORBITCONTROLS UNUSABLE, so we let user toggle between fixed camera offset or free orbit controls
 					if(fixedCamera) {
-						const cameraOffset = new THREE.Vector3(0.0, 5.0, 5.0); 
+						const cameraOffset = new THREE.Vector3(0.0, 7.5, 7.5); 
 						camera.position.copy(vehicleModel.position).add(cameraOffset);
 					}
 
+					
+
 					// Collision detection - https://stackoverflow.com/a/70403986/3174659
-					// first, calculate bounding boxes for the spheres and the player-controlled vehicle and also helpers to see where the bbs are
-					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallLeft));
-					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallRight));
-					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallBottom));
-					boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallTop));
+
+					// 1. Calculate bounding boxes for the spheres and the player-controlled vehicle and also helpers to see where the bbs are
+					for (let i = 0; i < wallArray.length ; i++) {
+						boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallArray[i]));
+					}
+
+					// https://github.com/Mugen87/yuka/blob/master/examples/math/common/js/BVHelper.js
+					function createSphereHelper( boundingSphere ) {
+						const geometry = new THREE.SphereGeometry( boundingSphere.radius, 16, 16 );
+						const material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+						const mesh = new THREE.Mesh( geometry, material );
+						mesh.position.copy( boundingSphere.center );
+						return mesh;
+					}
 					for (let i = 0; i < sphereGroup.length ; i++) {
-						boundingBoxesSpheres[i] = new THREE.Box3().setFromObject(sphereGroup[i]);
+						boundingBoxesSpheres[i] = new THREE.Sphere(new THREE.Vector3(sphereGroup[i].position.x, sphereGroup[i].position.y, sphereGroup[i].position.z), sphereGroup[i].scale.x/2);
 						// if(boundingBoxesSpheresHelpers[i])
 						// 	scene.remove( boundingBoxesSpheresHelpers[i] );
-						// boundingBoxesSpheresHelpers[i] = new THREE.Box3Helper(boundingBoxes[i], 0xffff00 )
+						// boundingBoxesSpheresHelpers[i] = new createSphereHelper(boundingBoxesSpheres[i])
 						// scene.add( boundingBoxesSpheresHelpers[i] );
 					}
+
 					for (let i = 0; i < miscModels.length ; i++) {
 						const boundingBoxModel = new THREE.Box3().setFromObject(miscModels[i]);
-						// boundingBoxModel.expandByVector(new THREE.Vector3(-0.4, 0, -0.4));
+						const centerVec = new THREE.Vector3();
+						boundingBoxModel.getCenter(centerVec);
+						// need to make min and max constant so that the boundingBox doesn't change with rotation of model
+						boundingBoxModel.min.x = centerVec.x - .7;
+						boundingBoxModel.min.y = centerVec.y - .7;
+						boundingBoxModel.min.z = centerVec.z - .7;
+						boundingBoxModel.max.x = centerVec.x + .7;
+						boundingBoxModel.max.y = centerVec.y + .7;
+						boundingBoxModel.max.z = centerVec.z + .7;
 						boundingBoxesModels[i] = boundingBoxModel;
-						if(boundingBoxesModelsHelpers[i])
-							scene.remove( boundingBoxesModelsHelpers[i] );
-						boundingBoxesModelsHelpers[i] = new THREE.Box3Helper(boundingBoxesModels[i], 0xffff00 )
-						scene.add( boundingBoxesModelsHelpers[i] );
+						// if(boundingBoxesModelsHelpers[i])
+						// 	scene.remove( boundingBoxesModelsHelpers[i] );
+						// boundingBoxesModelsHelpers[i] = new THREE.Box3Helper(boundingBoxesModels[i], 0xffff00 )
+						// scene.add( boundingBoxesModelsHelpers[i] );
 					}
-					boundingBoxVehicle = new THREE.Box3().setFromObject(vehicleModel);
-					// if(boundingBoxesVehicleHelper)
-					// 	scene.remove( boundingBoxesVehicleHelper );
+
+					if(boundingBoxesVehicleHelper)
+						scene.remove( boundingBoxesVehicleHelper );
+					// Set bounding box on the entire vehicle (may cause a too large box when the vehicle is rotated)
+					// boundingBoxVehicle = new THREE.Box3().setFromObject(vehicleModel);
 					// boundingBoxesVehicleHelper = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
-					// scene.add( boundingBoxesVehicleHelper );
+					// Alternatively, we can set bounding boxes on only some smaller parts of the vehicle so they don't get as big when the vehicle is rotated
+					boundingBoxesVehicleHelper = new THREE.Group();
+					for (const modelPart of vehicleModel.children[0].children[0].children) {
+						// Put the collision box either at the front or the back of the vehicle, depending on the direction of movement
+						if((modelPart.name.includes('Truck_front') && speed > 0) || (modelPart.name.includes('Truck_back') && speed < 0)) {
+							const boundingBoxVehicle = new THREE.Box3().setFromObject(modelPart);
+							// Adjust the bounding box a little so that rotating the vehicle doesn't distort it as much
+							const roundedAngle = Math.abs(Math.cos(vehicleModel.rotation.y));
+							boundingBoxVehicle.expandByVector(new THREE.Vector3((1-roundedAngle)*.3, 0, roundedAngle*.3));
+							//pprint debug ingo only e.g. every 600 frames (i.e. every 5 seconds at 120Hz)
+							// if( renderer.info.render.frame % 120 == 0) {
+							// 	console.log(Math.abs(Math.cos(vehicleModel.rotation.y)));
+							// }
+							boundingBoxesVehicle.push(boundingBoxVehicle);
+							// boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
+							// boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
+						}
+					}
+					scene.add( boundingBoxesVehicleHelper );
+
+					// 2. If there is a collision between the vehicle and one of the other objects in the scene, reverse the direction of movement of the vehicle
 					for (let i = 0; i < boundingBoxesSpheres.length ; i++) {
-						// second, if there is a collision between the vehicle and one of the spheres, reverse the direction of movement of both the vehicle and the sphere
-						if (boundingBoxesSpheres[i].intersectsBox(boundingBoxVehicle)) {
-							// console.log('hit ' + i + ' ' +  Date.now());
-							vehicleModel.position.z += 0.005 * Math.cos(vehicleModel.rotation.y);
-							vehicleModel.position.x += 0.005 * Math.sin(vehicleModel.rotation.y);
-							speed = -speed * 0.5;
-							movementDirectionY[i] = !movementDirectionY[i];
-							movementDirectionZ[i] = !movementDirectionZ[i];
-							if(movementDirectionY[i])
-								sphereGroup[i].position.y += 0.005;
-							else
-								sphereGroup[i].position.y -= 0.005;
-							if(movementDirectionZ[i])
-								sphereGroup[i].position.z += 0.005;
-							else
-								sphereGroup[i].position.z -= 0.005;
+						for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
+							if (boundingBoxesSpheres[i].intersectsBox(boundingBoxesVehicle[j])) {
+								// console.log('hit ' + i + ' ' +  Date.now());
+								vehicleModel.position.z += 0.05 * Math.cos(vehicleModel.rotation.y);
+								vehicleModel.position.x += 0.05 * Math.sin(vehicleModel.rotation.y);
+								speed = -speed * 0.75;
+								movementDirectionY[i] = !movementDirectionY[i];
+								movementDirectionZ[i] = !movementDirectionZ[i];
+								if(movementDirectionY[i])
+									sphereGroup[i].position.y += 0.1;
+								else
+									sphereGroup[i].position.y -= 0.1;
+								if(movementDirectionZ[i])
+									sphereGroup[i].position.z += 0.1;
+								else
+									sphereGroup[i].position.z -= 0.1;
+							}
 						}
 					}
 					for (let i = 0; i < boundingBoxesModels.length ; i++) {
-						if (boundingBoxesModels[i].intersectsBox(boundingBoxVehicle)) {
-							vehicleModel.position.z -= 0.05 * Math.cos(vehicleModel.rotation.y);
-							vehicleModel.position.x -= 0.05 * Math.sin(vehicleModel.rotation.y);
-							speed = -speed * 0.5;
+						for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
+							if (boundingBoxesModels[i].intersectsBox(boundingBoxesVehicle[j])) {
+								vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
+								vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);
+								speed = -speed * 0.75;
+							}
 						}
 					}
 					for (let i = 0; i < boundingBoxesWalls.length ; i++) {
-						if (boundingBoxesWalls[i].intersectsBox(boundingBoxVehicle)) {
-							if(speed > 0) {
-								vehicleModel.position.z += 0.05 * Math.cos(vehicleModel.rotation.y);
-								vehicleModel.position.x += 0.05 * Math.sin(vehicleModel.rotation.y);
+						for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
+							if (boundingBoxesWalls[i].intersectsBox(boundingBoxesVehicle[j])) {
+								// if(speed > 0) {
+								// 	vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
+								// 	vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);
+								// } else {
+								// 	vehicleModel.position.z += 0.2 * Math.cos(vehicleModel.rotation.y);
+								// 	vehicleModel.position.x += 0.2 * Math.sin(vehicleModel.rotation.y);
+								// }
+								
+								// To simulate impact, rotate the vehicle a bit depending on orientation of wall and vehicle
+								if(wallOrientation[i] == 'n') {
+									if(Math.sin(vehicleModel.rotation.y) < 0)
+										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+									else
+										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+								} else if(wallOrientation[i] == 's') {
+									if(Math.sin(vehicleModel.rotation.y) < 0)
+										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+									else
+										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+								} else if(wallOrientation[i] == 'e') {
+									if(Math.cos(vehicleModel.rotation.y) < 0)
+										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+									else
+										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+								} else if(wallOrientation[i] == 'w') {
+									if(Math.cos(vehicleModel.rotation.y) < 0)
+										vehicleModel.rotation.y += (speed > 0) ? +0.1 : -0.1;
+									else
+										vehicleModel.rotation.y += (speed > 0) ? -0.1 : +0.1;
+								} 
+								// speed = -speed * ((speed > 0) ? 0.75 : 0.5);
+								speed *= 0.75;
 							}
-							else {
-								vehicleModel.position.z -= 0.05 * Math.cos(vehicleModel.rotation.y);
-								vehicleModel.position.x -= 0.05 * Math.sin(vehicleModel.rotation.y);
-							}
-							speed = -speed;
 						}
 					}
 				}
