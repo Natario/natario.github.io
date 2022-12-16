@@ -25,14 +25,18 @@
 		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
 	</head>
 	<body>
-		<p style="margin-left: 100px;"><a href="index.html">Back home</a> <span style="margin-left: 100px;">Move the vehicle with WASD or arrow keys!</span></p>
+		<p style="margin-left: 100px;">
+			<a href="index.html">Back home</a>
+			<span style="margin-left: 100px;">WASD/arrows - move</span>
+			<span style="margin-left: 50px;">F - fixed/free camera</span>
+			<span style="margin-left: 50px;">R - reset vehicle</span>
+			<span style="margin-left: 50px;">Mouse wheel - zoom in/out</span> 
+		</p>
 		<div id="three-container"></div>
 		<!-- FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1"> -->
 		<!-- <button id="reset-camera">Reset camera</button> -->
 		<!-- <button id="auto-rotate">Auto rotate</button>
 		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off"> -->
-		<!-- <button id="fixed-camera">Toggle fixed camera</button> -->
-		<button id="reset-vehicle">Reset vehicle</button>
 		<script>
 
 
@@ -43,35 +47,29 @@
 			// IMPORTANT VARIABLES
 			//
 
-			// let vehicleFilename = 'img/skateboard.glb';
-			let vehicleFilename = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
+			let vehicleFilename = 'img/skateboard.glb';
+			// let vehicleFilename = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
 			// can also retrieve 3D model from dropbox instead of locally (using the dl.dropboxusercontent.com domain bypasses CORS restrictions):
 			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
 			// (beware because this is not fully supported - see https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/CORS-Access-Control-Allow-Origin/m-p/336138/highlight/true#M19583)
-			const vehicleInitialPosition = new THREE.Vector3(0, 0.15, 2); 
 			let speed = 0;
-			let MAX_SPEED;
-			if(vehicleFilename.includes('.glb'))
-				MAX_SPEED = 0.1;
-			else if(vehicleFilename.includes('.fbx'))
-				MAX_SPEED = 0.25;
-			let ROTATION_SPEED;
-			if(vehicleFilename.includes('.glb'))
-				ROTATION_SPEED = 0.05;
-			else if(vehicleFilename.includes('.fbx'))
-				ROTATION_SPEED = 0.035;
-			let BRAKING_SPEED;
-			if(vehicleFilename.includes('.glb'))
-				BRAKING_SPEED = 0.002;
-			else if(vehicleFilename.includes('.fbx'))
-				BRAKING_SPEED = 0.004;
-			let wallHitRotation;
-			if(vehicleFilename.includes('.glb'))
-				wallHitRotation = 0.1;
-			else if(vehicleFilename.includes('.fbx'))
-				wallHitRotation = 0.03;
+			let vehicleInitialPosition, MAX_SPEED, ROTATION_SPEED, BRAKING_SPEED, wallHitRotation;
 			
-			// let fixedCamera = true;
+			if(vehicleFilename.includes('.glb')) {
+				vehicleInitialPosition = new THREE.Vector3(0, 0.15, 2); 
+				MAX_SPEED = 0.1;
+				ROTATION_SPEED = 0.05;
+				BRAKING_SPEED = 0.002;
+				wallHitRotation = 0.1;
+			} else if(vehicleFilename.includes('.fbx')) {
+				vehicleInitialPosition = new THREE.Vector3(0, 0, 2); 
+				MAX_SPEED = 0.25;
+				ROTATION_SPEED = 0.035;
+				BRAKING_SPEED = 0.004;
+				wallHitRotation = 0.03;
+			}
+						
+			let fixedCamera = true;
 			let mouseZoom = 0;
 			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
 
@@ -99,7 +97,8 @@
 
 
 			// Camera
-			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 10000 );
+			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			camera.position.set(0,2,0);
 
 			// Camera Helper (create a second camera to see all the lines) - for some reason can't move this second camera from 0,0,0
 			// const camera2 = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 5, 10 );
@@ -108,8 +107,8 @@
 			// scene.add( helper );
 
 			// OrbitControls
-			// const controls = new THREE.OrbitControls( camera, renderer.domElement );
-			// controls.enablePan = false; // if pan is enabled, the target object moves with the pan!
+			const controls = new THREE.OrbitControls( camera, renderer.domElement );
+			controls.enablePan = false; // if pan is enabled, the target object moves with the pan!
 
 			// controls.addEventListener('change', () => {
 			// 	// update sliders when the camera is moved with the OrbitControls (basically using the mouse)
@@ -125,10 +124,9 @@
 
 
 			// Lights
-			const directionalLight = new THREE.DirectionalLight('white', 3);
+			const directionalLight = new THREE.DirectionalLight('white', 2);
 			directionalLight.position.set(100, 100, 100);
 			scene.add(directionalLight);
-			
 			// const helper = new THREE.DirectionalLightHelper( directionalLight, 5 );
 			// scene.add( helper );
 			
@@ -141,7 +139,7 @@
 				2, // intensity
 			);
 			scene.add( hemiLight );
-
+			
 			// Sky with sun - https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_ocean.html and https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_sky.html
 			const sky = new THREE.Sky();
 			sky.scale.setScalar( 10000 );
@@ -295,7 +293,7 @@
 					vehicleModel.rotation.y = Math.PI;
 					vehicleModel.position.copy(vehicleInitialPosition);
 					scene.add( vehicleModel );
-					vehicleModel.add(camera);
+					scene.add(camera);
 					// list parts of the model (e.g. wheels, chassis, ...) - of course, the location in the hierarchy depends on the model
 					// for (const modelPart of vehicleModel.children[0].children[0].children) {
 					// 	console.log(modelPart.name);
@@ -309,7 +307,7 @@
 					vehicleModel.rotation.y = Math.PI;
 					vehicleModel.position.copy(vehicleInitialPosition);
 					scene.add( vehicleModel );
-					vehicleModel.add(camera);
+					scene.add(camera);
 				});
 			}
 
@@ -359,6 +357,7 @@
 			// action.play();
 
 			
+			let spotLight, spotLightHelper;
 			let boundingBoxesVehicleHelper = {};
 			const stats = Stats();
 			document.body.appendChild(stats.dom);
@@ -441,22 +440,24 @@
 
 					// Update camera
 
-					// camera.lookAt(vehicleModel.position);
-					// controls.target = vehicleModel.position; // https://stackoverflow.com/a/68958468/3174659
-					// Move camera with object
-					// https://discourse.threejs.org/t/how-do-i-make-camera-follow-an-object-regardless-of-the-x-y-and-z-rotation-of-the-object/28974/2
-					// THIS CODE MAKES ORBITCONTROLS UNUSABLE, so we let user toggle between fixed camera offset or free orbit controls
-					// if(fixedCamera) {
-					// 	const cameraOffset = new THREE.Vector3(0.0, 7.5, 7.5); 
-					// 	camera.position.copy(vehicleModel.position).add(cameraOffset);
-					// }
-
-					const cameraOffset = new THREE.Vector3(0, 400+mouseZoom, -600-mouseZoom); 
-					camera.position.copy(vehicleModel.position).add(cameraOffset);
-					camera.lookAt(vehicleModel.position.x, vehicleModel.position.y+1.3, vehicleModel.position.z);
+					if(fixedCamera) {
+						camera.position.z =  vehicleModel.position.z - (6+mouseZoom*.005)*Math.cos(vehicleModel.rotation.y);
+						camera.position.x =  vehicleModel.position.x - (6+mouseZoom*.005)*Math.sin(vehicleModel.rotation.y);
+						camera.position.y = 3 + mouseZoom*.005;
+						camera.lookAt(vehicleModel.position.x, vehicleModel.position.y+1.5, vehicleModel.position.z);
+					}
 				
 
-					
+					// Move spotlight to where the vehicle is
+					// scene.remove(spotLight);
+					// spotLight = new THREE.SpotLight('white', 30, 1000, Math.PI / 7);
+					// spotLight.position.set(vehicleModel.position.x, vehicleModel.position.y+4, vehicleModel.position.z);
+					// spotLight.target.position.set(vehicleModel.position.x, vehicleModel.position.y, vehicleModel.position.z);
+					// scene.add(spotLight);
+					// scene.remove(spotLightHelper);
+					// spotLightHelper = new THREE.SpotLightHelper( spotLight );
+					// scene.add( spotLightHelper );
+
 
 					// Collision detection - https://stackoverflow.com/a/70403986/3174659
 
@@ -614,7 +615,8 @@
 					stats.update();
 				}
 				
-				// controls.update();
+				if(!fixedCamera)
+					controls.update();
 
 				renderer.render( scene, camera );
 			};
@@ -656,15 +658,9 @@
 			// document.querySelector('#auto-rotate-speed').addEventListener('input', function() {
 			// 	controls.autoRotateSpeed = this.value;
 			// });
-			// document.querySelector('#fixed-camera').addEventListener('click', function() {
-			// 	fixedCamera == false ? fixedCamera = true : fixedCamera = false;
-			// });
-			document.querySelector('#reset-vehicle').addEventListener('click', function() {
-				vehicleModel.position.copy(vehicleInitialPosition);
-				speed = 0;
-			});
 
-			// move the vehicle with the arrow keys
+
+			// Move the vehicle with the arrow or WASD keys, F to change camera, R to reset and scroll wheel to zoom
 			document.addEventListener('keydown', function(event) {
 				const key = event.key;
 				if(key == "ArrowLeft" || key == "a" || key == "A")
@@ -675,6 +671,23 @@
 					keysPressed.up = true;
 				if(key == "ArrowDown" || key == "s" || key == "S")
 					keysPressed.down = true;
+
+				if(key == "f" || key == "F") {
+					fixedCamera == false ? fixedCamera = true : fixedCamera = false;
+					// if user turned fixed camera off, put it close to the vehicle once and then let user change it at will (we don't change its position in animate())
+					if(!fixedCamera) {
+						controls.target = vehicleModel.position; // https://stackoverflow.com/a/68958468/3174659
+						camera.position.x = vehicleModel.position.x;
+						camera.position.y = vehicleModel.position.y + 4;
+						camera.position.z = vehicleModel.position.z + 6;
+					}
+					mouseZoom = 0;
+				}
+
+				if(key == "r" || key == "R") {
+					vehicleModel.position.copy(vehicleInitialPosition);
+					speed = 0;
+				}
 			});
 			document.addEventListener('keyup', function(event) {
 				const key = event.key;
