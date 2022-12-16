@@ -98,7 +98,7 @@
 
 			// Camera
 			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			camera.position.set(0,2,0);
+			camera.position.set(0,5,7.5);
 
 			// Camera Helper (create a second camera to see all the lines) - for some reason can't move this second camera from 0,0,0
 			// const camera2 = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 5, 10 );
@@ -361,6 +361,8 @@
 			let boundingBoxesVehicleHelper = {};
 			const stats = Stats();
 			document.body.appendChild(stats.dom);
+			let jumping = false;
+			let falling = false;
 
 			function animate() {
 				requestAnimationFrame( animate );
@@ -436,6 +438,26 @@
 					
 					vehicleModel.position.z += speed * Math.cos(vehicleModel.rotation.y);
 					vehicleModel.position.x += speed * Math.sin(vehicleModel.rotation.y);
+
+
+					// Jump (when user presses spacebar)
+					if(jumping) {
+						if(vehicleModel.position.y < 1) {
+							vehicleModel.position.y += 0.05;
+						} else {
+							jumping = false;
+							falling = true;
+						}
+
+					}
+					if(falling) {
+						if(vehicleModel.position.y <= vehicleInitialPosition.y) {
+							vehicleModel.position.y = vehicleInitialPosition.y;
+							falling = false;
+						} else {
+							vehicleModel.position.y -= 0.05;
+						}
+					}
 
 
 					// Update camera
@@ -687,6 +709,10 @@
 				if(key == "r" || key == "R") {
 					vehicleModel.position.copy(vehicleInitialPosition);
 					speed = 0;
+				}
+
+				if(key == " ") {
+					jumping = true;
 				}
 			});
 			document.addEventListener('keyup', function(event) {
