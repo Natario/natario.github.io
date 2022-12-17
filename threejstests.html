@@ -29,10 +29,11 @@
 			<a href="index.html">Back home</a>
 			<span style="margin-left: 100px;">WASD/arrows - move</span>
 			<span style="margin-left: 50px;">F - fixed/free camera</span>
-			<span style="margin-left: 50px;">R - reset vehicle</span>
+			<span style="margin-left: 50px;">R - restart</span>
 			<span style="margin-left: 50px;">Mouse wheel - zoom in/out</span> 
 		</p>
 		<div id="three-container"></div>
+		<canvas id="hud" width=1000 height=400 style="position: fixed; top: 0; left: 0; pointer-events: none;"></canvas>
 		<!-- FOV: <input type="range" id="fov-slider" min="0" max="100" value="50" step="1"> -->
 		<!-- <button id="reset-camera">Reset camera</button> -->
 		<!-- <button id="auto-rotate">Auto rotate</button>
@@ -47,13 +48,13 @@
 			// IMPORTANT VARIABLES
 			//
 
-			let vehicleFilename = 'img/skateboard.glb';
-			// let vehicleFilename = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
+			// let vehicleFilename = 'img/skateboard.glb';
+			let vehicleFilename = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
 			// can also retrieve 3D model from dropbox instead of locally (using the dl.dropboxusercontent.com domain bypasses CORS restrictions):
 			// let fileLocation = 'https://dl.dropboxusercontent.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0';
 			// (beware because this is not fully supported - see https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/CORS-Access-Control-Allow-Origin/m-p/336138/highlight/true#M19583)
 			let speed = 0;
-			let vehicleInitialPosition, MAX_SPEED, ROTATION_SPEED, BRAKING_SPEED, wallHitRotation;
+			let vehicleInitialPosition, MAX_SPEED, ROTATION_SPEED, BRAKING_SPEED, wallHitRotation, VEHICLE_SCALE;
 			
 			if(vehicleFilename.includes('.glb')) {
 				vehicleInitialPosition = new THREE.Vector3(0, 0.15, 2); 
@@ -61,17 +62,21 @@
 				ROTATION_SPEED = 0.05;
 				BRAKING_SPEED = 0.002;
 				wallHitRotation = 0.1;
+				VEHICLE_SCALE = 0.3;
 			} else if(vehicleFilename.includes('.fbx')) {
 				vehicleInitialPosition = new THREE.Vector3(0, 0, 2); 
-				MAX_SPEED = 0.25;
-				ROTATION_SPEED = 0.02;
+				MAX_SPEED = 0.4;
+				ROTATION_SPEED = 0.03;
 				BRAKING_SPEED = 0.004;
 				wallHitRotation = 0.03;
+				VEHICLE_SCALE = 0.015;
 			}
 						
 			let fixedCamera = true;
 			let mouseZoom = 0;
 			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
+			const HUD_FONT = "30px sans-serif";
+			const HUD_FONT_COLOR = "darkblue";
 
 
 
@@ -165,10 +170,10 @@
 			const floorNormal = textureLoader.load( "img/poly_normal2.jpg" );
 			floorTexture.wrapS = THREE.RepeatWrapping;
 			floorTexture.wrapT = THREE.RepeatWrapping;
-			floorTexture.repeat.set( 5, 5 );
+			floorTexture.repeat.set( 40, 40 );
 			// const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
 			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
-			const floorGeometry = new THREE.PlaneGeometry( 50, 50 );
+			const floorGeometry = new THREE.PlaneGeometry( 200, 200 );
 			const floor = new THREE.Mesh( floorGeometry, floorMaterial );
 			floor.rotation.x = - Math.PI / 2;
 			floor.position.y = 0;
@@ -180,7 +185,7 @@
 			// grid.position.y = 0;
 			// scene.add( grid );
 
-			// Walls
+			// Map limit walls
 			const wallArray = [];
 			const wallOrientation = [];
 			const wallGeometry = new THREE.BoxGeometry( 0.5, 3, floorGeometry.parameters.width );
@@ -258,6 +263,35 @@
 			}
 
 
+			// Checkpoints
+			const checkpointArray = [];
+			const checkpointGeometry = new THREE.BoxGeometry( 10, 5, 0.5 );
+			const checkpointMaterial = new THREE.MeshStandardMaterial( {color: 'green', transparent: true, opacity: 0.2} );
+			const checkpoint1 = new THREE.Mesh( checkpointGeometry, checkpointMaterial );
+			checkpoint1.position.y = checkpointGeometry.parameters.height/2;
+			const checkpoint2 = checkpoint1.clone();
+			const checkpoint3 = checkpoint1.clone();
+			const checkpoint4 = checkpoint1.clone();
+			checkpoint1.position.x = -20;
+			checkpoint2.position.x = -40;
+			checkpoint3.rotation.y = Math.PI / 2;
+			checkpoint3.position.x = -15;
+			checkpoint3.position.z = -15;
+			// checkpoint4.rotation.y = Math.PI / 2;
+			checkpoint4.position.x = -25;
+			checkpoint4.position.z = 25;
+			checkpointArray.push(checkpoint1, checkpoint2, checkpoint3, checkpoint4);
+			scene.add(checkpoint1, checkpoint2, checkpoint3, checkpoint4);
+
+			// Finish
+			const finishGeometry = new THREE.BoxGeometry( 10, 10, 0.5 );
+			const finishMaterial = new THREE.MeshStandardMaterial( {map: textureLoader.load( "img/checkered.jpg" ), transparent: true, opacity: 0.3} );
+			const finish = new THREE.Mesh( finishGeometry, finishMaterial );
+			finish.position.x = -40;
+			finish.position.z = -40;
+			scene.add(finish);
+
+
 			
 			// GLTFLoader for 3D models
 			const GLTFLoader = new THREE.GLTFLoader();
@@ -267,6 +301,7 @@
 			let mixer;
 			const clock = new THREE.Clock(); // clock for animation
 			let textMesh = {}; // loading text to remove when windmill finishes loading
+			const timer = new THREE.Clock(); // level timer
 			GLTFLoader.load( 'img/OlmecHead.glb', function ( gltf ) {
 				// console.log(gltf);
 				miscModels[0] = gltf.scene;
@@ -283,13 +318,14 @@
 				miscModels[2].position.x = 12;
 				scene.add( miscModels[1], miscModels[2] );
 				scene.remove( textMesh );
+				timer.start();
 			});
 
 			if(vehicleFilename.includes('.glb')) {
 				GLTFLoader.load( vehicleFilename, function ( gltf ) {
 					// console.log(gltf);
 					vehicleModel = gltf.scene;
-					vehicleModel.scale.setScalar(.3);
+					vehicleModel.scale.setScalar(VEHICLE_SCALE);
 					vehicleModel.rotation.y = Math.PI;
 					vehicleModel.position.copy(vehicleInitialPosition);
 					scene.add( vehicleModel );
@@ -301,9 +337,9 @@
 				});
 			} else if(vehicleFilename.includes('.fbx')) {
 				FBXLoader.load( vehicleFilename, function ( fbx ) {
-					console.log(fbx);
+					// console.log(fbx);
 					vehicleModel = fbx;
-					vehicleModel.scale.setScalar(.01);
+					vehicleModel.scale.setScalar(VEHICLE_SCALE);
 					vehicleModel.rotation.y = Math.PI;
 					vehicleModel.position.copy(vehicleInitialPosition);
 					scene.add( vehicleModel );
@@ -343,14 +379,12 @@
 				movementDirectionY[i] = true;
 			}
 
-			// Using threejs built-in animation system to animate one ball
-			// https://discoverthreejs.com/book/first-steps/animation-system/
+			// Using threejs built-in animation system to animate one ball -  https://discoverthreejs.com/book/first-steps/animation-system/
 			// const times = [0, 1, 2];
 			// const values = [0, 0 + sphereGroup[0].geometry.parameters.radius, 0, 0, 2, 0, 0, 0 + sphereGroup[0].geometry.parameters.radius, 0];
 			// const positionKF = new THREE.VectorKeyframeTrack(".position", times, values);
 			// const tracks = [positionKF];
-			// // Use -1 to automatically calculate the length from the array of tracks
-			// const length = -1;
+			// const length = -1; // -1 to automatically calculate the length from the array of tracks
 			// const clip = new THREE.AnimationClip("slowmove", length, tracks);
 			// const ballMixer = new THREE.AnimationMixer(sphereGroup[0]);
 			// const action = ballMixer.clipAction(clip);
@@ -363,6 +397,12 @@
 			document.body.appendChild(stats.dom);
 			let jumping = false;
 			let falling = false;
+			const canvas = document.querySelector("#hud");
+			const ctx = canvas.getContext("2d");
+			ctx.font = HUD_FONT;
+			ctx.fillStyle = HUD_FONT_COLOR;
+			let checkpointsPassed = [];
+			let finished = false;
 
 			function animate() {
 				requestAnimationFrame( animate );
@@ -370,6 +410,8 @@
 				const boundingBoxesSpheres = [];
 				const boundingBoxesModels = [];
 				const boundingBoxesWalls = [];
+				const boundingBoxesCheckpoints = [];
+				let boundingBoxFinish = {};
 				const boundingBoxesVehicle = [];
 				const boundingBoxesSpheresHelpers = [];
 				const boundingBoxesModelsHelpers = [];
@@ -411,26 +453,28 @@
 					// Idea to do this here from https://stackoverflow.com/a/12273538/3174659 and https://stackoverflow.com/a/14449028/3174659
 					// Because if done in the addEventListener it will look jerky because the keydown event fires more often than the animate() loop
 					if(keysPressed.left) {
-						vehicleModel.rotation.y += ROTATION_SPEED;
+						vehicleModel.rotation.y += ROTATION_SPEED * speed*3;
 						// rotate wheels left
 						if(vehicleFilename.includes('.fbx')) {
 							for (const modelPart of vehicleModel.children) {
 								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
 								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
 									modelPart.rotation.order = 'YXZ'; // https://stackoverflow.com/a/14776900/3174659
-									modelPart.rotation.y = Math.PI/6;
+									if(modelPart.rotation.y < Math.PI/6)
+										modelPart.rotation.y += 0.01;
 								}
 							}
 						}
 					} else if(keysPressed.right) {
-						vehicleModel.rotation.y -= ROTATION_SPEED;
+						vehicleModel.rotation.y -= ROTATION_SPEED * speed*3;
 						// rotate wheels right
 						if(vehicleFilename.includes('.fbx')) {
 							for (const modelPart of vehicleModel.children) {
 								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
 								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
 									modelPart.rotation.order = 'YXZ'; // https://stackoverflow.com/a/14776900/3174659
-									modelPart.rotation.y = -Math.PI/6;
+									if(modelPart.rotation.y > -Math.PI/6)
+										modelPart.rotation.y -= 0.01;
 								}
 							}
 						}
@@ -440,7 +484,10 @@
 							for (const modelPart of vehicleModel.children) {
 								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
 								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
-									modelPart.rotation.y = 0;
+									if(modelPart.rotation.y > 0)
+										modelPart.rotation.y -= 0.01;
+									else if(modelPart.rotation.y < 0)
+										modelPart.rotation.y += 0.01;
 								}
 							}
 						}
@@ -450,7 +497,7 @@
 							speed += 0.004;
 					}
 					if(keysPressed.down) {
-						if(speed >= -MAX_SPEED) 
+						if(speed >= -MAX_SPEED/2) 
 							speed -= BRAKING_SPEED;
 					}
 
@@ -468,12 +515,18 @@
 					vehicleModel.position.z += speed * Math.cos(vehicleModel.rotation.y);
 					vehicleModel.position.x += speed * Math.sin(vehicleModel.rotation.y);
 
-					// rotate wheels depending on speed
+					// rotate wheels of car depending on speed
 					if(vehicleFilename.includes('.fbx')) {
 						for (const modelPart of vehicleModel.children) {
-							if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF')  || modelPart.name.includes('WHEEL_RR')  || modelPart.name.includes('WHEEL_LR')
-							|| modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')   || modelPart.name.includes('DISC_RR')   || modelPart.name.includes('DISC_LR'))
+							if(modelPart.name.includes('WHEEL') || modelPart.name.includes('DISC'))
 								modelPart.rotation.x += speed;
+						}
+					}
+					// rotate wheels of skateboard depending on speed
+					if(vehicleFilename.includes('.glb')) {
+						for (const modelPart of vehicleModel.children[0].children[0].children) {
+							if(modelPart.name.includes('wheel'))
+								modelPart.rotation.x += speed*5;
 						}
 					}
 
@@ -525,12 +578,21 @@
 					// scene.add( spotLightHelper );
 
 
+					
+					//
 					// Collision detection - https://stackoverflow.com/a/70403986/3174659
+					//
 
 					// 1. Calculate bounding boxes for the spheres and the player-controlled vehicle and also helpers to see where the bbs are
 					for (let i = 0; i < wallArray.length ; i++) {
 						boundingBoxesWalls.push(new THREE.Box3().setFromObject(wallArray[i]));
 					}
+
+					for (let i = 0; i < checkpointArray.length ; i++) {
+						boundingBoxesCheckpoints.push(new THREE.Box3().setFromObject(checkpointArray[i]));
+					}
+
+					boundingBoxFinish = new THREE.Box3().setFromObject(finish);
 
 					// https://github.com/Mugen87/yuka/blob/master/examples/math/common/js/BVHelper.js
 					function createSphereHelper( boundingSphere ) {
@@ -678,6 +740,40 @@
 						}
 					}
 
+					for (let i = 0; i < boundingBoxesCheckpoints.length ; i++) {
+						for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
+							if (boundingBoxesCheckpoints[i].intersectsBox(boundingBoxesVehicle[j])) {
+								if(!checkpointsPassed.includes(i)) {
+									checkpointsPassed.push(i)
+									checkpointArray[i].visible = false;
+								}
+								
+							}
+						}
+					}
+
+					for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
+						if (boundingBoxFinish.intersectsBox(boundingBoxesVehicle[j])) {
+							if(checkpointsPassed.length == checkpointArray.length) {
+								finished = true;
+							}
+							
+						}
+					}
+
+
+					// Update HUD
+					if(!finished) {
+						ctx.clearRect(0, 0, canvas.width, canvas.height);
+						ctx.fillText("Checkpoints passed: " + checkpointsPassed.length, 20, 90);
+						ctx.fillText("Time: " + timer.getElapsedTime().toFixed(1) + " s", 20, 120);
+					} else {
+						timer.stop();
+						ctx.clearRect(0, 0, canvas.width, canvas.height);
+						ctx.fillText("Congrats! You finished in " + timer.getElapsedTime().toFixed(1) + " s", 400, 300);
+					}
+
+
 					stats.update();
 				}
 				
@@ -753,10 +849,17 @@
 				if(key == "r" || key == "R") {
 					vehicleModel.position.copy(vehicleInitialPosition);
 					speed = 0;
+					for (let i = 0; i < checkpointArray.length ; i++) {
+						checkpointArray[i].visible = true;
+						checkpointsPassed = [];
+					}
+					finished = false;
+					timer.start();
 				}
 
 				if(key == " ") {
-					jumping = true;
+					if(!jumping && !falling)
+						jumping = true;
 				}
 			});
 			document.addEventListener('keyup', function(event) {
