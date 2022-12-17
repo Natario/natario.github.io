@@ -64,7 +64,7 @@
 			} else if(vehicleFilename.includes('.fbx')) {
 				vehicleInitialPosition = new THREE.Vector3(0, 0, 2); 
 				MAX_SPEED = 0.25;
-				ROTATION_SPEED = 0.035;
+				ROTATION_SPEED = 0.02;
 				BRAKING_SPEED = 0.004;
 				wallHitRotation = 0.03;
 			}
@@ -136,7 +136,7 @@
 			const hemiLight = new THREE.HemisphereLight(
 				'white', // bright sky color
 				'lightgrey', // dim ground color
-				2, // intensity
+				3, // intensity
 			);
 			scene.add( hemiLight );
 			
@@ -412,9 +412,38 @@
 					// Because if done in the addEventListener it will look jerky because the keydown event fires more often than the animate() loop
 					if(keysPressed.left) {
 						vehicleModel.rotation.y += ROTATION_SPEED;
-					}
-					if(keysPressed.right) {
+						// rotate wheels left
+						if(vehicleFilename.includes('.fbx')) {
+							for (const modelPart of vehicleModel.children) {
+								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
+								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
+									modelPart.rotation.order = 'YXZ'; // https://stackoverflow.com/a/14776900/3174659
+									modelPart.rotation.y = Math.PI/6;
+								}
+							}
+						}
+					} else if(keysPressed.right) {
 						vehicleModel.rotation.y -= ROTATION_SPEED;
+						// rotate wheels right
+						if(vehicleFilename.includes('.fbx')) {
+							for (const modelPart of vehicleModel.children) {
+								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
+								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
+									modelPart.rotation.order = 'YXZ'; // https://stackoverflow.com/a/14776900/3174659
+									modelPart.rotation.y = -Math.PI/6;
+								}
+							}
+						}
+					} else {
+						// no left or right pressed so stop rotating wheels
+						if(vehicleFilename.includes('.fbx')) {
+							for (const modelPart of vehicleModel.children) {
+								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
+								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
+									modelPart.rotation.y = 0;
+								}
+							}
+						}
 					}
 					if(keysPressed.up) {
 						if(speed <= MAX_SPEED)
@@ -439,23 +468,38 @@
 					vehicleModel.position.z += speed * Math.cos(vehicleModel.rotation.y);
 					vehicleModel.position.x += speed * Math.sin(vehicleModel.rotation.y);
 
+					// rotate wheels depending on speed
+					if(vehicleFilename.includes('.fbx')) {
+						for (const modelPart of vehicleModel.children) {
+							if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF')  || modelPart.name.includes('WHEEL_RR')  || modelPart.name.includes('WHEEL_LR')
+							|| modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')   || modelPart.name.includes('DISC_RR')   || modelPart.name.includes('DISC_LR'))
+								modelPart.rotation.x += speed;
+						}
+					}
+
 
 					// Jump (when user presses spacebar)
-					if(jumping) {
-						if(vehicleModel.position.y < 1) {
+					if(vehicleFilename.includes('.glb') && jumping) {
+						vehicleModel.rotation.order = 'YXZ'; // https://stackoverflow.com/a/14776900/3174659
+						if(vehicleModel.position.y < 1.5) {
 							vehicleModel.position.y += 0.05;
+							if(vehicleModel.rotation.x >= -0.3)
+								vehicleModel.rotation.x -= 0.02;
 						} else {
 							jumping = false;
 							falling = true;
 						}
 
 					}
-					if(falling) {
+					if(vehicleFilename.includes('.glb') && falling) {
+						vehicleModel.rotation.order = 'YXZ'; // https://stackoverflow.com/a/14776900/3174659
 						if(vehicleModel.position.y <= vehicleInitialPosition.y) {
 							vehicleModel.position.y = vehicleInitialPosition.y;
 							falling = false;
 						} else {
 							vehicleModel.position.y -= 0.05;
+							if(vehicleModel.rotation.x <= 0)
+								vehicleModel.rotation.x += 0.025;
 						}
 					}
 
