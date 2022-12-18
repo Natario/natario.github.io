@@ -553,10 +553,12 @@
 								if(modelPart.name.includes('COCKPIT')) {
 									for (const subModelPart of modelPart.children) {
 										if(subModelPart.name.includes('STEER')) {
-											if(subModelPart.rotation.z > 0) {
+											if(Math.abs(subModelPart.rotation.z) < 0.1) {
+												subModelPart.rotation.z = 0;
+											} else if(subModelPart.rotation.z > 0) {
 												subModelPart.rotation.z -= 0.06;
 												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed/6;
-											}else if(subModelPart.rotation.z < 0) {
+											} else if(subModelPart.rotation.z < 0) {
 												subModelPart.rotation.z += 0.06;
 												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed/6;
 											}
