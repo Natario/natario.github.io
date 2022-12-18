@@ -27,10 +27,11 @@
 	<body>
 		<p style="margin-left: 100px;">
 			<a href="index.html">Back home</a>
-			<span style="margin-left: 100px;">WASD/arrows - move</span>
+			<span style="margin-left: 50px;">WASD/arrows - move</span>
 			<span style="margin-left: 50px;">Spacebar - jump (skateboard only)</span> 
 			<span style="margin-left: 50px;">C - fixed/free camera</span>
 			<span style="margin-left: 50px;">Mouse wheel - zoom in/out</span>
+			<span style="margin-left: 50px;">F - fullscreen</span>
 			<span style="margin-left: 50px;">V - change vehicle</span>
 			<span style="margin-left: 50px;">R - restart</span>
 		</p>
@@ -69,7 +70,7 @@
 			VEHICLE_FILEPATHS[1] = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
 			VEHICLE_INITIAL_POSITION[1] = new THREE.Vector3(0, 0, 20); 
 			MAX_SPEED[1] = 0.4;
-			ROTATION_SPEED[1] = 0.03;
+			ROTATION_SPEED[1] = 0.06;
 			BRAKING_SPEED[1] = 0.004;
 			WALL_HIT_ROTATION[1] = 0.03;
 			VEHICLE_SCALE[1] = 0.015;
@@ -292,10 +293,13 @@
 			let textGeometry = {}, textMaterial = {}, textMesh = {};
 			fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
 				for (let i = 0; i < checkpointArray.length; i++) {
-					textGeometry = new THREE.TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
+					// textGeometry = new THREE.TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
+					textGeometry = new THREE.TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
 					textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
 					textMesh = new THREE.Mesh( textGeometry, textMaterial );
-					textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2;
+					// textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2;
+					textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2 + 1;
+					textMesh.position.x = -3;
 					checkpointArray[i].add( textMesh );
 				}
 			});
@@ -474,12 +478,11 @@
 					// Idea to do this here from https://stackoverflow.com/a/12273538/3174659 and https://stackoverflow.com/a/14449028/3174659
 					// Because if done in the addEventListener it will look jerky because the keydown event fires more often than the animate() loop
 					if(keysPressed.left) {
-						if(currentVehicle == 0)
+						// turn skateboard left
+						if(currentVehicle == 0) {
 							vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle];
-						else if(currentVehicle == 1)
-							vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed*3;
-						// rotate wheels left
-						if(currentVehicle == 1) {
+						// for the car, turn also the wheels and steering wheel
+						} else if(currentVehicle == 1) {
 							for (const modelPart of vehicleModel.children) {
 								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
 								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
@@ -492,18 +495,25 @@
 										if(subModelPart.name.includes('STEER')) {
 											if(subModelPart.rotation.z > -Math.PI)
 												subModelPart.rotation.z -= 0.06;
+											// if the user turned right recently, the sterring wheel is still centering, so turn a bit slower
+											if(subModelPart.rotation.z > 0)
+												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed*.75;
+											else
+												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed;
 										}
 									}
 								}
 							}
 						}
+						// slow down a bit while turning
+						if(speed > MAX_SPEED[currentVehicle]*.75)
+							speed -= 0.01;
 					} else if(keysPressed.right) {
-						if(currentVehicle == 0)
+						// turn skateboard right
+						if(currentVehicle == 0) {
 							vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle];
-						else if(currentVehicle == 1)
-							vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed*3;
-						// rotate wheels right
-						if(currentVehicle == 1) {
+						// for the car, turn also the wheels and steering wheel
+						} else if(currentVehicle == 1) {
 							for (const modelPart of vehicleModel.children) {
 								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
 								|| modelPart.name.includes('SUSP_RF')  || modelPart.name.includes('SUSP_LF')) {
@@ -516,13 +526,21 @@
 										if(subModelPart.name.includes('STEER')) {
 											if(subModelPart.rotation.z < Math.PI)
 												subModelPart.rotation.z += 0.06;
+											// if the user turned left recently, the sterring wheel is still centering, so turn a bit slower
+											if(subModelPart.rotation.z < 0)
+												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed*.75;
+											else
+												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed;
 										}
 									}
 								}
 							}
 						}
+						// slow down a bit while turning
+						if(speed > MAX_SPEED[currentVehicle]*.75)
+							speed -= 0.01;
 					} else {
-						// no left or right pressed so stop rotating wheels
+						// no left or right pressed so stop rotating wheels and get steering wheel back on center
 						if(currentVehicle == 1) {
 							for (const modelPart of vehicleModel.children) {
 								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
@@ -535,10 +553,13 @@
 								if(modelPart.name.includes('COCKPIT')) {
 									for (const subModelPart of modelPart.children) {
 										if(subModelPart.name.includes('STEER')) {
-											if(subModelPart.rotation.z > 0)
+											if(subModelPart.rotation.z > 0) {
 												subModelPart.rotation.z -= 0.06;
-											else if(subModelPart.rotation.z < 0)
+												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed/6;
+											}else if(subModelPart.rotation.z < 0) {
 												subModelPart.rotation.z += 0.06;
+												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed/6;
+											}
 										}
 									}
 								}
