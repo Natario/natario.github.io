@@ -172,13 +172,11 @@
 
 			// Floor
 			const textureLoader = new THREE.TextureLoader();
-			const floorTexture = textureLoader.load( "img/poly_wood2.jpg" );
-			const floorNormal = textureLoader.load( "img/poly_normal2.jpg" );
+			const floorTexture = textureLoader.load( "img/asphalt2.jpg" );
 			floorTexture.wrapS = THREE.RepeatWrapping;
 			floorTexture.wrapT = THREE.RepeatWrapping;
-			floorTexture.repeat.set( 30, 30 );
-			// const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
-			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, normalMap: floorNormal});
+			floorTexture.repeat.set( 20, 20 );
+			const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
 			const floorGeometry = new THREE.PlaneGeometry( 150, 150 );
 			const floor = new THREE.Mesh( floorGeometry, floorMaterial );
 			floor.rotation.x = - Math.PI / 2;
@@ -194,8 +192,13 @@
 			// Map limit walls
 			const wallArray = [];
 			const wallOrientation = [];
+			const wallTexture = textureLoader.load( "img/bricks2.jpg" );
+			wallTexture.wrapS = THREE.RepeatWrapping;
+			wallTexture.wrapT = THREE.RepeatWrapping;
+			wallTexture.repeat.set( 10, 0.2 );
+			// const wallMaterial = new THREE.MeshStandardMaterial( {color: 'maroon'} );
+			const wallMaterial = new THREE.MeshStandardMaterial({map: wallTexture});
 			const wallGeometry = new THREE.BoxGeometry( 0.5, 3, floorGeometry.parameters.width );
-			const wallMaterial = new THREE.MeshStandardMaterial( {color: 'maroon'} );
 			const wallRight = new THREE.Mesh( wallGeometry, wallMaterial );
 			wallRight.position.y = wallGeometry.parameters.height/2;
 			const wallLeft = wallRight.clone();
@@ -497,9 +500,9 @@
 												subModelPart.rotation.z -= 0.06;
 											// if the user turned right recently, the sterring wheel is still centering, so turn a bit slower
 											if(subModelPart.rotation.z > 0)
-												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed*.75;
+												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed * 1.5 *.5;
 											else
-												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed;
+												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed * 1.5;
 										}
 									}
 								}
@@ -528,9 +531,9 @@
 												subModelPart.rotation.z += 0.06;
 											// if the user turned left recently, the sterring wheel is still centering, so turn a bit slower
 											if(subModelPart.rotation.z < 0)
-												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed*.75;
+												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed * 1.5 *.5;
 											else
-												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed;
+												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed * 1.5;
 										}
 									}
 								}
@@ -540,7 +543,7 @@
 						if(speed > MAX_SPEED[currentVehicle]*.75)
 							speed -= 0.01;
 					} else {
-						// no left or right pressed so stop rotating wheels and get steering wheel back on center
+						// no left or right pressed so stop turning wheels and get steering wheel slowly back on center (i.e. car keeps turning for a while after user stopped pressing left/right)
 						if(currentVehicle == 1) {
 							for (const modelPart of vehicleModel.children) {
 								if(modelPart.name.includes('WHEEL_RF') || modelPart.name.includes('WHEEL_LF') || modelPart.name.includes('DISC_RF')  || modelPart.name.includes('DISC_LF')
@@ -557,10 +560,10 @@
 												subModelPart.rotation.z = 0;
 											} else if(subModelPart.rotation.z > 0) {
 												subModelPart.rotation.z -= 0.06;
-												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed/6;
+												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed/3;
 											} else if(subModelPart.rotation.z < 0) {
 												subModelPart.rotation.z += 0.06;
-												vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed/6;
+												vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed/3;
 											}
 										}
 									}
