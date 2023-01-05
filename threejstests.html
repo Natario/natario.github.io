@@ -60,7 +60,7 @@
 			let VEHICLE_FILEPATHS = [], VEHICLE_INITIAL_POSITION = [], MAX_SPEED = [], ROTATION_SPEED = [], BRAKING_SPEED = [], WALL_HIT_ROTATION = [], VEHICLE_SCALE = [];
 			
 			VEHICLE_FILEPATHS[0] = 'img/skateboard.glb';
-			VEHICLE_INITIAL_POSITION[0] = new THREE.Vector3(50, 0.15, 50); 
+			VEHICLE_INITIAL_POSITION[0] = new THREE.Vector3(50, 0.15, 40); 
 			MAX_SPEED[0] = 0.1;
 			ROTATION_SPEED[0] = 0.03;
 			BRAKING_SPEED[0] = 0.002;
@@ -68,7 +68,7 @@
 			VEHICLE_SCALE[0] = 0.3;
 		
 			VEHICLE_FILEPATHS[1] = 'img/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
-			VEHICLE_INITIAL_POSITION[1] = new THREE.Vector3(50, 0, 50); 
+			VEHICLE_INITIAL_POSITION[1] = new THREE.Vector3(50, 0, 40); 
 			MAX_SPEED[1] = 0.4;
 			ROTATION_SPEED[1] = 0.06;
 			BRAKING_SPEED[1] = 0.004;
@@ -287,16 +287,16 @@
 			// = for horizontal checkpoint, | for vertical checkpoint, X for obstacle, and F for finish line
 			const trackPositions = [
 "                    ",
-"    X  |  |   X     ",
-"    X  XX  =  X     ",
-"    X=X  X  F X     ",
-"    X X  X    X     ",
+"    X  |  |  X      ",
+"    X  XX  = X      ",
+"    X=X  X  =X      ",
 "    X X  X   X      ",
-"    XXX  XXXX       ",
-"                    ",
-"                    ",
-"                    ",
-"                    ",
+"    X X  X = X      ",
+"    XXX  X   X      ",
+"         X = X      ",
+"         X   X      ",
+"         X F X      ",
+"          XXX       ",
 "                    ",
 "                    ",
 "                    ",
@@ -361,7 +361,7 @@
 			const timer = new THREE.Clock(); // level timer
 			GLTFLoader.load( 'img/OlmecHead.glb', function ( gltf ) {
 				const obstacleModel = gltf.scene;
-				obstacleModel.scale.setScalar(2);
+				obstacleModel.scale.setScalar(2.5);
 				// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
 				// mixer = new THREE.AnimationMixer( model );
 				// const action = mixer.clipAction( gltf.animations[ 0 ] );
