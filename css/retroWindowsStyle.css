@@ -207,21 +207,22 @@ input,select{vertical-align:middle}
 @media screen and (max-width:960px){
 	#window0 {	left: 10px;	}
 	#window3 {	left: 50px;	}	
+    #shoutOuts {display: none;}
 }
 @media screen and (max-width:770px){
 	#window0 .wincontent {	width: 460px;	}
 	#window2 {	left: 100px;	}
-	#window1 {	top: 190px;	left: -5px;	}
+	#window1 {	top: 190px;	left: 5px;	}
+    #taskbar {  height: 64px;}
 }
 @media screen and (max-width:540px){
-    #window0 .wincontent {	width: 230px; height: 200px;	}
-    #window3 .wincontent {
-        width: 275px;
-        height: auto;
-    }
-    #window3 {    top: 9px;    left: 10px;	}
-    #window2 {    left: -118px;	}
-    #window1 .wincontent {    width: auto;    height: 300px;	}
+    #window1 {  top: 20px;    left: 5px;	}
+    #window2 {  top: 10px;    left: 15px;	}
+    #window3 {  top: 90px;    left: 30px;	}
+    #window0 .wincontent {  width: 330px;   height: 300px;  }
+    #window1 .wincontent {  width: auto;    height: 500px;  }
+    #window2 .wincontent {  width: 400px;}
+    #window3 .wincontent {  width: 300px;   height: auto;   }
 }
 
 
