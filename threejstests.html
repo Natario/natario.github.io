@@ -283,70 +283,71 @@
 			}
 
 
-			// Checkpoints
-			// 1 for horizontal checkpoint, 2 for vertical checkpoint, 3 for obstacle
+			// Checkpoints, obstacles (loaded later) and finish line
+			// = for horizontal checkpoint, | for vertical checkpoint, X for obstacle, and F for finish line
 			const trackPositions = [
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,1,0,3,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,3,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,3,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]];
+"                    ",
+"    X  |  |   X     ",
+"    X  XX  =  X     ",
+"    X=X  X  F X     ",
+"    X X  X    X     ",
+"    X X  X   X      ",
+"    XXX  XXXX       ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    ",
+"                    "];
 			const checkpointArray = [];
 			const checkpointGeometry = new THREE.BoxGeometry( 10, 4, 0.5 );
 			const checkpointMaterial = new THREE.MeshStandardMaterial( {color: 'green', transparent: true, opacity: 0.2} );
+			const finishGeometry = new THREE.BoxGeometry( 15, 8, 0.1 );
+			const finishMaterial = new THREE.MeshStandardMaterial( {map: textureLoader.load( "img/checkered.jpg" ), transparent: true, opacity: 0.3} );
+			const finish = new THREE.Mesh( finishGeometry, finishMaterial );
 			for (let z = 0; z < trackPositions.length; z += 1) {
-				for (let x = 0; x < trackPositions[z].length; x += 1) {
-					if(trackPositions[z][x] == 1 || trackPositions[z][x] == 2) {
+				const mapLine = Array.from(trackPositions[z]);
+				for (let x = 0; x < mapLine.length; x += 1) {
+					if(mapLine[x] == '=' || mapLine[x] == '|') {
 						const checkpoint = new THREE.Mesh( checkpointGeometry, checkpointMaterial );
 						checkpoint.position.y = checkpointGeometry.parameters.height/2;
 						checkpoint.position.x = 10*x;
 						checkpoint.position.z = 10*z;
-						if(trackPositions[z][x] == 2)
+						if(mapLine[x] == '|')
 							checkpoint.rotation.y = Math.PI / 2;
 						checkpointArray.push(checkpoint);
 						scene.add(checkpoint);
+					} else if(mapLine[x] == 'F') {
+						finish.position.y = finishGeometry.parameters.height/2;
+						finish.position.x = 10*x;
+						finish.position.z = 10*z;
+						scene.add(finish);
 					}
 				}
 			}
 
 			const fontLoader = new THREE.FontLoader();
-			let textGeometry = {}, textMaterial = {}, textMesh = {};
-			fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
-				for (let i = 0; i < checkpointArray.length; i++) {
-					// textGeometry = new THREE.TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
-					textGeometry = new THREE.TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
-					textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
-					textMesh = new THREE.Mesh( textGeometry, textMaterial );
-					// textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2;
-					textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2 + 1;
-					textMesh.position.x = -3;
-					checkpointArray[i].add( textMesh );
-				}
-			});
-
-			// Finish line
-			const finishGeometry = new THREE.BoxGeometry( 15, 8, 0.1 );
-			const finishMaterial = new THREE.MeshStandardMaterial( {map: textureLoader.load( "img/checkered.jpg" ), transparent: true, opacity: 0.3} );
-			const finish = new THREE.Mesh( finishGeometry, finishMaterial );
-			finish.position.y = finishGeometry.parameters.height/2;
-			finish.position.x = 50;
-			finish.position.z = 20;
-			scene.add(finish);
+			// let textGeometry = {}, textMaterial = {}, textMesh = {};
+			// fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+			// 	for (let i = 0; i < checkpointArray.length; i++) {
+			// 		// textGeometry = new THREE.TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
+			// 		textGeometry = new THREE.TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
+			// 		textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
+			// 		textMesh = new THREE.Mesh( textGeometry, textMaterial );
+			// 		// textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2;
+			// 		textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2 + 1;
+			// 		textMesh.position.x = -3;
+			// 		checkpointArray[i].add( textMesh );
+			// 	}
+			// });
 
 
 			
@@ -366,8 +367,9 @@
 				// const action = mixer.clipAction( gltf.animations[ 0 ] );
 				// action.play();
 				for (let z = 0; z < trackPositions.length; z += 1) {
-					for (let x = 0; x < trackPositions[z].length; x += 1) {
-						if(trackPositions[z][x] == 3) {
+					const mapLine = Array.from(trackPositions[z]);
+					for (let x = 0; x < mapLine.length; x += 1) {
+						if(mapLine[x] == 'X') {
 							const obstacle = obstacleModel.clone();
 							obstacle.position.x = 10*x;
 							obstacle.position.z = 10*z;
