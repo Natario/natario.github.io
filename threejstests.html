@@ -82,6 +82,7 @@
 			let keysPressed = {left:false, right:false, up:false, down:false}; // used to store multiple keypresses at the same time (e.g. turn and accelerate) - updated below on addEventListener's
 			const HUD_FONT = "30px sans-serif";
 			const HUD_FONT_COLOR = "darkblue";
+			const OBSTACLE_SCALE = 5; // so that obstacle boundingboxes/hitboxes's custom size also increases/decreases with obstacle size
 
 
 
@@ -307,6 +308,50 @@
 "   XXXXXXXXXXXXXX   ",
 "                 X F",
 "                    "];
+// const trackPositions = [
+// "                    ",
+// "    X  |  |  X      ",
+// "    X  XX  = X      ",
+// "    X=X  X  =X      ",
+// "    X X  X   X      ",
+// "    X X  X = X      ",
+// "    XXX  X   X      ",
+// "         X = X      ",
+// "         X   X      ",
+// "         X F X      ",
+// "          XXX       ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    "];
+// const trackPositions = [
+// "                    ",
+// "       |     X      ",
+// "    X  XX  F        ",
+// "    X=X             ",
+// "    X X             ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    ",
+// "                    "];
 			const checkpointArray = [];
 			const checkpointGeometry = new THREE.BoxGeometry( 10, 4, 0.5 );
 			const checkpointMaterial = new THREE.MeshStandardMaterial( {color: 'green', transparent: true, opacity: 0.2} );
@@ -361,7 +406,7 @@
 			const timer = new THREE.Clock(); // level timer
 			GLTFLoader.load( 'img/OlmecHead.glb', function ( gltf ) {
 				const obstacleModel = gltf.scene;
-				obstacleModel.scale.setScalar(5);
+				obstacleModel.scale.setScalar(OBSTACLE_SCALE);
 				// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
 				// mixer = new THREE.AnimationMixer( model );
 				// const action = mixer.clipAction( gltf.animations[ 0 ] );
@@ -740,15 +785,16 @@
 					for (let i = 0; i < miscModels.length ; i++) {
 						const boundingBoxModel = new THREE.Box3().setFromObject(miscModels[i]);
 
-						// // if the models rotate, we need to make min and max constant so that the boundingBox doesn't change with rotation of model
-						// const centerVec = new THREE.Vector3();
-						// boundingBoxModel.getCenter(centerVec);
-						// boundingBoxModel.min.x = centerVec.x - .7;
-						// boundingBoxModel.min.y = centerVec.y - .7;
-						// boundingBoxModel.min.z = centerVec.z - .7;
-						// boundingBoxModel.max.x = centerVec.x + .7;
-						// boundingBoxModel.max.y = centerVec.y + .7;
-						// boundingBoxModel.max.z = centerVec.z + .7;
+						// if the models rotate, we need to make min and max constant so that the boundingBox doesn't change with rotation of model
+						// this is also good to have more control over the boundingbox size even if the models don't rotate (default boundingboxes are too big)
+						const centerVec = new THREE.Vector3();
+						boundingBoxModel.getCenter(centerVec);
+						boundingBoxModel.min.x = centerVec.x - .5 * OBSTACLE_SCALE;
+						boundingBoxModel.min.y = centerVec.y - .8 * OBSTACLE_SCALE;
+						boundingBoxModel.min.z = centerVec.z - .5 * OBSTACLE_SCALE;
+						boundingBoxModel.max.x = centerVec.x + .5 * OBSTACLE_SCALE;
+						boundingBoxModel.max.y = centerVec.y + .8 * OBSTACLE_SCALE;
+						boundingBoxModel.max.z = centerVec.z + .5 * OBSTACLE_SCALE;
 
 						boundingBoxesModels[i] = boundingBoxModel;
 
