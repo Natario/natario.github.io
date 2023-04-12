@@ -28,12 +28,12 @@
 		<p style="margin-left: 100px;">
 			<a href="index.html">Back home</a>
 			<span style="margin-left: 50px;">WASD/arrows - move</span>
-			<span style="margin-left: 50px;">Spacebar - jump (skateboard only)</span> 
+			<span style="margin-left: 50px;">R - restart</span>
 			<span style="margin-left: 50px;">C - change camera</span>
 			<span style="margin-left: 50px;">Mouse wheel - zoom in/out</span>
 			<span style="margin-left: 50px;">F - fullscreen</span>
 			<span style="margin-left: 50px;">V - change vehicle</span>
-			<span style="margin-left: 50px;">R - restart</span>
+			<span style="margin-left: 50px;">Spacebar - jump (skateboard only)</span> 
 		</p>
 		<div id="canvases">
 			<div id="three-container"></div>
@@ -104,8 +104,8 @@
 			scene.background = new THREE.Color('skyblue');
 			
 			// AxesHelper
-			const axesHelper = new THREE.AxesHelper( 1000 );
-			scene.add(axesHelper);
+			// const axesHelper = new THREE.AxesHelper( 1000 );
+			// scene.add(axesHelper);
 
 
 			// Camera
@@ -284,8 +284,8 @@
 			}
 
 
-			// Checkpoints, obstacles (loaded later) and finish line
-			// = for horizontal checkpoint, | for vertical checkpoint, X for obstacle, and F for finish line
+			// Checkpoints, obstacles (3d models loaded later) and finish line
+			// = for horizontal checkpoint, | for vertical checkpoint, X for obstacle, _ for skateboard hurdle, and F for finish line
 			const trackPositions = [
 "                    ",
 "    X  |  | X       ",
@@ -317,7 +317,7 @@
 // "    X X  X = X      ",
 // "    XXX  X   X      ",
 // "         X = X      ",
-// "         X   X      ",
+// "         X _ X      ",
 // "         X F X      ",
 // "          XXX       ",
 // "                    ",
@@ -358,6 +358,13 @@
 			const finishGeometry = new THREE.BoxGeometry( 15, 8, 0.1 );
 			const finishMaterial = new THREE.MeshStandardMaterial( {map: textureLoader.load( "img/checkered.jpg" ), transparent: true, opacity: 0.3} );
 			const finish = new THREE.Mesh( finishGeometry, finishMaterial );
+			const hurdleGeometry = new THREE.BoxGeometry( 100, 0.25, 0.5 );
+			const hurdleTexture = textureLoader.load( "img/bricks2.jpg" );
+			hurdleTexture.wrapS = THREE.RepeatWrapping;
+			hurdleTexture.wrapT = THREE.RepeatWrapping;
+			hurdleTexture.repeat.set( 10, 0.025 );
+			const hurdleMaterial = new THREE.MeshStandardMaterial({map: hurdleTexture});
+			const hurdle = new THREE.Mesh( hurdleGeometry, hurdleMaterial );
 			for (let z = 0; z < trackPositions.length; z += 1) {
 				const mapLine = Array.from(trackPositions[z]);
 				for (let x = 0; x < mapLine.length; x += 1) {
@@ -375,9 +382,15 @@
 						finish.position.x = 10*x;
 						finish.position.z = 10*z;
 						scene.add(finish);
+					} else if(mapLine[x] == '_') {
+						hurdle.position.y = hurdleGeometry.parameters.height/2;
+						hurdle.position.x = 10*x;
+						hurdle.position.z = 10*z;
+						scene.add(hurdle);
 					}
 				}
 			}
+
 
 			const fontLoader = new THREE.FontLoader();
 			// let textGeometry = {}, textMaterial = {}, textMesh = {};
@@ -432,14 +445,17 @@
 			function spawnVehicle() {
 				scene.remove( vehicleModel );
 				scene.remove(camera);
+				// for initial spawn use default values; if there is already a vehicle in game, it means user pressed V so spawn at current vehicle's position
+				let spawnPosition = vehicleModel ? vehicleModel.position : VEHICLE_INITIAL_POSITION[currentVehicle];
+				let spawnRotation = vehicleModel ? vehicleModel.rotation.y : Math.PI;
 
 				if(currentVehicle == 0) {
 					GLTFLoader.load( VEHICLE_FILEPATHS[currentVehicle], function ( gltf ) {
 						// console.log(gltf);
 						vehicleModel = gltf.scene;
 						vehicleModel.scale.setScalar(VEHICLE_SCALE[currentVehicle]);
-						vehicleModel.rotation.y = Math.PI;
-						vehicleModel.position.copy(VEHICLE_INITIAL_POSITION[currentVehicle]);
+						vehicleModel.rotation.y = spawnRotation;
+						vehicleModel.position.copy(spawnPosition);
 						scene.add( vehicleModel );
 						scene.add(camera);
 						// list parts of the model (e.g. wheels, chassis, ...) - of course, the location in the hierarchy depends on the model
@@ -452,8 +468,8 @@
 						// console.log(fbx);
 						vehicleModel = fbx;
 						vehicleModel.scale.setScalar(VEHICLE_SCALE[currentVehicle]);
-						vehicleModel.rotation.y = Math.PI;
-						vehicleModel.position.copy(VEHICLE_INITIAL_POSITION[currentVehicle]);
+						vehicleModel.rotation.y = spawnRotation;
+						vehicleModel.position.copy(spawnPosition);
 						scene.add( vehicleModel );
 						scene.add(camera);
 					});
@@ -476,6 +492,8 @@
 			
 			
 			
+
+
 
 
 			//
@@ -750,9 +768,12 @@
 					// scene.add( spotLightHelper );
 
 
+
+
+
 					
 					//
-					// Collision detection - https://stackoverflow.com/a/70403986/3174659
+					// COLLISION DETECTION - https://stackoverflow.com/a/70403986/3174659
 					//
 
 					// 1. Calculate bounding boxes for the spheres and the player-controlled vehicle and also helpers to see where the bbs are
@@ -765,6 +786,8 @@
 					}
 
 					boundingBoxFinish = new THREE.Box3().setFromObject(finish);
+
+					boundingBoxHurdle = new THREE.Box3().setFromObject(hurdle);
 
 					// https://github.com/Mugen87/yuka/blob/master/examples/math/common/js/BVHelper.js
 					function createSphereHelper( boundingSphere ) {
@@ -937,6 +960,14 @@
 						}
 					}
 
+					for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
+						if (boundingBoxHurdle.intersectsBox(boundingBoxesVehicle[j])) {
+							vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
+							vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);
+							speed = -speed * 0.75;
+						}
+					}
+
 
 					// Update HUD
 					if(!finished) {
@@ -971,6 +1002,8 @@
 
 
 			
+
+
 			//
 			// EVENT LISTENERS
 			//
