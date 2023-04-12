@@ -34,29 +34,29 @@
             </div>
             
             <div class="column">
-                <h4>Each number represents a pixel. Change them (between 0,1,2,3) and see what happens with the cube when you click Process</h4>
-                <p>(don't remove numbers or commas, just change the numbers)</p>
+                <h4>Each number represents a pixel. Change them (between 0 1 2 or 3) and see what happens with the cube when you click Process</h4>
+                <p>(don't remove numbers or spaces, just change the numbers)</p>
                 <textarea id="stringToArray" rows="20" cols="40">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,
-0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,0,0,0,
-0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,3,0,0,0,
-0,0,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,3,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,3,0,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,3,0,0,0,0,0,
-0,1,1,1,1,1,1,1,1,1,1,1,1,3,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 2 2 2 2 2 2 2 2 2 2 2 2 0 0 0 
+0 0 0 0 2 2 2 2 2 2 2 2 2 2 2 2 3 0 0 0 
+0 0 0 2 2 2 2 2 2 2 2 2 2 2 2 3 3 0 0 0 
+0 0 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 3 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 3 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 3 0 0 0 0 0 
+0 1 1 1 1 1 1 1 1 1 1 1 1 3 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                 </textarea>
                 <button id="stringToArrayButton" type="button">Process</button>
             </div>
@@ -108,7 +108,7 @@
         /*
          * For each point in the grid, draw 1 pixel
          */
-        function draw1pixel(gridToPrint) {
+        function drawPixels() {
         
             // code for testing pixel drawing
             // https://stackoverflow.com/questions/4899799/whats-the-best-way-to-set-a-single-pixel-in-an-html5-canvas
@@ -118,6 +118,9 @@
             //ctx.fillStyle = 'blue';
             //ctx.fillRect(0, 0, 1, 1);
             //ctx.fillRect(1, 1, 1, 1);
+
+            // read pixel values from user input
+            const gridToPrint = document.getElementById("stringToArray").value.split(" ");
 
             // create imageData of the same size of the gridToPrint
             const imageData = ctx.createImageData(Math.sqrt(gridToPrint.length), Math.sqrt(gridToPrint.length));
@@ -144,35 +147,24 @@
                 }
             }
 
+            // need to reset zoom first as ctx.putImageData doesn't work when there's zoom
+            document.getElementById("canvaspixel").setAttribute("style", "transform:scale(1)");
+
             // draw figure more or less in the middle of the canvas
             var rect = document.getElementById("canvaspixel").getBoundingClientRect();
             ctx.putImageData(imageData, rect.width/2 - 10, rect.height/2 - 10);
-        }
 
-
-
-        /*
-         * Process the values in the textarea
-         */
-        function processInput() {
-            // https://stackoverflow.com/a/13272437/3174659
-            // but first need to remove newlines as JSON (used go parse array to string below) does not accept them
-            // https://stackoverflow.com/questions/784539/how-do-i-replace-all-line-breaks-in-a-string-with-br-elements
-            stringToArrayJSON = document.getElementById("stringToArray").value.replace("/(\r\n|\n|\r)/gm", "");
-
-            //console.log(stringToArrayJSON);
-            //console.log(JSON.parse("[" + stringToArrayJSON + "]"));
-            
-            // need to reset zoom first as the drawing isn't updated when it's zoomed
-            zoom = 1;
+            // now revert zoom to what it was
             document.getElementById("canvaspixel").setAttribute("style", "transform:scale(" + zoom + ")");
-            draw1pixel(JSON.parse("[" + stringToArrayJSON + "]"));
         }
 
-        document.getElementById('stringToArrayButton').addEventListener('click', processInput);
+
+        document.getElementById('stringToArrayButton').addEventListener('click', drawPixels);
 
         // process default input data once when page loads
-        processInput();
+        drawPixels();
+
+
 
 
 
