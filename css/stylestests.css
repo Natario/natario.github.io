@@ -74,6 +74,8 @@ body {
 #stringToArray {
     resize: none;
     background: #EEE;
+    overflow: hidden; /* hide scrollbar in Chrome */
+    /* line-height: 10px; */
 }
 #stringToArrayButton {
     width: 60px;
