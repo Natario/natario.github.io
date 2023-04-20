@@ -27,7 +27,7 @@
 <body>
 	<canvas id="bg" style="position: fixed; top: 0; left: 0; "></canvas>
 	<div id="desktop">
-		<div class="window" data-title="Web stuff">
+		<div class="window" data-title="Web Stuff">
 			<p><a href="threejstests.html">Three.js racing</a>. Simple racing game using the amazing three.js library.</p>
 			<hr />
 			<p><a href="pixeltest.html">Lines and pixels</a>. How to draw simple elements on screen using no JS libraries nor WebGL -- only vanilla JS and HTML's 2D &lt;canvas&gt; context.</p>
@@ -43,7 +43,7 @@
 			<p>Most 3D models are from third parties, but the level design and gameplay were created by me.</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGtFkP0dm5Hazfhqz9">Get it here</a> (Windows only for now) VERY ALPHA EXPECT BUGS!1</p>
 			<p>To run, unzip and double click FirstProject.exe</p>
-			<p><a id="showGamePreview" href="javascript:void(0)">Click here to show/hide preview video</a></p>
+			<p><a id="showGamePreview" href="javascript:void(0)">Click here to show/hide preview video</a> (see in HD)</p>
 			<div id="gameiframeDisplay"></div>
 		</div>
 		<div class="window" data-title="Real Lisbon">
@@ -51,18 +51,28 @@
 			<p>The model was imported from Google Maps using a few tricks. To learn about this process, see <a href="https://www.youtube.com/watch?v=F_XsmoZJmG8">this</a> video and optionally also <a href="https://www.youtube.com/watch?v=XUkMY8Sp_AM">this</a> one.</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEG_DEq_i0zMIsKV_O_">Get it here</a> (Windows only for now)</p>
 			<p>To run, unzip and double click RealLisbon.exe</p>
-			<p>Use WASD, left Shift and Space to move. Esc to leave.</p>
-			<p><a id="showLisbonPreview" href="javascript:void(0)">Click here to show/hide preview video</a></p>
+			<p>Move - WASD, Run - LShift, Jump - Space, Exit - Esc.</p>
+			<p><a id="showLisbonPreview" href="javascript:void(0)">Click here to show/hide preview video</a> (see in HD)</p>
 			<div id="lisboniframeDisplay"></div>
 		</div>
-		<div class="window" data-title="3d Modelling stuff">
+		<div class="window" data-title="3D Windmill">
 			<p>This is a windmill 3D model I created in Blender as part of a course I took.</p>
 			<p>I imported it into Unreal Engine 5 and made a simple scenario so that you can walk around the windmill</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGugyL-_8LZQbYaFkL">Get it here</a> (Windows only for now)</p>
 			<p>To run, unzip and double click Windmill_Course.exe.</p>
-			<p><a id="showWindmillPreview" href="javascript:void(0)">Click here to show/hide preview video</a></p>
+			<p><a id="showWindmillPreview" href="javascript:void(0)">Click here to show/hide preview video</a> (see in HD)</p>
 			<div id="windmilliframeDisplay"></div>
 			<p>You can also see a lower-quality version <a href="windmillthreejs.html">online</a> (takes about 30secs to load)</p>
+		</div>
+		<div class="window" data-title="OpenGL Stuff">
+			<p>This is a simple Micro Machines-like game I developed during my BSc (2011) using OpenGL.</p>
+			<p>The track is random(ish)ly generated each time. In 2-player mode you gain points by being ahead of the other player.</p>
+			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGgYQUVy0XYOd0lDV1AQ?e=37hBpp">Get it here</a> (Windows)</p>
+			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGgYQVrwl1g8hA1DKU3A?e=x6DQk4">Or here</a> (Linux)</p>
+			<p>To run, unzip and execute Example.exe (Windows) or run $ ./test (Linux)</p>
+			<p>To move: Player 1 - arrow keys; Player 2 - WASD; ESC to leave</p>
+			<p><a id="showOpenGLPreview" href="javascript:void(0)">Click here to show/hide preview video</a> (see in HD)</p>
+			<div id="openGLiframeDisplay"></div>
 		</div>
 		<div class="window" data-title="Welcome">
 			<h1>Hi</h1>
@@ -85,12 +95,13 @@
 		<div id="icons">
 			<!-- fontawesome folder icons -->
 			<!--<a class="openWindow" data-id="0"><p><i class="fas fa-folder-closed fa-3x"></i></p><p>Open web stuff</p></a>-->
-			<a class="openWindow" data-id="0">Open web stuff</a>
+			<a class="openWindow" data-id="0">Open Web Stuff</a>
 			<a class="openWindow" data-id="1">Open Small Theft Auto</a>
 			<a class="openWindow" data-id="2">Open Real Lisbon</a>
-			<a class="openWindow" data-id="3">Open 3D modelling stuff</a>
-			<a class="openWindow" data-id="4">Welcome screen</a>
-			<!-- <a class="openWindow" data-id="5">Open window into the unknown</a>			 -->
+			<a class="openWindow" data-id="3">Open 3D Windmill</a>
+			<a class="openWindow" data-id="4">Open OpenGL OpenStuff</a>
+			<a class="openWindow" data-id="5">Welcome Screen</a>
+			<!-- <a class="openWindow" data-id="6">Open window into the unknown</a>			 -->
 		</div>
 		<!-- <div><a id="bgColorChanger">I don't like this background color</a></div>
 		<div><a id="bgColorReset">Actually I did</a></div> -->
@@ -131,6 +142,12 @@
 			$("#windmilliframeDisplay")[0].innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/GjrwO6EpYV0\" frameborder=\"0\" allowfullscreen></iframe>";
 			else
 			$("#windmilliframeDisplay")[0].innerHTML = "";
+		});
+		$("#showOpenGLPreview").click(function() {
+			if($("#openGLiframeDisplay")[0].innerHTML.length == 0)
+			$("#openGLiframeDisplay")[0].innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/0-26LeqKbOI\" frameborder=\"0\" allowfullscreen></iframe>";
+			else
+			$("#openGLiframeDisplay")[0].innerHTML = "";
 		});
 
 
