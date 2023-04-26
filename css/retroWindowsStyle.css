@@ -1,12 +1,14 @@
 html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}
 body{line-height:1}
 h1 {font-size: 1.5em;margin-bottom: 10px;}
-p{font-size: 1em;line-height: 1.3em;margin-bottom: 10px;}
+/* p{font-size: 1em;line-height: 1.3em;margin-bottom: 10px;} */
+p{font-size: 0.95em;line-height: 1.3em;margin-bottom: 10px;}
 article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
 nav ul{list-style:none}
 blockquote,q{quotes:none}
 blockquote:before,blockquote:after,q:before,q:after{content:none}
-a{margin:0;padding:0;font-size:100%;vertical-align:baseline;background:transparent}
+/* a{margin:0;padding:0;font-size:100%;vertical-align:baseline;background:transparent} */
+a{margin:0;padding:0;font-size:0.9em;vertical-align:baseline;background:transparent}
 ins{background-color:#ff9;color:#000;text-decoration:none}
 mark{background-color:#ff9;color:#000;font-style:italic;font-weight:bold}
 del{text-decoration:line-through}
@@ -194,18 +196,18 @@ input,select{vertical-align:middle}
 }
 
 /*Demo styles BEGIN*/
-#window0 {	top: 20px;	left: 300px;}
-#window1 {	top: 300px; left: 50px;}
-#window2 {	top: 200px; left: 250px;}
-#window3 {	top: 250px; left: 350px;}
-#window4 {	top: 120px; left: 650px;}
-#window5 {	top: 180px; left: 500px;}
+#window0 {	top: 10px;	left: 300px;}
+#window1 {	top: 135px; left: 30px;}
+#window2 {	top: 100px; left: 200px;}
+#window3 {	top: 180px; left: 300px;}
+#window4 {	top: 80px; left: 650px;}
+#window5 {	top: 170px; left: 530px;}
 #window6 {	top: 300px; left: 620px;}
-#window0 .wincontent {	width: 450px; height: 320px;	}
+#window0 .wincontent {	width: 450px; height: 300px;	}
 #window1 .wincontent {	width: 520px; height: 520px;	}
-#window2 .wincontent {	width: 500px; height: 520px;	}
-#window3 .wincontent {	width: 500px; height: 520px;	}
-#window4 .wincontent {	width: 550px; height: 520px;	}
+#window2 .wincontent {	width: 500px; height: 480px;	}
+#window3 .wincontent {	width: 500px; height: 460px;	}
+#window4 .wincontent {	width: 500px; height: 520px;	}
 #window5 .wincontent {	width: 550px; height: 350px;	}
 #window6 .wincontent {	width: 250px; height: 100px;	}
 @media screen and (max-width:960px){
