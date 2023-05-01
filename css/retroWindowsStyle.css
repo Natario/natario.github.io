@@ -199,21 +199,23 @@ input,select{vertical-align:middle}
 #window0 {	top: 2%;    left: 20%;}
 #window1 {	top: 20%;   left: 2%;}
 #window2 {	top: 10%;   left: 10%;}
-#window3 {	top: 20%;   left: 20%;}
+#window3 {	top: 17%;   left: 17%;}
 #window4 {	top: 10%;   left: 50%;}
-#window5 {	top: 25%;   left: 30%;}
-#window6 {	top: 300px; left: 620px;}
+#window5 {	top: 15%;   left: 40%;}
+#window6 {	top: 10%;   left: 45%;}
+#window7 {	top: 25%;   left: 30%;}
 #window0 .wincontent {	width: 450px; height: 300px;	}
 #window1 .wincontent {	width: 550px; height: 500px;	}
 #window2 .wincontent {	width: 500px; height: 480px;	}
 #window3 .wincontent {	width: 500px; height: 460px;	}
 #window4 .wincontent {	width: 500px; height: 520px;	}
-#window5 .wincontent {	width: 550px; height: 350px;	}
-#window6 .wincontent {	width: 250px; height: 100px;	}
+#window5 .wincontent {	width: 500px; height: 350px;	}
+#window6 .wincontent {	width: 500px; height: 380px;	}
+#window7 .wincontent {	width: 550px; height: 350px;	}
 @media screen and (max-width:960px){
 	#window0 {	left: 10px;     }
     #window4 {	left: 100px;    }
-	#window5 {	left: 50px;     }	
+	#window7 {	left: 50px;     }	
     #shoutOuts {display: none   }
 }
 @media screen and (max-width:770px){
@@ -228,13 +230,17 @@ input,select{vertical-align:middle}
     #window2 {  top: 10px;    left: 15px;	}
     #window3 {  top: 10px;    left: 15px;	}
     #window4 {  top: 10px;    left: 15px;	}
-    #window5 {  top: 90px;    left: 30px;	}
-    #window0 .wincontent {  width: 330px;   height: 320px;  }
+    #window5 {  top: 10px;    left: 15px;	}
+    #window6 {  top: 10px;    left: 15px;	}
+    #window7 {  top: 90px;    left: 30px;	}
+    #window0 .wincontent {  width: 330px;   height: 350px;  }
     #window1 .wincontent {  width: auto;    height: 500px;  }
     #window2 .wincontent {  width: 400px;}
     #window3 .wincontent {  width: 400px;}
     #window4 .wincontent {  width: 400px;}
-    #window5 .wincontent {  width: 300px;   height: auto;   }
+    #window5 .wincontent {  width: 400px;}
+    #window6 .wincontent {  width: 400px;}
+    #window7 .wincontent {  width: 300px;   height: auto;   }
 }
 
 

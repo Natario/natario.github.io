@@ -40,14 +40,14 @@
 			<p>One of my first forays into the world of modern game development using Unreal Engine 5.</p>
 			<p>(my first gamedev attemps were actually in the early 2000's with the almighty RPG Maker).</p>
 			<p>This is a small game where you steal cars as quickly as possible.</p>
-			<p>Most 3D models are from third parties, but the level design and gameplay were created by me.</p>
+			<p>Most 3D models are from third parties, but the level design and game mechanics were created by me.</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGtFkP0dm5Hazfhqz9">Get it here</a> (Windows only for now) VERY ALPHA EXPECT BUGS!1</p>
 			<p>To run, unzip and double click FirstProject.exe</p>
 			<p><a id="showGamePreview" href="javascript:void(0)">Click here to show/hide preview video</a> (see in HD)</p>
 			<div id="gameiframeDisplay"></div>
 		</div>
-		<div class="window" data-title="Real Lisbon">
-			<p>A rough 3D Model of a part of the Portuguese city of Lisbon.</p>
+		<div class="window closed" data-title="Real Lisbon">
+			<p>A rough 3D model of a part of the Portuguese city of Lisbon.</p>
 			<p>The model was imported from Google Maps using a few tricks. To learn about this process, see <a href="https://www.youtube.com/watch?v=F_XsmoZJmG8">this</a> video and optionally also <a href="https://www.youtube.com/watch?v=XUkMY8Sp_AM">this</a> one.</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEG_DEq_i0zMIsKV_O_">Get it here</a> (Windows only for now)</p>
 			<p>To run, unzip and double click RealLisbon.exe</p>
@@ -76,6 +76,20 @@
 			<p><a id="showOpenGLPreview" href="javascript:void(0)">Click here to show/hide preview video</a></p>
 			<div id="openGLiframeDisplay"></div>
 		</div>
+		<div class="window closed" data-title="3D Sword">
+			<p>This is a scene developed by following <a href="https://www.youtube.com/watch?v=3QAGpxV36wM">these</a>
+				<a href="https://www.youtube.com/watch?v=e3GCEEUnHPs">great</a>
+				<a href="https://www.youtube.com/watch?v=s-XhO3OOPxQ">tutorials</a>.</p>
+			<p>Created and animated in Blender.</p>
+			<p><a id="showSwordRender" href="javascript:void(0)">Click here to show/hide preview video</a></p>
+			<div id="swordRenderiframeDisplay"></div>
+		</div>
+		<div class="window closed" data-title="3D Furniture">
+			<p>This is a set of table and chairs I created in Blender.</p>
+			<p>Textures from <a href="https://polyhaven.com/">Poly Haven</a>.</p>
+			<p><a id="showFurniturePreview" href="javascript:void(0)">Click here to show/hide preview image</a></p>
+			<div id="furnitureiframeDisplay"></div>
+		</div>
 		<div class="window" data-title="Welcome">
 			<h1>Hi</h1>
 			<p>Hello</p>
@@ -87,9 +101,6 @@
 			<hr />
 			<p>You can find a more detailed CV at <a href="https://www.linkedin.com/in/pnatario">linkedin.com/in/pnatario</a></p>
 		</div>
-		<!-- <div class="window closed" data-title="The unknown">
-			<i class="fas fa-question"></i><i class="fas fa-question"></i><i class="fas fa-question"></i>
-		</div> -->
 
 		<div id="taskbar">		
 		</div>
@@ -102,8 +113,9 @@
 			<a class="openWindow" data-id="2">Open Real Lisbon</a>
 			<a class="openWindow" data-id="3">Open 3D Windmill</a>
 			<a class="openWindow" data-id="4">Open OpenGL OpenStuff</a>
-			<a class="openWindow" data-id="5">Welcome Screen</a>
-			<!-- <a class="openWindow" data-id="6">Open window into the unknown</a>			 -->
+			<a class="openWindow" data-id="5">Open 3D Sword</a>
+			<a class="openWindow" data-id="6">Open 3D Furniture</a>
+			<a class="openWindow" data-id="7">Welcome Screen</a>
 		</div>
 		<!-- <div><a id="bgColorChanger">I don't like this background color</a></div>
 		<div><a id="bgColorReset">Actually I did</a></div> -->
@@ -150,6 +162,18 @@
 			$("#openGLiframeDisplay")[0].innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/jwyhpMkKtWA\" frameborder=\"0\" allowfullscreen></iframe>";
 			else
 			$("#openGLiframeDisplay")[0].innerHTML = "";
+		});
+		$("#showSwordRender").click(function() {
+			if($("#swordRenderiframeDisplay")[0].innerHTML.length == 0)
+			$("#swordRenderiframeDisplay")[0].innerHTML = "<iframe width=\"400\" height=\"225\" src=\"https://www.youtube.com/embed/8bLVXvPKd60\" frameborder=\"0\" allowfullscreen></iframe>";
+			else
+			$("#swordRenderiframeDisplay")[0].innerHTML = "";
+		});
+		$("#showFurniturePreview").click(function() {
+			if($("#furnitureiframeDisplay")[0].innerHTML.length == 0)
+			$("#furnitureiframeDisplay")[0].innerHTML = "<img width=500 src=\"img/furnitureRender.png\"></img>";
+			else
+			$("#furnitureiframeDisplay")[0].innerHTML = "";
 		});
 
 
