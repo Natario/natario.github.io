@@ -332,7 +332,19 @@ input,select{vertical-align:middle}
     transition: background-color .5s ease-out;
 }
 
-.preview {
+
+.previewText {
     margin-top: 20px;
     text-align: center;
 }
+
+.wincontent {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* .wincontent iframe{
+    flex-grow: 1;
+} */
+

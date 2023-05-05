@@ -163,7 +163,7 @@
 			// or, as the above (using the URL dl.dropboxusercontent.com to bypass CORS) is not fully supported (https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/CORS-Access-Control-Allow-Origin/m-p/336138/highlight/true#M19583),
 			// we can also use the code below (inspired by https://github.com/dropbox/dropbox-sdk-js/blob/main/examples/javascript/download/index.html)
 			// note that we first need to generate an ACCESS_TOKEN from https://www.dropbox.com/developers/apps
-			// THIS METHOD IS NOT SAFE FOR PRODUCTION - ACESS_TOKEN AND ACCESS TO MY OWN DROPBOX SHOULD BE KEPT PRIVATE
+			// THIS METHOD IS NOT SAFE FOR PRODUCTION - ACCESS_TOKEN AND ACCESS TO MY OWN DROPBOX SHOULD BE KEPT PRIVATE
 			// let fileLocation = '';
 			// var dbx = new Dropbox.Dropbox({ accessToken: "ACCESS_TOKEN" });
 			// await dbx.sharingGetSharedLinkFile({url: "https://www.dropbox.com/s/6lv8fc5a6hkpoj5/Windmill%20Course%20Animation.glb?dl=0"})
