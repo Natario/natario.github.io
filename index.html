@@ -11,29 +11,45 @@
 		gtag('config', 'G-F880MS4FD9');
 	</script>
 
+	<title>A window into Pedro Natário's world</title>
+
 	<meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 	<!-- favicon -  thanks to https://favicon.io/favicon-generator/ -->
 	<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-	<!-- JS and CSS -->
+
+	<!-- CSS -->
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="js/clippy.js/clippy.css" media="all"> <!-- could also use CDN: <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/clippyjs/clippy.js/build/clippy.css" media="all"> -->
+	<link rel="stylesheet" type="text/css" href="css/retroWindowsStyle.css" />
+	
+	<!-- JS -->
+	<!-- use 'import' statements without a js bundler - see e.g. https://github.com/mrdoob/three.js/blob/master/examples/webgl_test_memory.html-->
+	<!-- or even better https://threejs.org/docs/index.html#manual/en/introduction/Installation -->
+	<!-- also the importmap needs to be before all other js scripts, otherwise errors occur - see https://discourse.threejs.org/t/firefox-importmap-error-the-specifier-three-was-a-bare/48855 -->
+	<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+	<script type="importmap">
+		{
+			"imports": {
+				"detect-gpu": "https://unpkg.com/detect-gpu@5.0.22/dist/detect-gpu.esm.js",
+				"three": "https://unpkg.com/three@0.148.0/build/three.module.js",
+				"three/addons/": "https://unpkg.com/three@0.148.0/examples/jsm/"
+			}
+		}
+	</script>
+
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
-	<script src="js/retroWindowsScript.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/retroWindowsStyle.css" />
-	<link rel="stylesheet" type="text/css" href="js/clippy.js/clippy.css" media="all"> <!-- could also use CDN: <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/clippyjs/clippy.js/build/clippy.css" media="all"> -->
 	<script src="js/clippy.js/clippy.js"></script> <!-- could also use CDN: <script src="https://cdn.jsdelivr.net/gh/clippyjs/clippy.js/build/clippy.js"></script> -->
-	<script src="node_modules/three/build/three.js"></script>
-	<script src="node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
-	<script src="node_modules/three/examples/js/loaders/ColladaLoader.js"></script>
-	<script src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
-	<script src="node_modules/three/examples/js/objects/Sky.js"></script>
+	<script src="js/retroWindowsScript.js"></script>
 	<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
-	<title>A window into Pedro Natário's world</title>
+	<script type="module" src="js/homepage.js"></script>
+
 </head>
 <body>
 	<canvas id="bg" style="position: fixed; top: 0; left: 0; "></canvas>
@@ -74,7 +90,7 @@
 			<p>To run, unzip and double click Windmill_Course.exe.</p>
 			<p class="previewText">Preview video (change quality to HD)</p>
 			<iframe width="100%" height="90%" src="https://www.youtube.com/embed/GjrwO6EpYV0" frameborder="0" allowfullscreen></iframe>
-			<p>You can also see a lower-quality version <a href="windmillthreejs.html">online</a> (takes about 30secs to load)</p>
+			<p>You can also see a lower-quality version <a href="windmillthreejs.html">online</a> (takes about 30 seconds to load)</p>
 		</div>
 		<div class="window" data-title="OpenGL Racing">
 			<p>This is a simple Micro Machines-like game I developed during my Computer Science BSc using C+++OpenGL.</p>
@@ -103,7 +119,7 @@
 			<p class="previewText">
 				Click
 				<a href="javascript:void(0)" onclick="$(this).parent().next().toggle(); $(this).parent().next().next().toggle()">here</a>
-				to toggle between video (see in HD) and 3D model viewer (takes a few secs to load)
+				to toggle between video (see in HD) and 3D model viewer (lower quality; takes a few seconds to load)
 			</p>
 			<iframe width="100%" height="90%" src="https://www.youtube.com/embed/iZ7_w9ofCV4" frameborder="0" allowfullscreen></iframe>
 			<model-viewer style="display: none; height: 100%; width: 100%; z-index: 100;"
@@ -138,7 +154,7 @@
 			<a class="openWindow" data-id="7">Welcome Screen</a>
 		</div>
 		<div><a id="bg3d">Toggle 3D background!</a></div>
-		<!-- Only show these buttons if we won't be drawing the 3D background - see the async call in threejsBackground.js -->
+		<!-- Only show these buttons if we won't be drawing the 3D background - see the async call in homepageThreejsBackground.js -->
 		<!-- if we don't hide them by default, then while the visitor is waiting for the 3D scene, he will see the buttons temporarily -->
 		<div><a style="display: none;" id="bgColorChanger">I don't like this background color</a></div>
 		<div><a style="display: none;" id="bgColorReset">Actually I did</a></div>
@@ -146,101 +162,6 @@
 		<!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
 	</div>
 
-	<!-- use imports without a js bundler - from e.g. https://github.com/mrdoob/three.js/blob/master/examples/webgl_test_memory.html-->
-	<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
-	<script type="importmap">
-		{
-			"imports": {
-				"detect-gpu": "./node_modules/detect-gpu/dist/detect-gpu.esm.js"
-			}
-		}
-	</script>
-	<script type="module" src="js/threejsBackground.js"></script>
-
-	<script type="module">
-
-		import toggle from './js/threejsBackground.js';
-		
-
-		/*
-		 * Toggle threejs background scene
-		 */		
-		$("#bg3d").click(function(event) {
-			toggle();
-		});
-
-
-
-		/*
-		 * Show Clippy
-		 */
-		clippy.load('Clippy', function(agent) {
-			agent.show();
-			// run a random animation every 60 secs
-			setInterval(function() {
-				agent.animate()
-			}, 60 * 1000); //
-		});
-
-
-		// show little "ok" text where a click happens - https://stackoverflow.com/a/60837378/3174659
-		function showOkText() {
-			// get mouse (event) location
-			var x = event.clientX;
-			var y = event.clientY;
-			
-			// create element to add, but first remove it if it exists already from a previous click
-			if($("#okText").length > 0)
-				$("#okText")[0].remove();
-			var newthing = document.createElement("div");
-			newthing.id = "okText";
-			newthing.style.position = "fixed";
-			newthing.style.left = x - 20 + "px";
-			newthing.style.top = y + 20 + "px";
-			newthing.innerText = "OK!";
-			$("#desktop")[0].appendChild(newthing);
-			
-			// remove "ok" text after a while so it doesn't stay there forever - https://stackoverflow.com/a/820954/3174659
-			clearTimeout(timeoutID); // reset timeout from previous click
-			timeoutID = setTimeout(function() {
-				$('#okText').fadeOut('fast');
-			}, 1000);
-		}
-
-
-		/*
-		 * Change background color on user click
-		 */
-		var timeoutID = undefined;
-		$("#bgColorChanger").click(function(event) {
-
-			showOkText()
-			
-			// change color (from Kirupa Chinnathambi - Creating Web Animations (2017))
-			var zeros = "0000000";
-			var color = "#" + Math.floor(Math.random() * 0xFFFFFF).toString(16);
-			var colorLength = color.length;
-			if (colorLength < 7) {
-				color += zeros.substring(0, zeros.length - colorLength);
-			}
-			$("#desktop")[0].style.backgroundColor = color;
-
-			$("#bgColorChanger").hide();
-			$("#bgColorReset").show();
-		});
-
-		// Reset color on user click
-		$("#bgColorReset").click(function() {
-
-			showOkText()
-
-			$("#desktop")[0].style.backgroundColor = "#CCC";
-
-			$("#bgColorChanger").show();
-			$("#bgColorReset").hide();
-		});
-
-	</script>
 </body>
 
 </html>

@@ -15,24 +15,30 @@
 		<meta http-equiv="x-ua-compatible" content="ie=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>My three.js tests</title>
+		
 		<!-- favicon - https://favicon.io/favicon-generator/ -->
 		<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-		<!-- JS and CSS -->
+		
+		<!-- CSS -->
         <link rel="stylesheet" href="css/stylestests.css" />
-		<script src="node_modules/three/build/three.js"></script>
-		<script src="node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
-		<script src="node_modules/three/examples/js/loaders/FBXLoader.js"></script>
-		<script src="node_modules/three/examples/js/libs/fflate.min.js"></script>
-		<script src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
-		<script src="node_modules/three/examples/js/loaders/FontLoader.js"></script>
-		<script src="node_modules/three/examples/js/geometries/TextGeometry.js"></script>
-		<script src="node_modules/three/examples/js/objects/Reflector.js"></script>
-		<script src="node_modules/three/examples/js/objects/Sky.js"></script>
-		<script src="node_modules/three/examples/js/libs/stats.min.js"></script>
+		
+		<!-- JS -->
+		<!-- use 'import' statements without a js bundler - see comments in index.html -->
+		<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.148.0/build/three.module.js",
+					"three/addons/": "https://unpkg.com/three@0.148.0/examples/jsm/"
+				}
+			}
+		</script>
+		
 		<!-- script to get big files from Dropbox (see code below) instead of locally (Github max file size is 25MB) -->
 		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
+
 	</head>
 	<body>
 		<p style="margin-left: 100px;">
@@ -53,9 +59,17 @@
 		<!-- <button id="reset-camera">Reset camera</button> -->
 		<!-- <button id="auto-rotate">Auto rotate</button>
 		Auto rotate speed: <input type="range" id="auto-rotate-speed" min="-10" max="10" value="2" step="1" autocomplete="off"> -->
-		<script>
+		<script type="module">
 
-
+			import * as THREE from 'three';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+			import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+			import { Reflector } from 'three/addons/objects/Reflector.js';
+			import { Sky } from 'three/addons/objects/Sky.js';
+			import Stats from 'three/addons/libs/stats.module.js'; // this import needs to be different: https://stackoverflow.com/a/62753240/3174659
 
 
 
@@ -131,7 +145,7 @@
 			// scene.add( helper );
 
 			// OrbitControls
-			const controls = new THREE.OrbitControls( camera, renderer.domElement );
+			const controls = new OrbitControls( camera, renderer.domElement );
 			controls.enablePan = false; // if pan is enabled, the target object moves with the pan!
 
 			// controls.addEventListener('change', () => {
@@ -165,7 +179,7 @@
 			scene.add( hemiLight );
 			
 			// Sky with sun - https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_ocean.html and https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_sky.html
-			const sky = new THREE.Sky();
+			const sky = new Sky();
 			sky.scale.setScalar( 10000 );
 			sky.material.uniforms[ 'sunPosition' ].value = directionalLight.position;
 			sky.material.uniforms[ 'rayleigh' ].value = 1;
@@ -238,7 +252,7 @@
 			
 			// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
 			const mirrorGeometry = new THREE.PlaneGeometry( 10, 3 );
-			verticalMirror = new THREE.Reflector( mirrorGeometry, {
+			const verticalMirror = new Reflector( mirrorGeometry, {
 				clipBias: 0.003,
 				textureWidth: window.innerWidth * window.devicePixelRatio,
 				textureHeight: window.innerHeight * window.devicePixelRatio,
@@ -402,12 +416,14 @@
 			}
 
 
-			const fontLoader = new THREE.FontLoader();
-			// let textGeometry = {}, textMaterial = {}, textMesh = {};
-			// fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+			const fontLoader = new FontLoader();
+			let textGeometry = {}, textMaterial = {}, textMesh = {};
+
+			// "Checkpoint" label above checkpoints - not really needed...
+			// fontLoader.load( 'https://unpkg.com/three@0.148.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
 			// 	for (let i = 0; i < checkpointArray.length; i++) {
-			// 		// textGeometry = new THREE.TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
-			// 		textGeometry = new THREE.TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
+			// 		// textGeometry = new TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
+			// 		textGeometry = new TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
 			// 		textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
 			// 		textMesh = new THREE.Mesh( textGeometry, textMaterial );
 			// 		// textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2;
@@ -417,17 +433,28 @@
 			// 	}
 			// });
 
+			// Loading... text
+			fontLoader.load( 'https://unpkg.com/three@0.148.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+				textGeometry = new TextGeometry( 'Loading 3D models...', {font: font, size: 0.5, height: 0.2, curveSegments: 2} );
+				textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
+				textMesh = new THREE.Mesh( textGeometry, textMaterial );
+				textMesh.position.y = 1;
+				textMesh.position.x = VEHICLE_INITIAL_POSITION[currentVehicle].x-2;
+				textMesh.position.z = VEHICLE_INITIAL_POSITION[currentVehicle].z-7;
+				scene.add( textMesh );
+			});
+
 
 			
 			// Loaders for 3D models and text
-			const GLTFLoader = new THREE.GLTFLoader();
-			const FBXLoader = new THREE.FBXLoader();
+			const gltfLoader = new GLTFLoader();
+			const fbxLoader = new FBXLoader();
 			let miscModels = [];
 			let vehicleModel;
 			let mixer;
 			const clock = new THREE.Clock(); // clock for animation
 			const timer = new THREE.Clock(); // level timer
-			GLTFLoader.load( 'img/OlmecHead.glb', function ( gltf ) {
+			gltfLoader.load( 'img/OlmecHead.glb', function ( gltf ) {
 				const obstacleModel = gltf.scene;
 				obstacleModel.scale.setScalar(OBSTACLE_SCALE);
 				// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
@@ -460,7 +487,7 @@
 				let spawnRotation = vehicleModel ? vehicleModel.rotation.y : Math.PI;
 
 				if(currentVehicle == 0) {
-					GLTFLoader.load( VEHICLE_FILEPATHS[currentVehicle], function ( gltf ) {
+					gltfLoader.load( VEHICLE_FILEPATHS[currentVehicle], function ( gltf ) {
 						// console.log(gltf);
 						vehicleModel = gltf.scene;
 						vehicleModel.scale.setScalar(VEHICLE_SCALE[currentVehicle]);
@@ -474,7 +501,7 @@
 						// }
 					});
 				} else if(currentVehicle == 1) {
-					FBXLoader.load( VEHICLE_FILEPATHS[currentVehicle], function ( fbx ) {
+					fbxLoader.load( VEHICLE_FILEPATHS[currentVehicle], function ( fbx ) {
 						// console.log(fbx);
 						vehicleModel = fbx;
 						vehicleModel.scale.setScalar(VEHICLE_SCALE[currentVehicle]);
@@ -488,17 +515,6 @@
 
 			spawnVehicle();
 
-			
-			// Loading... text
-			fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
-				textGeometry = new THREE.TextGeometry( 'Loading 3D models...', {font: font, size: 0.5, height: 0.2, curveSegments: 2} );
-				textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
-				textMesh = new THREE.Mesh( textGeometry, textMaterial );
-				textMesh.position.y = 1;
-				textMesh.position.x = VEHICLE_INITIAL_POSITION[currentVehicle].x-2;
-				textMesh.position.z = VEHICLE_INITIAL_POSITION[currentVehicle].z-7;
-				scene.add( textMesh );
-			});
 			
 			
 			
@@ -551,6 +567,7 @@
 				const boundingBoxesWalls = [];
 				const boundingBoxesCheckpoints = [];
 				let boundingBoxFinish = {};
+				let boundingBoxHurdle = {};
 				const boundingBoxesVehicle = [];
 				const boundingBoxesSpheresHelpers = [];
 				const boundingBoxesModelsHelpers = [];

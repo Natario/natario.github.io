@@ -15,18 +15,27 @@
 		<meta http-equiv="x-ua-compatible" content="ie=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>My windmill</title>
+		
 		<!-- favicon - https://favicon.io/favicon-generator/ -->
 		<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-		<!-- JS and CSS -->
+		
+		<!-- CSS -->
         <link rel="stylesheet" href="css/stylestests.css" />
-		<script src="node_modules/three/build/three.js"></script>
-		<script src="node_modules/three/examples/js/loaders/GLTFLoader.js"></script>
-		<script src="node_modules/three/examples/js/controls/OrbitControls.js"></script>
-		<script src="node_modules/three/examples/js/loaders/FontLoader.js"></script>
-		<script src="node_modules/three/examples/js/geometries/TextGeometry.js"></script>
-		<script src="node_modules/three/examples/js/objects/Sky.js"></script>
+
+		<!-- JS -->
+		<!-- use 'import' statements without a js bundler - see comments in index.html -->
+		<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "https://unpkg.com/three@0.148.0/build/three.module.js",
+					"three/addons/": "https://unpkg.com/three@0.148.0/examples/jsm/"
+				}
+			}
+		</script>
+		
 		<!-- script to get big files from Dropbox (see code below) instead of locally (Github max file size is 25MB) -->
 		<!-- <script src="https://cdn.jsdelivr.net/npm/dropbox@10.34.0/dist/Dropbox-sdk.js"></script> -->
 	</head>
@@ -34,7 +43,14 @@
 		<p><a href="index.html">Back home</a></p>
 		<p>Left click to orbit, right click to pan, scroll to zoom.</p>
 		<div id="three-container"></div>
-		<script>
+		<script type="module">
+
+			import * as THREE from 'three';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+			import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+			import { Sky } from 'three/addons/objects/Sky.js';
 
 			//			
 			// SCENE SETUP
@@ -68,7 +84,7 @@
 			// scene.add( helper );
 
 			// OrbitControls
-			const controls = new THREE.OrbitControls( camera, renderer.domElement );
+			const controls = new OrbitControls( camera, renderer.domElement );
 
 			// Floor
 			const textureLoader = new THREE.TextureLoader();
@@ -135,7 +151,7 @@
 			// scene.add( hemiLight );
 
 			// Sky with sun - https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_ocean.html and https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_sky.html
-			const sky = new THREE.Sky();
+			const sky = new Sky();
 			sky.scale.setScalar( 10000 );
 			sky.material.uniforms[ 'sunPosition' ].value = directionalLight.position;
 			sky.material.uniforms[ 'rayleigh' ].value = 1;
@@ -152,7 +168,7 @@
 			//
 
 			// GLTFLoader for 3D models
-			const loader = new THREE.GLTFLoader();
+			const loader = new GLTFLoader();
 			let model;
 			let mixer;
 			// let fileLocation = 'img/Windmill Course Animation.glb';
@@ -188,9 +204,9 @@
 
 
 			// Loading... text
-			const fontLoader = new THREE.FontLoader();
-			fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
-				const textGeometry = new THREE.TextGeometry( 'Loading 3D model...', {
+			const fontLoader = new FontLoader();
+			fontLoader.load( 'https://unpkg.com/three@0.148.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+				const textGeometry = new TextGeometry( 'Loading 3D model...', {
 					font: font,
 					size: 0.5,
 					height: 0.2,
