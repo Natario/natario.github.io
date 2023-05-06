@@ -307,10 +307,20 @@ input,select{vertical-align:middle}
     transform: rotate(3deg);
 } */
 
-#bgColorChanger {
+#bg3d {
     position: absolute;
     right:20px;
     top: 20px;
+    cursor: pointer;
+}
+#bg3d:hover {
+    background: #000;
+	color: #FFF;
+}
+#bgColorChanger {
+    position: absolute;
+    right:20px;
+    top: 60px;
     cursor: pointer;
 }
 #bgColorChanger:hover {
@@ -320,13 +330,14 @@ input,select{vertical-align:middle}
 #bgColorReset {
     position: absolute;
     right:20px;
-    top: 40px;
+    top: 80px;
     cursor: pointer;
 }
 #bgColorReset:hover {
     background: #000;
 	color: #FFF;
 }
+
 
 #desktop {
     transition: background-color .5s ease-out;

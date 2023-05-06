@@ -137,12 +137,39 @@
 			<a class="openWindow" data-id="6">Open 3D Furniture</a>
 			<a class="openWindow" data-id="7">Welcome Screen</a>
 		</div>
-		<!-- <div><a id="bgColorChanger">I don't like this background color</a></div>
-		<div><a id="bgColorReset">Actually I did</a></div> -->
+		<div><a id="bg3d">Toggle 3D background!</a></div>
+		<!-- Only show these buttons if we won't be drawing the 3D background - see the async call in threejsBackground.js -->
+		<!-- if we don't hide them by default, then while the visitor is waiting for the 3D scene, he will see the buttons temporarily -->
+		<div><a style="display: none;" id="bgColorChanger">I don't like this background color</a></div>
+		<div><a style="display: none;" id="bgColorReset">Actually I did</a></div>
 		<div id="shoutOuts" class="preserveSpace">Thanks to <a href="https://threejs.org/">three.js</a>, <a href="https://html5-templates.com/" rel="nofollow">HTML5-Templates.com</a>, <a href="https://www.smore.com/clippy-js">smore</a>, and all the other great people on the web.</div>
 		<!-- You can use this template freely if you leave a visible link to HTML5-Templates.com -->
 	</div>
-	<script type="text/javascript">
+
+	<!-- use imports without a js bundler - from e.g. https://github.com/mrdoob/three.js/blob/master/examples/webgl_test_memory.html-->
+	<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+	<script type="importmap">
+		{
+			"imports": {
+				"detect-gpu": "./node_modules/detect-gpu/dist/detect-gpu.esm.js"
+			}
+		}
+	</script>
+	<script type="module" src="js/threejsBackground.js"></script>
+
+	<script type="module">
+
+		import toggle from './js/threejsBackground.js';
+		
+
+		/*
+		 * Toggle threejs background scene
+		 */		
+		$("#bg3d").click(function(event) {
+			toggle();
+		});
+
+
 
 		/*
 		 * Show Clippy
@@ -156,14 +183,8 @@
 		});
 
 
-		
-		/*
-		 * Change background color on user click
-		 */
-		var timeoutID = undefined;
-		$("#bgColorChanger").click(function(event) {
-			
-			// show little "ok" text where the click happened - https://stackoverflow.com/a/60837378/3174659
+		// show little "ok" text where a click happens - https://stackoverflow.com/a/60837378/3174659
+		function showOkText() {
 			// get mouse (event) location
 			var x = event.clientX;
 			var y = event.clientY;
@@ -174,8 +195,8 @@
 			var newthing = document.createElement("div");
 			newthing.id = "okText";
 			newthing.style.position = "fixed";
-			newthing.style.left = x + "px";
-			newthing.style.top = y + 30 + "px";
+			newthing.style.left = x - 20 + "px";
+			newthing.style.top = y + 20 + "px";
 			newthing.innerText = "OK!";
 			$("#desktop")[0].appendChild(newthing);
 			
@@ -184,6 +205,16 @@
 			timeoutID = setTimeout(function() {
 				$('#okText').fadeOut('fast');
 			}, 1000);
+		}
+
+
+		/*
+		 * Change background color on user click
+		 */
+		var timeoutID = undefined;
+		$("#bgColorChanger").click(function(event) {
+
+			showOkText()
 			
 			// change color (from Kirupa Chinnathambi - Creating Web Animations (2017))
 			var zeros = "0000000";
@@ -193,153 +224,20 @@
 				color += zeros.substring(0, zeros.length - colorLength);
 			}
 			$("#desktop")[0].style.backgroundColor = color;
+
+			$("#bgColorChanger").hide();
+			$("#bgColorReset").show();
 		});
 
 		// Reset color on user click
 		$("#bgColorReset").click(function() {
+
+			showOkText()
+
 			$("#desktop")[0].style.backgroundColor = "#CCC";
-		});
 
-
-
-		/*
-		 * Three.js background - https://www.youtube.com/watch?v=Q7AOvWpIVHU
-		 * basically I just took the idea of using a three.js scene covering the whole background (using position: fixed) and not all the other animations
-		 */
-
-		// SETUP
-		const scene = new THREE.Scene();
-		// scene.background = new THREE.Color( 'dodgerblue' );
-		// scene.background = new THREE.TextureLoader().load('img/clouds2.jpg');
-		
-		const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
-		camera.position.z = 26;
-
-		const renderer = new THREE.WebGLRenderer({canvas: document.querySelector('#bg')});
-		renderer.setPixelRatio(window.devicePixelRatio);
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		renderer.render(scene, camera);
-
-		const controls = new THREE.OrbitControls( camera, renderer.domElement );
-
-		// const axesHelper = new THREE.AxesHelper( 100 );
-		// scene.add(axesHelper);
-		
-
-		// LIGHTS AND SKY
-		// const ambientLight = new THREE.AmbientLight( 0x404040, 4); // soft white light
-		// scene.add( ambientLight );
-		
-		// const directionalLight = new THREE.DirectionalLight('white', 3);
-		// directionalLight.position.set(0, 30, 100);
-		// scene.add(directionalLight);
-		
-		const spotLight = new THREE.SpotLight('white', 5, 400, Math.PI / 2.4);
-		spotLight.position.set(2, 8, 10);
-		spotLight.target.position.set(2, -10, 0);
-		scene.add(spotLight);
-		const spotLightHelper = new THREE.SpotLightHelper( spotLight );
-		spotLightHelper.visible = false; // have to hide it this way because if I remove the code for the spotLightHelper, then I can't move the spotlight...
-		scene.add( spotLightHelper );
-		
-		const sky = new THREE.Sky();
-		sky.scale.setScalar( 10000 );
-		sky.material.uniforms[ 'sunPosition' ].value.set(0,3,10);
-		sky.material.uniforms[ 'rayleigh' ].value = 1;
-		sky.material.uniforms[ 'turbidity' ].value = 5;
-		sky.material.uniforms[ 'mieCoefficient' ].value = 0.01;
-		sky.material.uniforms[ 'mieDirectionalG' ].value = 0.9;
-		scene.add( sky );
-
-		// Skybox to use instead of THREE.Sky() - https://r105.threejsfundamentals.org/threejs/lessons/threejs-backgrounds.html
-		// const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-		// const textureLoader = new THREE.TextureLoader();
-		// const material = new THREE.MeshStandardMaterial( {map: textureLoader.load('img/sky_seamless2.jpg')} );
-		// material.side = THREE.BackSide;
-		// const cube = new THREE.Mesh( geometry, material );
-		// cube.scale.setScalar(1500);
-		// scene.add(cube);
-
-
-		// OBJECTS
-		const gltfLoader = new THREE.GLTFLoader();
-		const colladaLoader = new THREE.ColladaLoader();
-		let model, model2;
-		//
-		// TO use FBXLoader, we need to also include "three/examples/js/libs/fflate.min.js"
-		// BUT even with that extra lib, the GLTFLoader (.gltf/.glb) and the ColladaLoader (.dae) seem to work better.
-		// 
-		// HOWEVER, for .glb models that throw the error "THREE.GLTFLoader: Unknown extension "KHR_materials_pbrSpecularGlossiness"."
-		// we need to remove that extension from the model by importing and then exporting the model at https://gltf.report/
-		// For details about three.js's deprecation of this extension see https://github.com/mrdoob/three.js/pull/24950
-		// and see also the tool author's explanation at https://www.donmccurdy.com/2022/11/28/converting-gltf-pbr-materials-from-specgloss-to-metalrough/
-		// 
-		// ALSO, for .dae files we EITHER need to remove white lines with:
-		// "model2.children[0].children.forEach(child => { if(child.type == "LineSegments")child.visible = false; });"
-		// OR use a tool like https://imagetostl.com/convert/file/dae/to/glb to convert .dae to .glb and import with GLTFLoader
-		//
-		gltfLoader.load( 'img/mount_rough.glb', function ( file ) {
-			// console.log(file);
-			model = file.scene;
-			model2 = model.clone();
-			model.scale.set(0.2,0.075,0.1);
-			model.position.x = 0;
-			model.position.y = -5;
-			model2.scale.set(0.2,0.12,0.2);
-			model2.position.x = 55;
-			model2.position.y = -10;
-			model2.position.z = -50;
-			scene.add(model, model2);
-		});
-		// gltfLoader.load( 'img/win2.glb', function ( file ) {
-		// 	// console.log(file);
-		// 	model2 = file.scene;
-		// 	model2.position.x = 7;
-		// 	model2.position.y = 2.5;
-		// 	model2.position.z = 15;
-		// 	model2.scale.setScalar(0.5);
-		// 	model2.rotation.y = -0.15;
-		// 	scene.add(model2);
-		// });
-		// colladaLoader.load( 'img/hill.dae', function ( file ) {
-		// 	console.log(file);
-		// 	model2 = file.scene;
-		// 	model2.children[0].children.forEach(child => {
-		// 		if(child.type == "LineSegments")
-		// 			child.visible = false;
-		// 	});
-		// 	model2.position.y = 10;
-		// 	model2.scale.setScalar( 0.01 );
-		// 	scene.add( model2 );
-		// });
-		
-
-		// ANIMATIONS AND UPDATES
-		function animate() {
-			requestAnimationFrame(animate);
-			// if(model2)model2.rotation.y = Math.sin(Date.now() * 0.003) * Math.PI * 0.02; // https://stackoverflow.com/a/40971141/3174659
-			controls.update();
-			renderer.render(scene, camera);
-		}
-		animate();
-
-		// Resize scene on window resize - https://discoverthreejs.com/book/first-steps/responsive-design/
-		window.addEventListener("resize", () => {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setPixelRatio(window.devicePixelRatio);
-
-			// do not stretch background image when resizing window - https://stackoverflow.com/a/60842693/3174659
-			// const targetAspect = window.innerWidth / window.innerHeight;
-			// const imageAspect = 1920 / 1277;
-			// const factor = imageAspect / targetAspect;
-			// // When factor larger than 1, that means texture 'wilder' than target. We should scale texture height to target height and then 'map' the center of texture to target，and vice versa.
-			// scene.background.offset.x = factor > 1 ? (1 - 1 / factor) / 2 : 0;
-			// scene.background.repeat.x = factor > 1 ? 1 / factor : 1;
-			// scene.background.offset.y = factor > 1 ? 0 : (1 - factor) / 2;
-			// scene.background.repeat.y = factor > 1 ? 1 : factor;
+			$("#bgColorChanger").show();
+			$("#bgColorReset").hide();
 		});
 
 	</script>
