@@ -26,12 +26,12 @@
 
 		<!-- JS -->
 		<!-- use 'import' statements without a js bundler - see comments in index.html -->
-		<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+		<script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "https://unpkg.com/three@0.148.0/build/three.module.js",
-					"three/addons/": "https://unpkg.com/three@0.148.0/examples/jsm/"
+					"three": "https://cdn.jsdelivr.net/npm/three@0.152/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152/examples/jsm/"
 				}
 			}
 		</script>
@@ -59,7 +59,13 @@
 			// Renderer
 			const renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setSize( window.innerWidth*.8, window.innerHeight*.8 );
-			renderer.physicallyCorrectLights = true;
+			
+			renderer.useLegacyLights = false;
+			// renderer.physicallyCorrectLights= true; // pre r150
+
+			// new default was making colors washed out, so revert to pre r152 colors - see https://github.com/mrdoob/three.js/pull/25783 (and maybe https://discourse.threejs.org/t/updates-to-color-management-in-three-js-r152/50791)
+			renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
 			document.querySelector('#three-container').appendChild( renderer.domElement );
 
 			// Scene
@@ -122,7 +128,7 @@
 			
 
 			// Lights
-			const directionalLight = new THREE.DirectionalLight('white', 5);
+			const directionalLight = new THREE.DirectionalLight('white', 10);
 			directionalLight.position.set(10, 5, 10);
 			scene.add(directionalLight);
 			// const directionalLight2 = new THREE.DirectionalLight('white', 7);
@@ -191,21 +197,29 @@
 			const clock = new THREE.Clock(); // clock for animation
 			let textMesh = {}; // loading text to remove when windmill finishes loading
 			loader.load( fileLocation, function ( gltf ) {
-				// console.log(gltf);
-				model = gltf.scene;
-				model.position.x = 5;
-				// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
-				mixer = new THREE.AnimationMixer( model );
-				const action = mixer.clipAction( gltf.animations[ 0 ] );
-				action.play();
-				scene.add( model );
-				scene.remove( textMesh );
-			});
+					// console.log(gltf);
+					model = gltf.scene;
+					model.position.x = 5;
+					// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
+					mixer = new THREE.AnimationMixer( model );
+					const action = mixer.clipAction( gltf.animations[ 0 ] );
+					action.play();
+					scene.add( model );
+					scene.remove( textMesh );
+				},
+				// (xhr) => {
+				// 	// This only works if the server where the model is hosted returns a
+				// 	// Content-Length header... see https://threejs.org/docs/#examples/en/loaders/GLTFLoader.load
+				// 	// Unfortunately Dropbox doesn't return this header (OneDrive seems not to either - besides the CORS issue)
+				// 	if(xhr.total != 0)
+				// 		console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+				// }
+			);
 
 
 			// Loading... text
 			const fontLoader = new FontLoader();
-			fontLoader.load( 'https://unpkg.com/three@0.148.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+			fontLoader.load( 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
 				const textGeometry = new TextGeometry( 'Loading 3D model...', {
 					font: font,
 					size: 0.5,

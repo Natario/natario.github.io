@@ -150,35 +150,44 @@ function toggle() {
         // scene.background = new THREE.Color( 'dodgerblue' );
         // scene.background = new THREE.TextureLoader().load('img/clouds2.jpg');
         
+
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.z = 26;
+
 
         renderer = new THREE.WebGLRenderer({canvas: document.querySelector('#bg')});
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.render(scene, camera);
 
+        renderer.useLegacyLights = false;
+		// renderer.physicallyCorrectLights= true; // pre r150
+
+        renderer.outputColorSpace = THREE.LinearSRGBColorSpace; // revert to pre r152 colors - https://github.com/mrdoob/three.js/pull/25783
+
+        
         const controls = new OrbitControls( camera, renderer.domElement );
 
+        
         // const axesHelper = new THREE.AxesHelper( 100 );
         // scene.add(axesHelper);
         
 
         // LIGHTS AND SKY
-        // const ambientLight = new THREE.AmbientLight( 0x404040, 4); // soft white light
-        // scene.add( ambientLight );
+        const ambientLight = new THREE.AmbientLight( 0x404040, 50); // soft white light
+        scene.add( ambientLight );
         
-        // const directionalLight = new THREE.DirectionalLight('white', 3);
-        // directionalLight.position.set(0, 30, 100);
-        // scene.add(directionalLight);
+        const directionalLight = new THREE.DirectionalLight('white', 15);
+        directionalLight.position.set(0, 30, 100);
+        scene.add(directionalLight);
         
-        const spotLight = new THREE.SpotLight('white', 5, 400, Math.PI / 2.4);
-        spotLight.position.set(2, 8, 10);
-        spotLight.target.position.set(2, -10, 0);
-        scene.add(spotLight);
-        const spotLightHelper = new THREE.SpotLightHelper( spotLight );
-        spotLightHelper.visible = false; // have to hide it this way because if I remove the code for the spotLightHelper, then I can't move the spotlight...
-        scene.add( spotLightHelper );
+        // const spotLight = new THREE.SpotLight('white', 500, 400, Math.PI / 2.4);
+        // spotLight.position.set(2, 8, 10);
+        // spotLight.target.position.set(2, -10, 0);
+        // scene.add(spotLight);
+        // const spotLightHelper = new THREE.SpotLightHelper( spotLight );
+        // spotLightHelper.visible = false; // have to hide it this way because if I remove the code for the spotLightHelper, then I can't move the spotlight...
+        // scene.add( spotLightHelper );
         
         const sky = new Sky();
         sky.scale.setScalar( 10000 );
@@ -227,6 +236,11 @@ function toggle() {
             model2.position.x = 55;
             model2.position.y = -10;
             model2.position.z = -50;
+            // edit each material for this mesh - doesn't seem to have any effect...
+            // model.children[0].children[0].children[0].children[0].children.forEach(element => {
+            //     element.material.specularIntensity = 0.5;
+            // });
+            // console.log(model.children[0].children[0].children[0].children[0].children)
             scene.add(model, model2);
         });
         // gltfLoader.load( 'img/win2.glb', function ( file ) {

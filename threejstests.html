@@ -26,12 +26,12 @@
 		
 		<!-- JS -->
 		<!-- use 'import' statements without a js bundler - see comments in index.html -->
-		<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+		<script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
 		<script type="importmap">
 			{
 				"imports": {
-					"three": "https://unpkg.com/three@0.148.0/build/three.module.js",
-					"three/addons/": "https://unpkg.com/three@0.148.0/examples/jsm/"
+					"three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js",
+					"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/"
 				}
 			}
 		</script>
@@ -120,9 +120,16 @@
 			const renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setSize( window.innerWidth*.9, window.innerHeight*.9 );
 			renderer.setPixelRatio(window.devicePixelRatio);
-			renderer.physicallyCorrectLights = true;
+			
+			renderer.useLegacyLights = false;
+			// renderer.physicallyCorrectLights= true; // pre-r150			
+
+			// new default was making colors washed out, so revert to pre r152 colors - see https://github.com/mrdoob/three.js/pull/25783 (and maybe https://discourse.threejs.org/t/updates-to-color-management-in-three-js-r152/50791)
+			renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
 			document.querySelector('#three-container').appendChild( renderer.domElement );
 
+			
 			// Scene
 			const scene = new THREE.Scene();
 			scene.background = new THREE.Color('skyblue');
@@ -162,19 +169,19 @@
 
 
 			// Lights
-			const directionalLight = new THREE.DirectionalLight('white', 2);
+			const directionalLight = new THREE.DirectionalLight('white', 4);
 			directionalLight.position.set(100, 100, 100);
 			scene.add(directionalLight);
 			// const helper = new THREE.DirectionalLightHelper( directionalLight, 5 );
 			// scene.add( helper );
 			
-			// const ambientLight = new THREE.AmbientLight( 0x404040, 3); // soft white light
+			// const ambientLight = new THREE.AmbientLight( 0x404040, 40); // soft white light
 			// scene.add( ambientLight );
 		
 			const hemiLight = new THREE.HemisphereLight(
 				'white', // bright sky color
 				'lightgrey', // dim ground color
-				3, // intensity
+				2, // intensity
 			);
 			scene.add( hemiLight );
 			
@@ -420,7 +427,7 @@
 			let textGeometry = {}, textMaterial = {}, textMesh = {};
 
 			// "Checkpoint" label above checkpoints - not really needed...
-			// fontLoader.load( 'https://unpkg.com/three@0.148.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+			// fontLoader.load( 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
 			// 	for (let i = 0; i < checkpointArray.length; i++) {
 			// 		// textGeometry = new TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
 			// 		textGeometry = new TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
@@ -434,7 +441,7 @@
 			// });
 
 			// Loading... text
-			fontLoader.load( 'https://unpkg.com/three@0.148.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+			fontLoader.load( 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
 				textGeometry = new TextGeometry( 'Loading 3D models...', {font: font, size: 0.5, height: 0.2, curveSegments: 2} );
 				textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
 				textMesh = new THREE.Mesh( textGeometry, textMaterial );
@@ -502,14 +509,19 @@
 					});
 				} else if(currentVehicle == 1) {
 					fbxLoader.load( VEHICLE_FILEPATHS[currentVehicle], function ( fbx ) {
-						// console.log(fbx);
-						vehicleModel = fbx;
-						vehicleModel.scale.setScalar(VEHICLE_SCALE[currentVehicle]);
-						vehicleModel.rotation.y = spawnRotation;
-						vehicleModel.position.copy(spawnPosition);
-						scene.add( vehicleModel );
-						scene.add(camera);
-					});
+							// console.log(fbx);
+							vehicleModel = fbx;
+							vehicleModel.scale.setScalar(VEHICLE_SCALE[currentVehicle]);
+							vehicleModel.rotation.y = spawnRotation;
+							vehicleModel.position.copy(spawnPosition);
+							scene.add( vehicleModel );
+							scene.add(camera);
+						},
+						// (xhr) => {
+						// 	if(xhr.total != 0)
+						// 		console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+						// }
+					);
 				}
 			}
 
