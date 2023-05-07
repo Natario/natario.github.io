@@ -12,7 +12,7 @@ import { Sky } from 'three/addons/objects/Sky.js';
 /*
  * Toggle threejs background scene
  */		
-$("#bg3d").click(function(event) {
+$("#bg3d").on('click', function(event) {
     toggle();
 });
 
@@ -60,7 +60,7 @@ function showOkText() {
  * Change background color on user click
  */
 var timeoutID = undefined;
-$("#bgColorChanger").click(function(event) {
+$("#bgColorChanger").on('click', function(event) {
 
     showOkText()
     
@@ -81,7 +81,7 @@ $("#bgColorChanger").click(function(event) {
 /*
  * Reset color on user click
  */
-$("#bgColorReset").click(function() {
+$("#bgColorReset").on('click', function() {
 
     showOkText()
 

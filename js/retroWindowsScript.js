@@ -97,19 +97,19 @@ $(document).ready(function(){
 	$( ".window" ).draggable({ cancel: ".wincontent" });	// draggable
 	
 
-    $(".window").mousedown(function(){		// active window on top (z-index 1000)
+    $(".window").on('mousedown', function(){		// active window on top (z-index 1000)
 		makeWindowActive($(this).attr("data-id"));
     });
 	
-    $(".winclose").click(function(){		// close window
+    $(".winclose").on('click', function(){		// close window
 		closeWindwow($(this).parent().parent().attr("data-id"));
     });	
 
-    $(".winminimize").click(function(){		// minimize window
+    $(".winminimize").on('click', function(){		// minimize window
 		minimizeWindow($(this).parent().parent().attr("data-id"));
     });	
 	
-    $(".taskbarPanel").click(function(){		// taskbar click
+    $(".taskbarPanel").on('click', function(){		// taskbar click
 		id = $(this).attr("data-id");
 		if ($(this).hasClass("activeTab")) {	// minimize if active
 			minimizeWindow($(this).attr("data-id"));
@@ -122,11 +122,11 @@ $(document).ready(function(){
 		}
     });	
 	
-    $(".openWindow").click(function(){		// open closed window
+    $(".openWindow").on('click', function(){		// open closed window
 		openWindow($(this).attr("data-id"));
     });
 	
-    $(".winmaximize").click(function(){
+    $(".winmaximize").on('click', function(){
 		if ($(this).parent().parent().hasClass('fullSizeWindow')) {			// minimize
 			
 			$(this).parent().parent().removeClass('fullSizeWindow');
