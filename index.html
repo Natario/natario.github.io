@@ -26,6 +26,10 @@
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" href="js/clippy.js/clippy.css" media="all"> <!-- could also use CDN: <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/clippyjs/clippy.js/build/clippy.css" media="all"> -->
 	<link rel="stylesheet" type="text/css" href="css/retroWindowsStyle.css" />
+	<!-- Avoid FOUC (Flash of unstyled content) - thanks to https://stackoverflow.com/a/9823468/3174659 -->
+	<style type="text/css">
+		.hidden {display:none;}
+	</style>
 	
 	<!-- JS -->
 	<!-- use 'import' statements without a js bundler - see e.g. https://github.com/mrdoob/three.js/blob/master/examples/webgl_test_memory.html-->
@@ -44,6 +48,13 @@
 
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<!-- Avoid FOUC (Flash of unstyled content) - thanks to https://stackoverflow.com/a/9823468/3174659 -->
+	<script type="text/javascript">
+		$('html').addClass('hidden');
+		$(document).ready(function() {    // Maybe use this instead: $(window).on('load', function() {
+			$('html').removeClass('hidden');
+		});  
+	</script>
 	<script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
 	<script src="js/clippy.js/clippy.js"></script> <!-- could also use CDN: <script src="https://cdn.jsdelivr.net/gh/clippyjs/clippy.js/build/clippy.js"></script> -->
 	<script src="js/retroWindowsScript.js"></script>
@@ -130,11 +141,11 @@
 					shadow-intensity="1.30" exposure="1.10" shadow-softness="0.50" camera-controls touch-action="pan-y" alt="3D Furniture"></model-viewer>
 		</div>
 		<div class="window" data-title="Welcome">
-			<h1>Hi</h1>
+			<h1>Hi<noscript id="javascriptWarning"> Please enable javascript in your browser or the site will look like a mess</noscript></h1>
 			<p>Hello</p>
 			<p>Greetings</p>
 			<p>I'm Pedro Natário, a software developer and an editor with a degree in computer science and another one in philosophy.</p>
-			<p>This site was made with the aim of sharing my computer-related experiments (and it works much better on Desktop than Mobile).</p>
+			<p>This site was made with the aim of sharing my computer-related experiments (<span id="mobileWarning">and it works much better on Desktop than Mobile</span>).</p>
 			<p>For the full list of projects see the menu in the top left of the desktop (behind the windows).</p>
 			<p>Apologies in advance for the <span class="bentText">mess.</span></p>
 			<hr />

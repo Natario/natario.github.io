@@ -302,6 +302,10 @@ input,select{vertical-align:middle}
     flex-grow: 1;
 } */
 
+#javascriptWarning {
+    color: red;
+}
+
 
 
 /*
@@ -383,5 +387,11 @@ input,select{vertical-align:middle}
         width: 400px;
         height: 225px;
     }
+
+    #mobileWarning {
+        font-weight:900;
+        text-decoration: underline 2px;
+    }
+
 }
 

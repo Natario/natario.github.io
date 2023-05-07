@@ -106,8 +106,9 @@ var threeDBackgroundOn = false;
 $("#desktop").css("background","#CCC");
 
 // code from https://www.npmjs.com/package/detect-gpu
+// but grab benchmarks from jsdelivr instead of unpkg (default in detect-gpu source code) because the latter has been intermittent
 (async () => {
-    const gpuTier = await getGPUTier();
+    const gpuTier = await getGPUTier({benchmarksURL: 'https://cdn.jsdelivr.net/npm/detect-gpu@5.0.22/dist/benchmarks'});
   
     // Example output:
     // {
