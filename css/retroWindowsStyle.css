@@ -31,7 +31,7 @@ input,select{vertical-align:middle}
     left: 0;
     right: 0;
 
-    pointer-events: none; /* we don't need click events on the whole bacground, just on its children buttons, windows etc. (so we reset "pointer-events: auto" below) */
+    pointer-events: none; /* we don't need click events on the whole background, just on its children buttons, windows etc. (so we reset "pointer-events: auto" below) */
 }
 #desktop * {
     pointer-events: auto;
@@ -359,12 +359,7 @@ input,select{vertical-align:middle}
     .taskbarPanel {
         font-size: 12px;
     }
-    #bgColorChanger {
-        top: 160px;
-    }
-    #bgColorReset {
-        top: 180px;
-    }
+
     #taskbar {  height: 64px;   }
     #window0 {  top: 1%;    left: 1%;	}
     #window1 {  top: 1%;    left: 1%;	}
@@ -384,13 +379,22 @@ input,select{vertical-align:middle}
     #window7 .wincontent {  width: 90vw;   height: 80vh;  }
 
     iframe {
-        width: 400px;
-        height: 225px;
+        width: 320px;
+        height: 180px;
     }
 
     #mobileWarning {
         font-weight:900;
         text-decoration: underline 2px;
+    }
+
+    #icons {
+        top: 100px;
+        left: 10px;
+    }
+
+    #icons a {
+        font-size: 14px;
     }
 
 }
