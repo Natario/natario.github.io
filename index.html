@@ -70,9 +70,12 @@
 			<p>Most 3D models are from third parties, but the level design and game mechanics were created by me.</p>
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGtFkP0dm5Hazfhqz9">Get it here</a> (Windows only for now) VERY ALPHA EXPECT BUGS!1</p>
 			<p>To run, unzip and double click FirstProject.exe</p>
+			<!-- Show video by default so the page has a little more color when opened. And also it's clear there's a video - the user might not see the "click here" -->
 			<!-- <p><a href="javascript:void(0)" onclick="$(this).parent().next().toggle()">Click here to show/hide preview video</a> (see in HD)</p> -->
 			<p class="previewText">Preview video (change quality to HD)</p>
-			<iframe width="100%" height="100%" src="https://www.youtube.com/embed/xD0XOUPAF14" frameborder="0" allowfullscreen></iframe>
+			<!-- Don't load the player on page load, load only when the user wants to watch it. Load just a thumbnail instead. Thanks to https://stackoverflow.com/a/63872309/3174659 but see also https://stackoverflow.com/a/20542029/3174659 which has URLs for higher quality thumbnails. -->
+			<!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/xD0XOUPAF14" frameborder="0" allowfullscreen></iframe> -->
+			<iframe width="100%" height="100%" srcdoc="<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/xD0XOUPAF14/?autoplay=1><img src=https://img.youtube.com/vi/xD0XOUPAF14/sddefault.jpg alt='video thumbnail'><span>▶</span></a>" frameborder="0" allowfullscreen></iframe>
 		</div>
 		<div class="window closed" data-title="Real Lisbon">
 			<p>A rough 3D model of a part of the Portuguese city of Lisbon.</p>
@@ -81,7 +84,7 @@
 			<p>To run, unzip and double click RealLisbon.exe</p>
 			<p>Move - WASD, Run - LShift, Jump - Space, Exit - Esc.</p>
 			<p class="previewText">Preview video (change quality to HD)</p>
-			<iframe width="100%" height="90%" src="https://www.youtube.com/embed/cPRw2Wpu1Is" frameborder="0" allowfullscreen></iframe>
+			<iframe width="100%" height="90%" srcdoc="<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/cPRw2Wpu1Is/?autoplay=1><img src=https://img.youtube.com/vi/cPRw2Wpu1Is/sddefault.jpg alt='video thumbnail'><span>▶</span></a>" frameborder="0" allowfullscreen></iframe>
 		</div>
 		<div class="window closed" data-title="3D Windmill">
 			<p>This is a windmill 3D model I created in Blender by following <a href="https://www.packtpub.com/product/blender-to-unreal-engine-5-3d-props-medieval-windmill-video/9781837631902">this</a> course.</p>
@@ -89,7 +92,7 @@
 			<p><a href="https://1drv.ms/u/s!At9qU0gJSyEGugyL-_8LZQbYaFkL">Get it here</a> (Windows only for now)</p>
 			<p>To run, unzip and double click Windmill_Course.exe.</p>
 			<p class="previewText">Preview video (change quality to HD)</p>
-			<iframe width="100%" height="90%" src="https://www.youtube.com/embed/GjrwO6EpYV0" frameborder="0" allowfullscreen></iframe>
+			<iframe width="100%" height="90%" srcdoc="<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/GjrwO6EpYV0/?autoplay=1><img src=https://img.youtube.com/vi/GjrwO6EpYV0/sddefault.jpg alt='video thumbnail'><span>▶</span></a>" frameborder="0" allowfullscreen></iframe>
 			<p>You can also see a lower-quality version <a href="windmillthreejs.html">online</a> (takes about 30 seconds to load)</p>
 		</div>
 		<div class="window" data-title="OpenGL Racing">
@@ -102,7 +105,7 @@
 			<p>To run, unzip and execute Example.exe (Windows) or run $ ./test (Linux)</p>
 			<p>To move: Player 1-arrow keys, Player 2-WASD; To leave: Esc</p>
 			<p class="previewText">Preview video (change quality to 720p)</p>
-			<iframe width="100%" height="90%" src="https://www.youtube.com/embed/Duab9-v2tBU" frameborder="0" allowfullscreen></iframe>
+			<iframe width="100%" height="90%" srcdoc="<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/Duab9-v2tBU/?autoplay=1><img src=https://img.youtube.com/vi/Duab9-v2tBU/sddefault.jpg alt='video thumbnail'><span>▶</span></a>" frameborder="0" allowfullscreen></iframe>
 		</div>
 		<div class="window closed" data-title="3D Sword">
 			<p>This is a scene modelled and animated in Blender with the help of
@@ -111,7 +114,7 @@
 				<a href="https://www.youtube.com/watch?v=s-XhO3OOPxQ">tutorials</a>.
 			</p>
 			<p class="previewText">Preview video (change quality to HD)</p>
-			<iframe width="100%" height="90%" src="https://www.youtube.com/embed/RjGi1PAoQPA" frameborder="0" allowfullscreen></iframe>
+			<iframe width="100%" height="90%" srcdoc="<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/RjGi1PAoQPA/?autoplay=1><img src=https://img.youtube.com/vi/RjGi1PAoQPA/sddefault.jpg alt='video thumbnail'><span>▶</span></a>" frameborder="0" allowfullscreen></iframe>
 		</div>
 		<div class="window closed" data-title="3D Furniture">
 			<p>This is a set of table and chairs I modelled in Blender.</p>
@@ -121,7 +124,7 @@
 				<a href="javascript:void(0)" onclick="$(this).parent().next().toggle(); $(this).parent().next().next().toggle()">here</a>
 				to toggle between video (see in HD) and 3D model viewer (lower quality; takes a few seconds to load)
 			</p>
-			<iframe width="100%" height="90%" src="https://www.youtube.com/embed/iZ7_w9ofCV4" frameborder="0" allowfullscreen></iframe>
+			<iframe width="100%" height="90%" srcdoc="<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img,span{position:absolute;width:100%;top:0;bottom:0;margin:auto}span{height:1.5em;text-align:center;font:48px/1.5 sans-serif;color:white;text-shadow:0 0 0.5em black}</style><a href=https://www.youtube.com/embed/iZ7_w9ofCV4/?autoplay=1><img src=https://img.youtube.com/vi/iZ7_w9ofCV4/sddefault.jpg alt='video thumbnail'><span>▶</span></a>" frameborder="0" allowfullscreen></iframe>
 			<model-viewer style="display: none; height: 100%; width: 100%; z-index: 100;"
 					src="https://dl.dropboxusercontent.com/s/ej79rjvjyvikxjg/Furniture.glb?dl=0" min-field-of-view="5deg"
 					shadow-intensity="1.30" exposure="1.10" shadow-softness="0.50" camera-controls touch-action="pan-y" alt="3D Furniture"></model-viewer>
