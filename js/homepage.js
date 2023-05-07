@@ -120,7 +120,7 @@ $("#desktop").css("background","#CCC");
 
     // alert(JSON.stringify(gpuTier));
 
-    if(gpuTier.tier == 3)
+    if(gpuTier.tier == 3 && !gpuTier.isMobile)
         toggle()
     else {
         $("#bgColorChanger").show();

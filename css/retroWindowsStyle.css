@@ -195,69 +195,12 @@ input,select{vertical-align:middle}
     white-space: pre;
 }
 
-/*Styles for large (e.g. second) screens*/
-#window0 {	top: 5%;    left: 25%;}
-#window1 {	top: 20%;   left: 3%;}
-#window2 {	top: 15%;   left: 10%;}
-#window3 {	top: 15%;   left: 17%;}
-#window4 {	top: 10%;   left: 55%;}
-#window5 {	top: 15%;   left: 40%;}
-#window6 {	top: 10%;   left: 45%;}
-#window7 {	top: 25%;   left: 30%;}
-#window0 .wincontent {	width: 500px; height: 300px;	}
-#window1 .wincontent {	width: 550px; height: 550px;	}
-#window2 .wincontent {	width: 550px; height: 500px;	}
-#window3 .wincontent {	width: 550px; height: 550px;	}
-#window4 .wincontent {	width: 550px; height: 600px;	}
-#window5 .wincontent {	width: 500px; height: 400px;	}
-#window6 .wincontent {	width: 500px; height: 400px;	}
-#window7 .wincontent {	width: 550px; height: 350px;	}
-
-/* Avoid windows disappearing though the bottom of screen in laptops with multiple browser menu bars */
-@media screen and ((max-width:1280px) or (max-height:800px)){
-    #window0 {  top: 2%;    left: 20%;}
-    #window1 {	top: 9%;    left: 5%;}
-    #window2 {	top: 10%;   left: 10%;}
-    #window3 {	top: 8%;    left: 17%;}
-    #window4 {	top: 3%;    left: 45%;}
-    #window5 {	top: 15%;   left: 40%;}
-    #window6 {	top: 10%;   left: 45%;}
-    #window7 {	top: 25%;   left: 30%;}
-}
-
-@media screen and (max-width:1280px) {
-    #shoutOuts {display: none   }
-}
-
-/* Mobile phones or supper small screens*/
-@media screen and (max-width:800px){
-    #taskbar {  height: 64px;   }
-    #window0 {  top: 1%;    left: 1%;	}
-    #window1 {  top: 1%;    left: 1%;	}
-    #window2 {  top: 1%;    left: 1%;	}
-    #window3 {  top: 1%;    left: 1%;	}
-    #window4 {  top: 1%;    left: 1%;	}
-    #window5 {  top: 1%;    left: 1%;	}
-    #window6 {  top: 1%;    left: 1%;	}
-    #window7 {  top: 1%;    left: 1%;	}
-    #window0 .wincontent {  width: 330px;   height: 350px;  }
-    #window1 .wincontent {  width: 400px;   height: 550px;  }
-    #window2 .wincontent {  width: 400px;}
-    #window3 .wincontent {  width: 400px;}
-    #window4 .wincontent {  width: 400px;}
-    #window5 .wincontent {  width: 400px;}
-    #window6 .wincontent {  width: 400px;}
-    #window7 .wincontent {  width: 300px;   height: auto;   }
-
-    iframe {
-        width: 400px;
-        height: 225px;
-    }
-}
 
 
 
-/* my own styles for the homepage */
+/* 
+ * My own styles for the homepage
+ */
 
 .bentText {
     writing-mode: vertical-rl;
@@ -358,4 +301,87 @@ input,select{vertical-align:middle}
 /* .wincontent iframe{
     flex-grow: 1;
 } */
+
+
+
+/*
+ * RESPONSIVE DESIGN
+ */
+
+/* 
+ * Default styles - for large (e.g. second) screens
+ */
+#window0 {	top: 5%;    left: 25%;}
+#window1 {	top: 20%;   left: 3%;}
+#window2 {	top: 15%;   left: 10%;}
+#window3 {	top: 15%;   left: 17%;}
+#window4 {	top: 10%;   left: 55%;}
+#window5 {	top: 15%;   left: 40%;}
+#window6 {	top: 10%;   left: 45%;}
+#window7 {	top: 25%;   left: 30%;}
+#window0 .wincontent {	width: 500px; height: 300px;	}
+#window1 .wincontent {	width: 550px; height: 550px;	}
+#window2 .wincontent {	width: 550px; height: 500px;	}
+#window3 .wincontent {	width: 550px; height: 550px;	}
+#window4 .wincontent {	width: 550px; height: 600px;	}
+#window5 .wincontent {	width: 500px; height: 400px;	}
+#window6 .wincontent {	width: 500px; height: 400px;	}
+#window7 .wincontent {	width: 550px; height: 350px;	}
+
+/*
+ * Avoid windows disappearing though the bottom of screen in laptops with multiple browser menu bars
+ */
+@media screen and ((max-width:1280px) or (max-height:800px)){
+    #window0 {  top: 2%;    left: 20%;}
+    #window1 {	top: 9%;    left: 5%;}
+    #window2 {	top: 10%;   left: 10%;}
+    #window3 {	top: 8%;    left: 17%;}
+    #window4 {	top: 3%;    left: 45%;}
+    #window5 {	top: 15%;   left: 40%;}
+    #window6 {	top: 10%;   left: 45%;}
+    #window7 {	top: 25%;   left: 30%;}
+}
+@media screen and (max-width:1280px) {
+    #shoutOuts {display: none   }
+}
+
+/*
+ * Mobile phones or supper small desktop screens
+ */
+@media screen and (max-width:800px){
+    html {
+        font-size:80%;
+    }
+    .taskbarPanel {
+        font-size: 12px;
+    }
+    #bgColorChanger {
+        top: 160px;
+    }
+    #bgColorReset {
+        top: 180px;
+    }
+    #taskbar {  height: 64px;   }
+    #window0 {  top: 1%;    left: 1%;	}
+    #window1 {  top: 1%;    left: 1%;	}
+    #window2 {  top: 1%;    left: 1%;	}
+    #window3 {  top: 1%;    left: 1%;	}
+    #window4 {  top: 1%;    left: 1%;	}
+    #window5 {  top: 1%;    left: 1%;	}
+    #window6 {  top: 1%;    left: 1%;	}
+    #window7 {  top: 1%;    left: 1%;	}
+    #window0 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window1 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window2 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window3 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window4 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window5 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window6 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window7 .wincontent {  width: 90vw;   height: 80vh;  }
+
+    iframe {
+        width: 400px;
+        height: 225px;
+    }
+}
 
