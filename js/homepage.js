@@ -149,7 +149,7 @@ function toggle() {
         // SETUP
         scene = new THREE.Scene();
         // scene.background = new THREE.Color( 'dodgerblue' );
-        // scene.background = new THREE.TextureLoader().load('img/clouds2.jpg');
+        // scene.background = new THREE.TextureLoader().load('img/textures/clouds2.jpg');
         
 
         const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -202,7 +202,7 @@ function toggle() {
         // Skybox to use instead of Sky() - https://r105.threejsfundamentals.org/threejs/lessons/threejs-backgrounds.html
         // const geometry = new THREE.BoxGeometry( 1, 1, 1 );
         // const textureLoader = new THREE.TextureLoader();
-        // const material = new THREE.MeshStandardMaterial( {map: textureLoader.load('img/sky_seamless2.jpg')} );
+        // const material = new THREE.MeshStandardMaterial( {map: textureLoader.load('img/textures/sky_seamless2.jpg')} );
         // material.side = THREE.BackSide;
         // const cube = new THREE.Mesh( geometry, material );
         // cube.scale.setScalar(1500);
@@ -226,7 +226,7 @@ function toggle() {
         // "model2.children[0].children.forEach(child => { if(child.type == "LineSegments")child.visible = false; });"
         // OR use a tool like https://imagetostl.com/convert/file/dae/to/glb to convert .dae to .glb and import with GLTFLoader
         //
-        gltfLoader.load( 'img/mount_rough.glb', function ( file ) {
+        gltfLoader.load( 'img/models/mount_rough.glb', function ( file ) {
             // console.log(file);
             model = file.scene;
             model2 = model.clone();
@@ -244,7 +244,7 @@ function toggle() {
             // console.log(model.children[0].children[0].children[0].children[0].children)
             scene.add(model, model2);
         });
-        // gltfLoader.load( 'img/win2.glb', function ( file ) {
+        // gltfLoader.load( 'img/models/win2.glb', function ( file ) {
         // 	// console.log(file);
         // 	model2 = file.scene;
         // 	model2.position.x = 7;
@@ -254,7 +254,7 @@ function toggle() {
         // 	model2.rotation.y = -0.15;
         // 	scene.add(model2);
         // });
-        // colladaLoader.load( 'img/hill.dae', function ( file ) {
+        // colladaLoader.load( 'img/models/hill.dae', function ( file ) {
         // 	console.log(file);
         // 	model2 = file.scene;
         // 	model2.children[0].children.forEach(child => {
