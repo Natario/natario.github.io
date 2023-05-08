@@ -75,6 +75,8 @@
 	// Scene
 	const scene = new THREE.Scene();
 	scene.background = new THREE.Color('skyblue');
+	// scene.fog = new THREE.Fog( 0xcccccc, 30, 50 );
+	scene.fog = new THREE.FogExp2( 0xcccccc, 0.015 ); // values between 0.01 and 0.1 are the most realistic
 	
 	// AxesHelper
 	// const axesHelper = new THREE.AxesHelper( 1000 );
