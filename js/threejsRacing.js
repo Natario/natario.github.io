@@ -254,7 +254,7 @@ import * as THREE from 'three';
 
 			// Checkpoints, obstacles (3d models loaded later) and finish line
 			// = for horizontal checkpoint, | for vertical checkpoint, X for obstacle, _ for skateboard hurdle, and F for finish line
-			const trackPositions = [
+			let trackPositions = [
 "                    ",
 "    X  |  | X       ",
 "    X  XX   X       ",
@@ -276,7 +276,7 @@ import * as THREE from 'three';
 "   XXXXXXXXXXXXXX   ",
 "                 X F",
 "                    "];
-// const trackPositions = [
+// trackPositions = [
 // "                    ",
 // "    X  |  |  X      ",
 // "    X  XX  = X      ",
@@ -298,7 +298,7 @@ import * as THREE from 'three';
 // "                    ",
 // "                    ",
 // "                    "];
-// const trackPositions = [
+// trackPositions = [
 // "                    ",
 // "       |     X      ",
 // "    X  XX  F        ",
@@ -496,7 +496,7 @@ import * as THREE from 'three';
 
 			
 			let spotLight, spotLightHelper;
-			let boundingBoxesVehicleHelper = {};
+			let boundingBoxesVehicleHelper, boundingBoxesVehicleHelperElement = {};
 			const stats = Stats();
 			document.body.appendChild(stats.dom);
 			let jumping = false;
@@ -586,7 +586,7 @@ import * as THREE from 'three';
                                             if(subModelPart.name.includes('STEER')) {
                                                 if(subModelPart.rotation.z > -Math.PI)
                                                     subModelPart.rotation.z -= 0.06;
-                                                // if the user turned right recently, the sterring wheel is still centering, so turn a bit slower
+                                                // if the user turned right recently, the steering wheel is still centering, so turn a bit slower
                                                 if(subModelPart.rotation.z > 0)
                                                     vehicleModel.rotation.y += ROTATION_SPEED[currentVehicle] * speed * 1.5 *.5;
                                                 else
@@ -617,7 +617,7 @@ import * as THREE from 'three';
                                             if(subModelPart.name.includes('STEER')) {
                                                 if(subModelPart.rotation.z < Math.PI)
                                                     subModelPart.rotation.z += 0.06;
-                                                // if the user turned left recently, the sterring wheel is still centering, so turn a bit slower
+                                                // if the user turned left recently, the steering wheel is still centering, so turn a bit slower
                                                 if(subModelPart.rotation.z < 0)
                                                     vehicleModel.rotation.y -= ROTATION_SPEED[currentVehicle] * speed * 1.5 *.5;
                                                 else
@@ -799,12 +799,12 @@ import * as THREE from 'three';
                             // this is also good to have more control over the boundingbox size even if the models don't rotate (default boundingboxes are too big)
                             const centerVec = new THREE.Vector3();
                             boundingBoxModel.getCenter(centerVec);
-                            boundingBoxModel.min.x = centerVec.x - .5 * OBSTACLE_SCALE;
+                            boundingBoxModel.min.x = centerVec.x - .4 * OBSTACLE_SCALE;
                             boundingBoxModel.min.y = centerVec.y - .8 * OBSTACLE_SCALE;
-                            boundingBoxModel.min.z = centerVec.z - .5 * OBSTACLE_SCALE;
-                            boundingBoxModel.max.x = centerVec.x + .5 * OBSTACLE_SCALE;
+                            boundingBoxModel.min.z = centerVec.z - .6 * OBSTACLE_SCALE;
+                            boundingBoxModel.max.x = centerVec.x + .4 * OBSTACLE_SCALE;
                             boundingBoxModel.max.y = centerVec.y + .8 * OBSTACLE_SCALE;
-                            boundingBoxModel.max.z = centerVec.z + .5 * OBSTACLE_SCALE;
+                            boundingBoxModel.max.z = centerVec.z + .6 * OBSTACLE_SCALE;
 
                             boundingBoxesModels[i] = boundingBoxModel;
 
@@ -830,7 +830,7 @@ import * as THREE from 'three';
                                     // Adjust the bounding box a little so that rotating the vehicle doesn't distort it as much
                                     const roundedAngle = Math.abs(Math.cos(vehicleModel.rotation.y));
                                     boundingBoxVehicle.expandByVector(new THREE.Vector3((1-roundedAngle)*.3, 0, roundedAngle*.3));
-                                    //pprint debug ingo only e.g. every 600 frames (i.e. every 5 seconds at 120Hz)
+                                    // print debug info only e.g. every 600 frames (i.e. every 5 seconds at 120Hz)
                                     // if( renderer.info.render.frame % 120 == 0) {
                                     // 	console.log(Math.abs(Math.cos(vehicleModel.rotation.y)));
                                     // }
@@ -842,12 +842,14 @@ import * as THREE from 'three';
                         } else if(currentVehicle == 1) {
                             for (const modelPart of vehicleModel.children) {
                                 if((modelPart.name.includes('FRONT_BUMPER') && speed > 0) || (modelPart.name.includes('REAR_BUMPER') && speed < 0)) {
-                                    for (const modelSubpart of modelPart.children[0].children) {
-                                        const boundingBoxVehicle = new THREE.Box3().setFromObject(modelSubpart);
-                                        boundingBoxesVehicle.push(boundingBoxVehicle);
-                                        // boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
-                                        // boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
-                                    }
+                                    // the first children of the part should be enough for collision detection, but if not use this for:
+									// for (const modelSubpart of modelPart.children[0].children) {
+									const modelSubpart = modelPart.children[0].children[0]
+									const boundingBoxVehicle = new THREE.Box3().setFromObject(modelSubpart, true);
+									boundingBoxesVehicle.push(boundingBoxVehicle);
+									boundingBoxesVehicleHelperElement = new THREE.Box3Helper(boundingBoxVehicle, 0xffff00 )
+									boundingBoxesVehicleHelper.add(boundingBoxesVehicleHelperElement);
+                                    
                                 }
                             }
                         }
@@ -856,98 +858,89 @@ import * as THREE from 'three';
 
                         // 2. If there is a collision between the vehicle and one of the other objects in the scene, reverse the direction of movement of the vehicle
                         
-                        for (let i = 0; i < boundingBoxesSpheres.length ; i++) {
-                            for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
-                                if (boundingBoxesSpheres[i].intersectsBox(boundingBoxesVehicle[j])) {
-                                    // console.log('hit ' + i + ' ' +  Date.now());
-                                    vehicleModel.position.z += 0.05 * Math.cos(vehicleModel.rotation.y);
-                                    vehicleModel.position.x += 0.05 * Math.sin(vehicleModel.rotation.y);
-                                    speed = -speed * 0.75;
-                                    movementDirectionY[i] = !movementDirectionY[i];
-                                    movementDirectionZ[i] = !movementDirectionZ[i];
-                                    if(movementDirectionY[i])
-                                        sphereGroup[i].position.y += 0.1;
-                                    else
-                                        sphereGroup[i].position.y -= 0.1;
-                                    if(movementDirectionZ[i])
-                                        sphereGroup[i].position.z += 0.1;
-                                    else
-                                        sphereGroup[i].position.z -= 0.1;
-                                }
-                            }
-                        }
-                        
-                        for (let i = 0; i < boundingBoxesModels.length ; i++) {
-                            for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
-                                if (boundingBoxesModels[i].intersectsBox(boundingBoxesVehicle[j])) {
-                                    vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
-                                    vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);
-                                    speed = -speed * 0.75;
-                                }
-                            }
-                        }
-                        
-                        for (let i = 0; i < boundingBoxesWalls.length ; i++) {
-                            for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
-                                if (boundingBoxesWalls[i].intersectsBox(boundingBoxesVehicle[j])) {
-                                    // if(speed > 0) {
-                                    // 	vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
-                                    // 	vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);
-                                    // } else {
-                                    // 	vehicleModel.position.z += 0.2 * Math.cos(vehicleModel.rotation.y);
-                                    // 	vehicleModel.position.x += 0.2 * Math.sin(vehicleModel.rotation.y);
-                                    // }
-                                    
-                                    // To simulate impact, rotate the vehicle a bit depending on orientation of wall and vehicle
-                                    if(wallOrientation[i] == 'n') {
-                                        if(Math.sin(vehicleModel.rotation.y) < 0)
-                                            vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
-                                        else
-                                            vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
-                                    } else if(wallOrientation[i] == 's') {
-                                        if(Math.sin(vehicleModel.rotation.y) < 0)
-                                            vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
-                                        else
-                                            vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
-                                    } else if(wallOrientation[i] == 'e') {
-                                        if(Math.cos(vehicleModel.rotation.y) < 0)
-                                            vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
-                                        else
-                                            vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
-                                    } else if(wallOrientation[i] == 'w') {
-                                        if(Math.cos(vehicleModel.rotation.y) < 0)
-                                            vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
-                                        else
-                                            vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
-                                    } 
-                                    // speed = -speed * ((speed > 0) ? 0.75 : 0.5);
-                                    // speed *= 0.75;
-                                }
-                            }
-                        }
-
-                        for (let i = 0; i < boundingBoxesCheckpoints.length ; i++) {
-                            for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
-                                if (boundingBoxesCheckpoints[i].intersectsBox(boundingBoxesVehicle[j])) {
-                                    if(!checkpointsPassed.includes(i)) {
-                                        checkpointsPassed.push(i)
-                                        checkpointArray[i].visible = false;
-                                    }
-                                    
-                                }
-                            }
-                        }
-
                         for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
+							
+							for (let i = 0; i < boundingBoxesSpheres.length ; i++) {
+								if (boundingBoxesSpheres[i].intersectsBox(boundingBoxesVehicle[j])) {
+									// console.log('hit ' + i + ' ' +  Date.now());
+									vehicleModel.position.z += 0.05 * Math.cos(vehicleModel.rotation.y);
+									vehicleModel.position.x += 0.05 * Math.sin(vehicleModel.rotation.y);
+									speed = -speed * 0.75;
+									movementDirectionY[i] = !movementDirectionY[i];
+									movementDirectionZ[i] = !movementDirectionZ[i];
+									if(movementDirectionY[i])
+										sphereGroup[i].position.y += 0.1;
+									else
+										sphereGroup[i].position.y -= 0.1;
+									if(movementDirectionZ[i])
+										sphereGroup[i].position.z += 0.1;
+									else
+										sphereGroup[i].position.z -= 0.1;
+								}
+							}
+							
+							for (let i = 0; i < boundingBoxesModels.length ; i++) {
+								if (boundingBoxesModels[i].intersectsBox(boundingBoxesVehicle[j])) {
+									vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
+									vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);
+									speed = -speed * 0.5;
+								}
+							}
+							
+							for (let i = 0; i < boundingBoxesWalls.length ; i++) {
+								if (boundingBoxesWalls[i].intersectsBox(boundingBoxesVehicle[j])) {
+									// if(speed > 0) {
+									// 	vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
+									// 	vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);
+									// } else {
+									// 	vehicleModel.position.z += 0.2 * Math.cos(vehicleModel.rotation.y);
+									// 	vehicleModel.position.x += 0.2 * Math.sin(vehicleModel.rotation.y);
+									// }
+									
+									// To simulate impact, rotate the vehicle a bit depending on orientation of wall and vehicle
+									// if(wallOrientation[i] == 'n') {
+									// 	if(Math.sin(vehicleModel.rotation.y) < 0)
+									// 		vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
+									// 	else
+									// 		vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
+									// } else if(wallOrientation[i] == 's') {
+									// 	if(Math.sin(vehicleModel.rotation.y) < 0)
+									// 		vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
+									// 	else
+									// 		vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
+									// } else if(wallOrientation[i] == 'e') {
+									// 	if(Math.cos(vehicleModel.rotation.y) < 0)
+									// 		vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
+									// 	else
+									// 		vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
+									// } else if(wallOrientation[i] == 'w') {
+									// 	if(Math.cos(vehicleModel.rotation.y) < 0)
+									// 		vehicleModel.rotation.y += (speed > 0) ? +WALL_HIT_ROTATION[currentVehicle] : -WALL_HIT_ROTATION[currentVehicle];
+									// 	else
+									// 		vehicleModel.rotation.y += (speed > 0) ? -WALL_HIT_ROTATION[currentVehicle] : +WALL_HIT_ROTATION[currentVehicle];
+									// } 
+
+									speed = -speed * 0.5;
+								}
+							}
+
+							for (let i = 0; i < boundingBoxesCheckpoints.length ; i++) {
+								if (boundingBoxesCheckpoints[i].intersectsBox(boundingBoxesVehicle[j])) {
+									if(!checkpointsPassed.includes(i)) {
+										checkpointsPassed.push(i)
+										checkpointArray[i].visible = false;
+									}
+									
+								}
+							}
+
                             if (boundingBoxFinish.intersectsBox(boundingBoxesVehicle[j])) {
                                 if(checkpointsPassed.length == checkpointArray.length) {
                                     finished = true;
                                 }
                                 
                             }
-                        }
 
-                        for (let j = 0; j < boundingBoxesVehicle.length ; j++) {
                             if (boundingBoxHurdle.intersectsBox(boundingBoxesVehicle[j])) {
                                 vehicleModel.position.z -= 0.2 * Math.cos(vehicleModel.rotation.y);
                                 vehicleModel.position.x -= 0.2 * Math.sin(vehicleModel.rotation.y);

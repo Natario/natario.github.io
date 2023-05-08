@@ -32,7 +32,7 @@ clippy.load('Clippy', function(agent) {
 /*
  * Show little "OK" text where a click happens - https://stackoverflow.com/a/60837378/3174659
  */
-function showOkText() {
+function showOkText(event) {
     // get mouse (event) location
     var x = event.clientX;
     var y = event.clientY;
@@ -62,7 +62,7 @@ function showOkText() {
 var timeoutID = undefined;
 $("#bgColorChanger").on('click', function(event) {
 
-    showOkText()
+    showOkText(event)
     
     // change color (from Kirupa Chinnathambi - Creating Web Animations (2017))
     var zeros = "0000000";
@@ -81,9 +81,9 @@ $("#bgColorChanger").on('click', function(event) {
 /*
  * Reset color on user click
  */
-$("#bgColorReset").on('click', function() {
+$("#bgColorReset").on('click', function(event) {
 
-    showOkText()
+    showOkText(event)
 
     $("#desktop")[0].style.backgroundColor = "#CCC";
 
