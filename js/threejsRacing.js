@@ -22,7 +22,7 @@
 	
 	VEHICLE_FILEPATHS[0] = 'img/models/skateboard.glb';
 	VEHICLE_INITIAL_POSITION[0] = new THREE.Vector3(50, 0.15, 40); 
-	MAX_SPEED[0] = 0.1;
+	MAX_SPEED[0] = 0.25;
 	ROTATION_SPEED[0] = 0.03;
 	BRAKING_SPEED[0] = 0.002;
 	WALL_HIT_ROTATION[0] = 0.1;
@@ -30,7 +30,7 @@
 
 	VEHICLE_FILEPATHS[1] = 'img/models/ac-alfa-romeo-155-v6-ti/source/Alfa_Romeo_155_V6.fbx';
 	VEHICLE_INITIAL_POSITION[1] = new THREE.Vector3(50, 0, 40); 
-	MAX_SPEED[1] = 0.4;
+	MAX_SPEED[1] = 0.5;
 	ROTATION_SPEED[1] = 0.06;
 	BRAKING_SPEED[1] = 0.004;
 	WALL_HIT_ROTATION[1] = 0.03;
@@ -741,7 +741,7 @@
 				if(keysPressed.up) {
 					if(speed <= currentMaxSpeed){
 						speed += 0.004;
-						if(!isAccelerationSoundOn) {
+						if(currentVehicle == 1 && !isAccelerationSoundOn) {
 							accelerationSound.play();
 							isAccelerationSoundOn = true;
 						}
@@ -1196,6 +1196,7 @@
 
 		if(key == "v" || key == "V") {
 			currentVehicle = (currentVehicle + 1) % VEHICLE_FILEPATHS.length;
+			currentMaxSpeed = MAX_SPEED[currentVehicle];
 			speed = 0;
 			cameraView = 'fixed';
 			spawnVehicle();
