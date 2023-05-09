@@ -141,6 +141,11 @@ function toggle() {
     
         threeDBackgroundOn = true;
 
+
+
+
+
+
         /*
          * Three.js background - https://www.youtube.com/watch?v=Q7AOvWpIVHU
          * basically I just took the idea of using a three.js scene covering the whole background (using position: fixed) and not all the other animations
@@ -174,13 +179,23 @@ function toggle() {
         // scene.add(axesHelper);
         
 
+
+
+
+
+
         // LIGHTS AND SKY
         const ambientLight = new THREE.AmbientLight( 0x404040, 50); // soft white light
         scene.add( ambientLight );
         
+        // light the front
         const directionalLight = new THREE.DirectionalLight('white', 15);
         directionalLight.position.set(0, 30, 100);
         scene.add(directionalLight);
+        // light the back (if no ambient light is present)
+        // const directionalLightBack = new THREE.DirectionalLight('white', 5);
+        // directionalLightBack.position.set(0, 30, -500);
+        // scene.add(directionalLightBack);
         
         // const spotLight = new THREE.SpotLight('white', 500, 400, Math.PI / 2.4);
         // spotLight.position.set(2, 8, 10);
@@ -209,7 +224,29 @@ function toggle() {
         // scene.add(cube);
 
 
+
+
+
+
+
         // OBJECTS
+        
+        // Floor
+        const textureLoader = new THREE.TextureLoader();
+        const floorTexture = textureLoader.load( "img/textures/grassDarker.jpg" ); // default grass texture with my lighting setup made grass too bright, so darkened it thanks to https://pinetools.com/darken-image
+        floorTexture.wrapS = THREE.RepeatWrapping;
+        floorTexture.wrapT = THREE.RepeatWrapping;
+        floorTexture.repeat.set( 100, 100 );
+        const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
+        floorMaterial.side = THREE.DoubleSide;
+        const floorSide = 500;
+        const floorGeometry = new THREE.PlaneGeometry( floorSide, floorSide );
+        const floor = new THREE.Mesh( floorGeometry, floorMaterial );
+        floor.rotation.x = - Math.PI / 2;
+        floor.position.y = -4;
+        scene.add( floor );
+
+
         const gltfLoader = new GLTFLoader();
         const colladaLoader = new ColladaLoader();
         let model, model2;
@@ -266,6 +303,11 @@ function toggle() {
         // 	scene.add( model2 );
         // });
         
+
+
+
+
+
 
         // ANIMATIONS AND UPDATES
         function animate() {
