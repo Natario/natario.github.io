@@ -319,7 +319,7 @@ input,select{vertical-align:middle}
 #window1 {	top: 20%;   left: 3%;}
 #window2 {	top: 15%;   left: 10%;}
 #window3 {	top: 15%;   left: 17%;}
-#window4 {	top: 10%;   left: 55%;}
+#window4 {	top: 10%;   left: 50%;}
 #window5 {	top: 15%;   left: 40%;}
 #window6 {	top: 10%;   left: 45%;}
 #window7 {	top: 25%;   left: 30%;}
@@ -336,8 +336,8 @@ input,select{vertical-align:middle}
  * Avoid windows disappearing though the bottom of screen in laptops with multiple browser menu bars
  */
 @media screen and ((max-width:1280px) or (max-height:800px)){
-    #window0 {  top: 2%;    left: 20%;}
-    #window1 {	top: 9%;    left: 5%;}
+    #window0 {  top: 2%;    left: 15%;}
+    #window1 {	top: 11%;    left: 5%;}
     #window2 {	top: 10%;   left: 10%;}
     #window3 {	top: 8%;    left: 17%;}
     #window4 {	top: 3%;    left: 45%;}
