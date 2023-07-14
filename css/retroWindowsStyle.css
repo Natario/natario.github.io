@@ -323,7 +323,8 @@ input,select{vertical-align:middle}
 #window5 {	top: 15%;   left: 40%;}
 #window6 {	top: 10%;   left: 45%;}
 #window7 {	top: 12%;   left: 28%;}
-#window8 {	top: 25%;   left: 30%;}
+#window8 {	top: 15%;   left: 50%;}
+#window9 {	top: 25%;   left: 30%;}
 #window0 .wincontent {	width: 500px; height: 300px;	}
 #window1 .wincontent {	width: 550px; height: 550px;	}
 #window2 .wincontent {	width: 550px; height: 500px;	}
@@ -332,7 +333,8 @@ input,select{vertical-align:middle}
 #window5 .wincontent {	width: 500px; height: 400px;	}
 #window6 .wincontent {	width: 500px; height: 400px;	}
 #window7 .wincontent {	width: 500px; height: 400px;	}
-#window8 .wincontent {	width: 550px; height: 350px;	}
+#window8 .wincontent {	width: 550px; height: 470px;	}
+#window9 .wincontent {	width: 550px; height: 350px;	}
 
 /*
  * Avoid windows disappearing though the bottom of screen in laptops with multiple browser menu bars
@@ -346,7 +348,8 @@ input,select{vertical-align:middle}
     #window5 {	top: 15%;   left: 40%;}
     #window6 {	top: 10%;   left: 45%;}
     #window7 {	top: 12%;   left: 30%;}
-    #window8 {	top: 25%;   left: 30%;}
+    #window8 {	top: 4%;    left: 40%;}
+    #window9 {	top: 25%;   left: 30%;}
 }
 @media screen and (max-width:1280px) {
     #shoutOuts {display: none   }
@@ -373,6 +376,8 @@ input,select{vertical-align:middle}
     #window6 {  top: 1%;    left: 1%;	}
     #window7 {  top: 1%;    left: 1%;	}
     #window8 {  top: 1%;    left: 1%;	}
+    #window9 {  top: 1%;    left: 1%;	}
+    #window10 {  top: 1%;    left: 1%;	}
     #window0 .wincontent {  width: 90vw;   height: 80vh;  }
     #window1 .wincontent {  width: 90vw;   height: 80vh;  }
     #window2 .wincontent {  width: 90vw;   height: 80vh;  }
@@ -382,6 +387,8 @@ input,select{vertical-align:middle}
     #window6 .wincontent {  width: 90vw;   height: 80vh;  }
     #window7 .wincontent {  width: 90vw;   height: 80vh;  }
     #window8 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window9 .wincontent {  width: 90vw;   height: 80vh;  }
+    #window10 .wincontent {  width: 90vw;   height: 80vh;  }
 
     iframe {
         width: 320px;
