@@ -156,6 +156,10 @@
 	
 	let sphereGroup = [];
 	let trackPositions = [];
+	let wallRight = {};
+	let wallLeft = {};
+	let wallTop = {};
+	let wallBottom = {};
 	let wallArray = [];
 	let wallOrientation = [];
 	let checkpointArray = [];
@@ -174,6 +178,15 @@
 	function loadMap() {
 
 		// reset track objects
+		if(wallRight)
+			scene.remove(wallRight)
+		if(wallLeft)
+			scene.remove(wallLeft)
+		if(wallTop)
+			scene.remove(wallTop)
+		if(wallBottom)
+			scene.remove(wallBottom)
+		wallArray = [];
 		if(checkpointArray) {
 			for(let i in checkpointArray) 
 				scene.remove(checkpointArray[i])
@@ -184,13 +197,11 @@
 				scene.remove(miscModels[i])
 		}
 		miscModels = [];
-		if(finish) {
+		if(finish)
 			scene.remove(finish)
-		}
 		finish = {};
-		if(hurdle) {
+		if(hurdle)
 			scene.remove(hurdle)
-		}
 		hurdle = {};
 
 
@@ -225,11 +236,11 @@
 		// const wallMaterial = new THREE.MeshStandardMaterial( {color: 'maroon'} );
 		const wallMaterial = new THREE.MeshStandardMaterial({map: wallTexture});
 		const wallGeometry = new THREE.BoxGeometry( 0.5, 3, floorGeometry.parameters.width );
-		const wallRight = new THREE.Mesh( wallGeometry, wallMaterial );
+		wallRight = new THREE.Mesh( wallGeometry, wallMaterial );
 		wallRight.position.y = wallGeometry.parameters.height/2;
-		const wallLeft = wallRight.clone();
-		const wallTop = wallRight.clone();
-		const wallBottom = wallRight.clone();
+		wallLeft = wallRight.clone();
+		wallTop = wallRight.clone();
+		wallBottom = wallRight.clone();
 		wallRight.position.x = floorGeometry.parameters.width;
 		wallRight.position.z = floorGeometry.parameters.width/2;
 		wallLeft.position.x = 0;
