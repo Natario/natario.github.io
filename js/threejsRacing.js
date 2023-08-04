@@ -6,7 +6,7 @@
 	import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 	import { Reflector } from 'three/addons/objects/Reflector.js';
 	import { Sky } from 'three/addons/objects/Sky.js';
-	import Stats from 'three/addons/libs/stats.module.js'; // this import needs to be different: https://stackoverflow.com/a/62753240/3174659
+	import Stats from 'three/addons/libs/stats.module.js'; // this import needs to be different from the others: https://stackoverflow.com/a/62753240/3174659
 
 
 
@@ -44,6 +44,7 @@
 	const HUD_FONT = "30px sans-serif";
 	const HUD_FONT_COLOR = "red";
 	const OBSTACLE_SCALE = 5; // so that obstacle boundingboxes/hitboxes's custom size also increases/decreases with obstacle size
+	let currentMap = 0;
 
 
 
@@ -152,257 +153,14 @@
 	//
 	// OBJECTS
 	//
-
-	// Floor
-	const textureLoader = new THREE.TextureLoader();
-	const floorTexture = textureLoader.load( "img/textures/asphalt2.jpg" );
-	floorTexture.wrapS = THREE.RepeatWrapping;
-	floorTexture.wrapT = THREE.RepeatWrapping;
-	floorTexture.repeat.set( 20, 20 );
-	const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
-	const floorSide = 200;
-	const floorGeometry = new THREE.PlaneGeometry( floorSide, floorSide );
-	const floor = new THREE.Mesh( floorGeometry, floorMaterial );
-	floor.rotation.x = - Math.PI / 2;
-	floor.position.y = 0;
-	// put top left corner of floor at 0,0 so that it's easier to position objects (all in positive coordinates)
-	floor.position.x = floorSide / 2;
-	floor.position.z = floorSide / 2;
-	scene.add( floor );
-	// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
-	// const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
-	// grid.material.opacity = 0.2;
-	// grid.material.transparent = true;
-	// grid.position.y = 0;
-	// scene.add( grid );
-
-	// Map limit walls
-	const wallArray = [];
-	const wallOrientation = [];
-	const wallTexture = textureLoader.load( "img/textures/bricks2.jpg" );
-	wallTexture.wrapS = THREE.RepeatWrapping;
-	wallTexture.wrapT = THREE.RepeatWrapping;
-	wallTexture.repeat.set( 10, 0.2 );
-	// const wallMaterial = new THREE.MeshStandardMaterial( {color: 'maroon'} );
-	const wallMaterial = new THREE.MeshStandardMaterial({map: wallTexture});
-	const wallGeometry = new THREE.BoxGeometry( 0.5, 3, floorGeometry.parameters.width );
-	const wallRight = new THREE.Mesh( wallGeometry, wallMaterial );
-	wallRight.position.y = wallGeometry.parameters.height/2;
-	const wallLeft = wallRight.clone();
-	const wallTop = wallRight.clone();
-	const wallBottom = wallRight.clone();
-	wallRight.position.x = floorGeometry.parameters.width;
-	wallRight.position.z = floorGeometry.parameters.width/2;
-	wallLeft.position.x = 0;
-	wallLeft.position.z = floorGeometry.parameters.width/2;
-	wallTop.rotation.y = Math.PI / 2;
-	wallTop.position.z = 0;
-	wallTop.position.x = floorGeometry.parameters.width/2;
-	wallBottom.rotation.y = Math.PI / 2;
-	wallBottom.position.z = floorGeometry.parameters.width;
-	wallBottom.position.x = floorGeometry.parameters.width/2;
-	wallArray.push(wallRight, wallLeft, wallTop, wallBottom);
-	wallOrientation.push('w','e','s','n'); // to detect how vehicle should rotate when it hits each wall
-	scene.add(wallRight, wallLeft, wallTop, wallBottom);
-
 	
-	// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
-	const mirrorGeometry = new THREE.PlaneGeometry( 10, 3 );
-	const verticalMirror = new Reflector( mirrorGeometry, {
-		clipBias: 0.003,
-		textureWidth: window.innerWidth * window.devicePixelRatio,
-		textureHeight: window.innerHeight * window.devicePixelRatio,
-		color: 0x889999
-	} );
-	verticalMirror.position.y = mirrorGeometry.parameters.height/2;
-	verticalMirror.position.x = 10;
-	verticalMirror.position.z = 2;
-	scene.add( verticalMirror );
-	// const box = new THREE.BoxHelper( verticalMirror, 0xffff00 );
-	// box.material = new THREE.LineBasicMaterial();
-	// scene.add( box );
-
-	// Border around the mirror because the BoxHelper around the mirror is too thin
-	let mirrorBorderTop = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-	mirrorBorderTop.position.y = mirrorGeometry.parameters.height/2;
-	let mirrorBorderRight = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-	mirrorBorderRight.rotation.z = Math.PI / 2;
-	mirrorBorderRight.position.x = mirrorGeometry.parameters.width/2;
-	let mirrorBorderBottom = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-	mirrorBorderBottom.position.y = -mirrorGeometry.parameters.height/2;
-	let mirrorBorderLeft = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
-	mirrorBorderLeft.rotation.z = Math.PI / 2;
-	mirrorBorderLeft.position.x = -mirrorGeometry.parameters.width/2;
-	verticalMirror.add(mirrorBorderTop, mirrorBorderRight, mirrorBorderBottom, mirrorBorderLeft);
-
-
-
-	// Generic cube with custom texture
-	// const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-	// const material = new THREE.MeshStandardMaterial( {
-	// 	emissiveIntensity: 0.5,
-	// 	map: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-albedo.png'),
-	// 	aoMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-ao2.png'),
-	// 	metalnessMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-metalness.png'),
-	// 	normalMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-normal.png'),
-	// 	roughnessMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-roughness.png'),
-	// } );
-	// const cube = new THREE.Mesh( geometry, material );
-	// cube.position.z = 0;
-	// scene.add(cube);
-
-	// Generic spheres
-	const sphereGeometry = new THREE.SphereGeometry(0.5);
-	const sphereMaterial = new THREE.MeshStandardMaterial({color: 'olivedrab'});
-	const sphereGroup = [];
-	for (let i = 0; i < 10; i++) {
-		sphereGroup[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
-		sphereGroup[i].scale.multiplyScalar(Math.random()+0.3);
-		sphereGroup[i].position.x = i*1.5;
-		sphereGroup[i].position.y = 2;
-		scene.add(sphereGroup[i]);
-	}
-
-
-	// Checkpoints, obstacles (3d models loaded later) and finish line
-	// = for horizontal checkpoint, | for vertical checkpoint, X for obstacle, _ for skateboard hurdle, and F for finish line
-	let trackPositions = [
-"                    ",
-"    X  |  | X       ",
-"    X  XX   X       ",
-"    X=X  X =X       ",
-"    X X  X  X       ",
-"    X X  X  X       ",
-"    XXX  X  X       ",
-"         X= X       ",
-"         X  X       ",
-"   XXXXXX   X       ",
-"   X        X       ",
-"   X    |   X       ",
-"   X = XXXXXX       ",
-"   X  X             ",
-"   X  X             ",
-"   X  X             ",
-"   X = XXXXXXXXXXXXX",
-"   X        |       ",
-"   XXXXXXXXXXXXXX   ",
-"                 X F",
-"                    "];
-// trackPositions = [
-// "                    ",
-// "    X  |  |  X      ",
-// "    X  XX  = X      ",
-// "    X=X  X  =X      ",
-// "    X X  X   X      ",
-// "    X X  X = X      ",
-// "    XXX  X   X      ",
-// "         X = X      ",
-// "         X _ X      ",
-// "         X F X      ",
-// "          XXX       ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    "];
-// trackPositions = [
-// "                    ",
-// "       |     X      ",
-// "    X  XX  F        ",
-// "    X=X             ",
-// "    X X             ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    ",
-// "                    "];
-	const checkpointArray = [];
-	const checkpointGeometry = new THREE.BoxGeometry( 10, 4, 0.5 );
-	const checkpointMaterial = new THREE.MeshStandardMaterial( {color: 'limegreen', transparent: true, opacity: 0.2} );
-	const finishGeometry = new THREE.BoxGeometry( 15, 8, 0.1 );
-	const finishMaterial = new THREE.MeshStandardMaterial( {map: textureLoader.load( "img/textures/checkered.jpg" ), transparent: true, opacity: 0.3} );
-	const finish = new THREE.Mesh( finishGeometry, finishMaterial );
-	const hurdleGeometry = new THREE.BoxGeometry( 100, 0.25, 0.5 );
-	const hurdleTexture = textureLoader.load( "img/textures/bricks2.jpg" );
-	hurdleTexture.wrapS = THREE.RepeatWrapping;
-	hurdleTexture.wrapT = THREE.RepeatWrapping;
-	hurdleTexture.repeat.set( 10, 0.025 );
-	const hurdleMaterial = new THREE.MeshStandardMaterial({map: hurdleTexture});
-	const hurdle = new THREE.Mesh( hurdleGeometry, hurdleMaterial );
-	for (let z = 0; z < trackPositions.length; z += 1) {
-		const mapLine = Array.from(trackPositions[z]);
-		for (let x = 0; x < mapLine.length; x += 1) {
-			if(mapLine[x] == '=' || mapLine[x] == '|') {
-				const checkpoint = new THREE.Mesh( checkpointGeometry, checkpointMaterial );
-				checkpoint.position.y = checkpointGeometry.parameters.height/2;
-				checkpoint.position.x = 10*x;
-				checkpoint.position.z = 10*z;
-				if(mapLine[x] == '|')
-					checkpoint.rotation.y = Math.PI / 2;
-				checkpointArray.push(checkpoint);
-				scene.add(checkpoint);
-			} else if(mapLine[x] == 'F') {
-				finish.position.y = finishGeometry.parameters.height/2;
-				finish.position.x = 10*x;
-				finish.position.z = 10*z;
-				scene.add(finish);
-			} else if(mapLine[x] == '_') {
-				hurdle.position.y = hurdleGeometry.parameters.height/2;
-				hurdle.position.x = 10*x;
-				hurdle.position.z = 10*z;
-				scene.add(hurdle);
-			}
-		}
-	}
-
-
-	const fontLoader = new FontLoader();
-	let textGeometry = {}, textMaterial = {}, textMesh = {};
-
-	// "Checkpoint" label above checkpoints - not really needed...
-	// fontLoader.load( 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
-	// 	for (let i = 0; i < checkpointArray.length; i++) {
-	// 		// textGeometry = new TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
-	// 		textGeometry = new TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
-	// 		textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
-	// 		textMesh = new THREE.Mesh( textGeometry, textMaterial );
-	// 		// textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2;
-	// 		textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2 + 1;
-	// 		textMesh.position.x = -3;
-	// 		checkpointArray[i].add( textMesh );
-	// 	}
-	// });
-
-	// Loading... text
-	fontLoader.load( 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
-		textGeometry = new TextGeometry( 'Loading 3D models...', {font: font, size: 0.5, height: 0.2, curveSegments: 2} );
-		textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
-		textMesh = new THREE.Mesh( textGeometry, textMaterial );
-		textMesh.position.y = 1;
-		textMesh.position.x = VEHICLE_INITIAL_POSITION[currentVehicle].x-2;
-		textMesh.position.z = VEHICLE_INITIAL_POSITION[currentVehicle].z-7;
-		scene.add( textMesh );
-	});
-
-
-	
-	// Loaders for 3D models and text
+	let sphereGroup = [];
+	let trackPositions = [];
+	let wallArray = [];
+	let wallOrientation = [];
+	let checkpointArray = [];
+	let finish = {};
+	let hurdle = {};
 	const gltfLoader = new GLTFLoader();
 	const fbxLoader = new FBXLoader();
 	let miscModels = [];
@@ -410,30 +168,317 @@
 	let mixer;
 	const clock = new THREE.Clock(); // clock for animation
 	const timer = new THREE.Clock(); // level timer
-	gltfLoader.load( 'img/models/OlmecHead.glb', function ( gltf ) {
-		const obstacleModel = gltf.scene;
-		obstacleModel.scale.setScalar(OBSTACLE_SCALE);
-		// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
-		// mixer = new THREE.AnimationMixer( model );
-		// const action = mixer.clipAction( gltf.animations[ 0 ] );
-		// action.play();
-		for (let z = 0; z < trackPositions.length; z += 1) {
-			const mapLine = Array.from(trackPositions[z]);
+
+
+
+	function loadMap() {
+
+		// reset track objects
+		if(checkpointArray) {
+			for(let i in checkpointArray) 
+				scene.remove(checkpointArray[i])
+		}
+		checkpointArray = [];
+		if(miscModels) {
+			for(let i in miscModels) 
+				scene.remove(miscModels[i])
+		}
+		miscModels = [];
+		if(finish) {
+			scene.remove(finish)
+		}
+		finish = {};
+		if(hurdle) {
+			scene.remove(hurdle)
+		}
+		hurdle = {};
+
+
+		// Floor
+		const textureLoader = new THREE.TextureLoader();
+		const floorTexture = textureLoader.load( "img/textures/asphalt2.jpg" );
+		floorTexture.wrapS = THREE.RepeatWrapping;
+		floorTexture.wrapT = THREE.RepeatWrapping;
+		floorTexture.repeat.set( 20, 20 );
+		const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture});
+		const floorSide = 200;
+		const floorGeometry = new THREE.PlaneGeometry( floorSide, floorSide );
+		const floor = new THREE.Mesh( floorGeometry, floorMaterial );
+		floor.rotation.x = - Math.PI / 2;
+		floor.position.y = 0;
+		// put top left corner of floor at 0,0 so that it's easier to position objects (all in positive coordinates)
+		floor.position.x = floorSide / 2;
+		floor.position.z = floorSide / 2;
+		scene.add( floor );
+		// Ground with helper grid - from https://threejs.org/examples/#webgl_animation_skinning_morph
+		// const grid = new THREE.GridHelper( 100, 100, 0x000000, 0x000000 );
+		// grid.material.opacity = 0.2;
+		// grid.material.transparent = true;
+		// grid.position.y = 0;
+		// scene.add( grid );
+
+		// Map limit walls
+		const wallTexture = textureLoader.load( "img/textures/bricks2.jpg" );
+		wallTexture.wrapS = THREE.RepeatWrapping;
+		wallTexture.wrapT = THREE.RepeatWrapping;
+		wallTexture.repeat.set( 10, 0.2 );
+		// const wallMaterial = new THREE.MeshStandardMaterial( {color: 'maroon'} );
+		const wallMaterial = new THREE.MeshStandardMaterial({map: wallTexture});
+		const wallGeometry = new THREE.BoxGeometry( 0.5, 3, floorGeometry.parameters.width );
+		const wallRight = new THREE.Mesh( wallGeometry, wallMaterial );
+		wallRight.position.y = wallGeometry.parameters.height/2;
+		const wallLeft = wallRight.clone();
+		const wallTop = wallRight.clone();
+		const wallBottom = wallRight.clone();
+		wallRight.position.x = floorGeometry.parameters.width;
+		wallRight.position.z = floorGeometry.parameters.width/2;
+		wallLeft.position.x = 0;
+		wallLeft.position.z = floorGeometry.parameters.width/2;
+		wallTop.rotation.y = Math.PI / 2;
+		wallTop.position.z = 0;
+		wallTop.position.x = floorGeometry.parameters.width/2;
+		wallBottom.rotation.y = Math.PI / 2;
+		wallBottom.position.z = floorGeometry.parameters.width;
+		wallBottom.position.x = floorGeometry.parameters.width/2;
+		wallArray.push(wallRight, wallLeft, wallTop, wallBottom);
+		wallOrientation.push('w','e','s','n'); // to detect how vehicle should rotate when it hits each wall
+		scene.add(wallRight, wallLeft, wallTop, wallBottom);
+
+		
+		// Mirror - view-source:https://threejs.org/examples/webgl_mirror.html
+		const mirrorGeometry = new THREE.PlaneGeometry( 10, 3 );
+		const verticalMirror = new Reflector( mirrorGeometry, {
+			clipBias: 0.003,
+			textureWidth: window.innerWidth * window.devicePixelRatio,
+			textureHeight: window.innerHeight * window.devicePixelRatio,
+			color: 0x889999
+		} );
+		verticalMirror.position.y = mirrorGeometry.parameters.height/2;
+		verticalMirror.position.x = 10;
+		verticalMirror.position.z = 2;
+		scene.add( verticalMirror );
+		// const box = new THREE.BoxHelper( verticalMirror, 0xffff00 );
+		// box.material = new THREE.LineBasicMaterial();
+		// scene.add( box );
+
+		// Border around the mirror because the BoxHelper around the mirror is too thin
+		let mirrorBorderTop = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+		mirrorBorderTop.position.y = mirrorGeometry.parameters.height/2;
+		let mirrorBorderRight = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+		mirrorBorderRight.rotation.z = Math.PI / 2;
+		mirrorBorderRight.position.x = mirrorGeometry.parameters.width/2;
+		let mirrorBorderBottom = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.width, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+		mirrorBorderBottom.position.y = -mirrorGeometry.parameters.height/2;
+		let mirrorBorderLeft = new THREE.Mesh( new THREE.BoxGeometry( mirrorGeometry.parameters.height, .1, .1 ), new THREE.MeshBasicMaterial( { color: "peru" } ) );
+		mirrorBorderLeft.rotation.z = Math.PI / 2;
+		mirrorBorderLeft.position.x = -mirrorGeometry.parameters.width/2;
+		verticalMirror.add(mirrorBorderTop, mirrorBorderRight, mirrorBorderBottom, mirrorBorderLeft);
+
+
+
+		// Generic cube with custom texture
+		// const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+		// const material = new THREE.MeshStandardMaterial( {
+		// 	emissiveIntensity: 0.5,
+		// 	map: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-albedo.png'),
+		// 	aoMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-ao2.png'),
+		// 	metalnessMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-metalness.png'),
+		// 	normalMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-normal.png'),
+		// 	roughnessMap: textureLoader.load('img/textures/harshbricks-Unreal-Engine/harshbricks-roughness.png'),
+		// } );
+		// const cube = new THREE.Mesh( geometry, material );
+		// cube.position.z = 0;
+		// scene.add(cube);
+
+		// Generic spheres
+		const sphereGeometry = new THREE.SphereGeometry(0.5);
+		const sphereMaterial = new THREE.MeshStandardMaterial({color: 'olivedrab'});
+		for (let i = 0; i < 10; i++) {
+			sphereGroup[i] = new THREE.Mesh(sphereGeometry, sphereMaterial);
+			sphereGroup[i].scale.multiplyScalar(Math.random()+0.3);
+			sphereGroup[i].position.x = i*1.5;
+			sphereGroup[i].position.y = 2;
+			scene.add(sphereGroup[i]);
+		}
+
+
+		// Checkpoints, obstacles (3d models loaded later) and finish line
+		// = for horizontal checkpoint, | for vertical checkpoint, X for obstacle, _ for skateboard hurdle, and F for finish line
+		trackPositions = [
+			[
+				"                    ",
+				"    X  |  | X       ",
+				"    X  XX   X       ",
+				"    X=X  X =X       ",
+				"    X X  X  X       ",
+				"    X X  X  X       ",
+				"    XXX  X  X       ",
+				"         X= X       ",
+				"         X  X       ",
+				"   XXXXXX   X       ",
+				"   X        X       ",
+				"   X    |   X       ",
+				"   X = XXXXXX       ",
+				"   X  X             ",
+				"   X  X             ",
+				"   X  X             ",
+				"   X = XXXXXXXXXXXXX",
+				"   X        |       ",
+				"   XXXXXXXXXXXXXX   ",
+				"                 X F",
+				"                    "
+			],
+
+			[
+				"                    ",
+				"    X  |  |  X      ",
+				"    X  XX  = X      ",
+				"    X=X  X  =X      ",
+				"    X X  X   X      ",
+				"    X X  X = X      ",
+				"    XXX  X   X      ",
+				"         X = X      ",
+				"         X _ X      ",
+				"         X F X      ",
+				"          XXX       ",
+				"                    ",
+				"                    ",
+				"                    ",
+				"                    ",
+				"                    ",
+				"                    ",
+				"                    ",
+				"                    ",
+				"                    ",
+				"                    "
+			],
+
+			// [
+			// 	"                    ",
+			// 	"       |     X      ",
+			// 	"    X  XX  F        ",
+			// 	"    X=X             ",
+			// 	"    X X             ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    ",
+			// 	"                    "
+			// ]
+		];
+
+
+		const checkpointGeometry = new THREE.BoxGeometry( 10, 4, 0.5 );
+		const checkpointMaterial = new THREE.MeshStandardMaterial( {color: 'limegreen', transparent: true, opacity: 0.2} );
+		const finishGeometry = new THREE.BoxGeometry( 15, 8, 0.1 );
+		const finishMaterial = new THREE.MeshStandardMaterial( {map: textureLoader.load( "img/textures/checkered.jpg" ), transparent: true, opacity: 0.3} );
+		finish = new THREE.Mesh( finishGeometry, finishMaterial );
+		const hurdleGeometry = new THREE.BoxGeometry( 100, 0.25, 0.5 );
+		const hurdleTexture = textureLoader.load( "img/textures/bricks2.jpg" );
+		hurdleTexture.wrapS = THREE.RepeatWrapping;
+		hurdleTexture.wrapT = THREE.RepeatWrapping;
+		hurdleTexture.repeat.set( 10, 0.025 );
+		const hurdleMaterial = new THREE.MeshStandardMaterial({map: hurdleTexture});
+		hurdle = new THREE.Mesh( hurdleGeometry, hurdleMaterial );
+		for (let z = 0; z < trackPositions[currentMap].length; z += 1) {
+			const mapLine = Array.from(trackPositions[currentMap][z]);
 			for (let x = 0; x < mapLine.length; x += 1) {
-				if(mapLine[x] == 'X') {
-					const obstacle = obstacleModel.clone();
-					obstacle.position.x = 10*x;
-					obstacle.position.z = 10*z;
-					miscModels.push(obstacle);
-					scene.add(obstacle);
+				if(mapLine[x] == '=' || mapLine[x] == '|') {
+					const checkpoint = new THREE.Mesh( checkpointGeometry, checkpointMaterial );
+					checkpoint.position.y = checkpointGeometry.parameters.height/2;
+					checkpoint.position.x = 10*x;
+					checkpoint.position.z = 10*z;
+					if(mapLine[x] == '|')
+						checkpoint.rotation.y = Math.PI / 2;
+					checkpointArray.push(checkpoint);
+					scene.add(checkpoint);
+				} else if(mapLine[x] == 'F') {
+					finish.position.y = finishGeometry.parameters.height/2;
+					finish.position.x = 10*x;
+					finish.position.z = 10*z;
+					scene.add(finish);
+				} else if(mapLine[x] == '_') {
+					hurdle.position.y = hurdleGeometry.parameters.height/2;
+					hurdle.position.x = 10*x;
+					hurdle.position.z = 10*z;
+					scene.add(hurdle);
 				}
 			}
 		}
-		scene.remove( textMesh );
-		timer.start();
-	});
+
+
+		const fontLoader = new FontLoader();
+		let textGeometry = {}, textMaterial = {}, textMesh = {};
+
+		// "Checkpoint" label above checkpoints - not really needed...
+		// fontLoader.load( 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+		// 	for (let i = 0; i < checkpointArray.length; i++) {
+		// 		// textGeometry = new TextGeometry( (i+1).toString(), {font: font, size: 1.5, height: 0.2, curveSegments: 2} );
+		// 		textGeometry = new TextGeometry( 'checkpoint', {font: font, size: 1, height: 0.2, curveSegments: 2} );
+		// 		textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
+		// 		textMesh = new THREE.Mesh( textGeometry, textMaterial );
+		// 		// textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2;
+		// 		textMesh.position.y = checkpointArray[i].geometry.parameters.height / 2 + 1;
+		// 		textMesh.position.x = -3;
+		// 		checkpointArray[i].add( textMesh );
+		// 	}
+		// });
+
+		// Loading... text
+		fontLoader.load( 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+			textGeometry = new TextGeometry( 'Loading 3D models...', {font: font, size: 0.5, height: 0.2, curveSegments: 2} );
+			textMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, specular: 0xffffff });
+			textMesh = new THREE.Mesh( textGeometry, textMaterial );
+			textMesh.position.y = 1;
+			textMesh.position.x = VEHICLE_INITIAL_POSITION[currentVehicle].x-2;
+			textMesh.position.z = VEHICLE_INITIAL_POSITION[currentVehicle].z-7;
+			scene.add( textMesh );
+		});
+
+
+		
+		// Load obstacles
+		gltfLoader.load( 'img/models/OlmecHead.glb', function ( gltf ) {
+			const obstacleModel = gltf.scene;
+			obstacleModel.scale.setScalar(OBSTACLE_SCALE);
+			// add animations (when they exist in the source model - view-source:https://threejs.org/examples/webgl_loader_fbx.html
+			// mixer = new THREE.AnimationMixer( model );
+			// const action = mixer.clipAction( gltf.animations[ 0 ] );
+			// action.play();
+			for (let z = 0; z < trackPositions[currentMap].length; z += 1) {
+				const mapLine = Array.from(trackPositions[currentMap][z]);
+				for (let x = 0; x < mapLine.length; x += 1) {
+					if(mapLine[x] == 'X') {
+						const obstacle = obstacleModel.clone();
+						obstacle.position.x = 10*x;
+						obstacle.position.z = 10*z;
+						miscModels.push(obstacle);
+						scene.add(obstacle);
+					}
+				}
+			}
+			scene.remove( textMesh );
+			timer.start();
+		});
+
+	}
+
+	loadMap();
 
 	
+
+
 
 	function spawnVehicle() {
 		scene.remove( vehicleModel );
@@ -574,8 +619,8 @@
 	
 	let spotLight, spotLightHelper;
 	let boundingBoxesVehicleHelper, boundingBoxesVehicleHelperElement = {};
-	const stats = Stats();
-	document.body.appendChild(stats.dom);
+	// const stats = Stats();
+	// document.body.appendChild(stats.dom);
 	let jumping = false;
 	let falling = false;
 	const canvas = document.querySelector("#hud");
@@ -1085,7 +1130,7 @@
 				}
 
 
-				stats.update();
+				// stats.update();
 			} else {
 				// if vehicle isn't loaded yet, point camera at where it will be loaded (so it doesn't point at 0,0,0)
 				camera.lookAt(VEHICLE_INITIAL_POSITION[currentVehicle].x, VEHICLE_INITIAL_POSITION[currentVehicle].y+1.5, VEHICLE_INITIAL_POSITION[currentVehicle].z);
@@ -1174,7 +1219,11 @@
 			mouseZoom = 0;
 		}
 
-		if(key == "r" || key == "R") {
+		if(key == "r" || key == "R" || key == "m" || key == "M") {
+			if(key == "m" || key == "M") {
+				currentMap = (currentMap + 1) % trackPositions.length;
+				loadMap();
+			}
 			vehicleModel.position.copy(VEHICLE_INITIAL_POSITION[currentVehicle]);
 			vehicleModel.rotation.y = Math.PI;
 			speed = 0;
@@ -1209,6 +1258,7 @@
 				document.exitFullscreen();
 			}
 		}
+
 	});
 	document.addEventListener('keyup', function(event) {
 		const key = event.key;
