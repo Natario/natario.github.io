@@ -70,6 +70,17 @@ body {
     left: 95px;
     z-index: -1; /* move it to the back so user cant drag it */
 }
+.colorpicker {
+    position: absolute;
+    top: 350px;
+    left: 394px;
+}
+.sizepicker {
+    width: 65px;
+    position: absolute;
+    top: 395px;
+    left: 394px;
+}
 
 #stringToArray {
     resize: none;

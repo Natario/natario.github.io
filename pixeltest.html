@@ -41,6 +41,9 @@
                 <p>(you can also press the arrow keys to "move" the camera; warning: objects out of focus disappear into the void)</p>
                 <canvas id="canvasmouse" width=223 height=153></canvas>
                 <img class="camera" src="img/photo-camera-svgrepo-com.svg"></img>
+                <!-- Inspiration from https://github.com/mdn/learning-area/tree/main/javascript/apis/drawing-graphics/loops_animation/8_canvas_drawing_app -->
+                <input class="colorpicker" type="color" value="#0000ff">
+                <input class="sizepicker" type="range" min="1" max="50" value="5">
             </div>
             
             <div class="column">
@@ -208,12 +211,15 @@
             if (e.buttons !== 1) return;
 
             var ctx = document.getElementById("canvasmouse").getContext("2d");
+            const colorPicker = document.querySelector('.colorpicker');
+            const sizePicker = document.querySelector('.sizepicker');
 
             ctx.beginPath(); // begin
 
-            ctx.lineWidth = 2;
+            ctx.lineWidth = sizePicker.value;
             ctx.lineCap = 'round';
-            ctx.strokeStyle = 'blue';
+            // ctx.strokeStyle = 'blue';
+            ctx.strokeStyle = colorPicker.value;
 
             ctx.moveTo(pos.x, pos.y); // from
             setPosition(e);
