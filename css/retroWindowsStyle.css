@@ -218,10 +218,12 @@ input,select{vertical-align:middle}
     top: 10px;
 }
 
-.window a:hover {
+/* colorize links on hover except fontawesome icons because it doesnt make sense to change e.g. LinkedIn's icon color */
+.window a:hover:not(.socialicon)  {
 	background: #000;
 	color: #FFF;
 }
+
 
 /* some animation tests - based on the book by Kirupa Chinnathambi - Creating Web Animations (2017) */
 /* .clippy {
@@ -336,7 +338,7 @@ input,select{vertical-align:middle}
 #window7 .wincontent {	width: 500px; height: 400px;	}
 #window8 .wincontent {	width: 550px; height: 470px;	}
 #window9 .wincontent {	width: 550px; height: 450px;	}
-#window10 .wincontent {	width: 550px; height: 350px;	}
+#window10 .wincontent {	width: 550px; height: 340px;	}
 
 /*
  * Avoid windows disappearing though the bottom of screen in laptops with multiple browser menu bars
